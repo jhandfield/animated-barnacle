@@ -24,6 +24,10 @@ vFuture Goals
 1. Scripted mobs (complex dialogue trees, triggered actions, etc.)
 2. >200 concurrent user capacity on commodity hardware (aka my Core i5-2500K w/16GB RAM)
 
+Closing
+=======
 Yes, I know no one is ever going to use this software, if I even finish it, but it's something to keep me occupied and takes me out of my comfort zone (I'm an ASP.NET/C# web developer by trade who's only dabbled in console apps before, and never built a serious standalone server app before).
 
-"Do something you can't, because you can."
+Questions? Want to join in the fun? Think I'm an idiot? Contact me @ <animatedbarnacle@handfield.org>
+
+"Do something you can't, just because you can."
