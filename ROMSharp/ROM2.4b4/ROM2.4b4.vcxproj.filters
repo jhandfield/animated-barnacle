@@ -1,0 +1,315 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Data">
+      <UniqueIdentifier>{c4a6dc37-45b6-489e-bd3d-f456c4130f3b}</UniqueIdentifier>
+      <Extensions>are;lst;txt</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\act_comm.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\act_enter.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\act_info.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\act_move.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\act_obj.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\act_wiz.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\alias.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ban.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\comm.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\const.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\db.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\db2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\effects.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\fight.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\flags.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\handler.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\healer.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\interp.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\lookup.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\magic.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\magic2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\music.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\note.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\recycle.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\save.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\scan.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\skills.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\special.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\tables.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\update.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\db.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\interp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\lookup.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\magic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\merc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\music.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\recycle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\tables.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\telnet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="area\air.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\arachnos.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\area.lst">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\astral.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\canyon.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\catacomb.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\chapel.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\daycare.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\draconia.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\dream.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\drow.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\dwarven.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\dylan.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\eastern.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\galaxy.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\gnome.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\grave.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\group.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\grove.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\haon.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\help.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\hitower.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\hood.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\immort.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\limbo.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\mahntor.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\marsh.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\mega1.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\midennir.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\midgaard.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\mirror.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\mobfact.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\moria.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\newthalos.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\nirvana.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\ofcol.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\ofcol2.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\olympus.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\plains.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\proto.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\pyramid.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\quifael.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\redferne.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\rom.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\school.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\sewer.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\shire.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\smurf.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\social.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\startup" />
+    <None Include="area\thalos.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\tohell.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\trollden.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\valley.are">
+      <Filter>Data</Filter>
+    </None>
+    <None Include="area\wyvern.are">
+      <Filter>Data</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="area\music.txt">
+      <Filter>Data</Filter>
+    </Text>
+    <Text Include="area\shutdown.txt">
+      <Filter>Data</Filter>
+    </Text>
+  </ItemGroup>
+</Project>
