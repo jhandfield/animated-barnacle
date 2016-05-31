@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ROMSharp", "ROMSharp\ROMSha
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ROM2.4b4", "ROM2.4b4\ROM2.4b4.vcxproj", "{057B080D-F525-4CC2-8C09-3FA75CB3015E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{F55DD9B0-93B7-4C3F-8B9A-959A16968287}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,18 @@ Global
 		{057B080D-F525-4CC2-8C09-3FA75CB3015E}.Release|x64.Build.0 = Release|x64
 		{057B080D-F525-4CC2-8C09-3FA75CB3015E}.Release|x86.ActiveCfg = Release|Win32
 		{057B080D-F525-4CC2-8C09-3FA75CB3015E}.Release|x86.Build.0 = Release|Win32
+		{F55DD9B0-93B7-4C3F-8B9A-959A16968287}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F55DD9B0-93B7-4C3F-8B9A-959A16968287}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F55DD9B0-93B7-4C3F-8B9A-959A16968287}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F55DD9B0-93B7-4C3F-8B9A-959A16968287}.Debug|x64.Build.0 = Debug|Any CPU
+		{F55DD9B0-93B7-4C3F-8B9A-959A16968287}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F55DD9B0-93B7-4C3F-8B9A-959A16968287}.Debug|x86.Build.0 = Debug|Any CPU
+		{F55DD9B0-93B7-4C3F-8B9A-959A16968287}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F55DD9B0-93B7-4C3F-8B9A-959A16968287}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F55DD9B0-93B7-4C3F-8B9A-959A16968287}.Release|x64.ActiveCfg = Release|Any CPU
+		{F55DD9B0-93B7-4C3F-8B9A-959A16968287}.Release|x64.Build.0 = Release|Any CPU
+		{F55DD9B0-93B7-4C3F-8B9A-959A16968287}.Release|x86.ActiveCfg = Release|Any CPU
+		{F55DD9B0-93B7-4C3F-8B9A-959A16968287}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
