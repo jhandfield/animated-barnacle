@@ -79,13 +79,14 @@ namespace ROMSharp
                 listener.Bind(localEndPoint);
                 listener.Listen(100);
 
+				// Start an asynchronous socket to listen for connections.
+				Console.WriteLine("Waiting for a connection on address {0} port {1}...", addr.ToString(), port);
+
                 while (true)
                 {
                     // Set the event to nonsignaled state.
                     allDone.Reset();
 
-                    // Start an asynchronous socket to listen for connections.
-                    Console.WriteLine("Waiting for a connection on address {0} port {1}...", addr.ToString(), port);
                     listener.BeginAccept(
                         new AsyncCallback(AcceptCallback),
                         listener);
