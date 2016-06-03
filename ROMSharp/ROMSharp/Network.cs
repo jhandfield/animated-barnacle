@@ -3,13 +3,16 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
+using System.Collections.Generic;
 
 namespace ROMSharp
 {
     public class Network
     {
+		public static List<ClientConnection> ClientConnections;
+
         // State object for reading client data asynchronously
-        public class StateObject
+        public class ClientConnection
         {
             // Client  socket.
             public Socket workSocket = null;
@@ -23,7 +26,11 @@ namespace ROMSharp
             public UInt64 bytesSent = 0;
             // Data received count
             public UInt64 bytesReceived = 0;
-            // ID of the connection (handle number)
+
+			#region Properties
+            /// <summary>
+            /// Returns the unique identifier for the connection
+            /// </summary>
             public Int32 ID
             {
                 get
@@ -34,6 +41,34 @@ namespace ROMSharp
                         return -1;
                 }
             }
+
+			/// <summary>
+			/// Stores the date/time at which the client connected
+			/// </summary>
+			public DateTime ConnectedAt { get; }
+
+			/// <summary>
+			/// Returns the remote IP address of the client
+			/// </summary>
+			public IPAddress RemoteIP { get { return ((IPEndPoint)this.workSocket.RemoteEndPoint).Address; } }
+
+			/// <summary>
+			/// Returns the duration for which the client's session has existed
+			/// </summary>
+			/// <value>The duration of the connection.</value>
+			public TimeSpan ConnectionDuration { get { return (TimeSpan)(DateTime.Now - this.ConnectedAt); } }
+
+			/// <summary>
+			/// Returns the text of the last command sent from the client
+			/// </summary>
+			public string LastCommand { get; set; }
+			#endregion
+
+			#region Constructors
+			public ClientConnection() {
+				this.ConnectedAt = DateTime.Now;
+			}
+			#endregion
         }
 
         public static ManualResetEvent allDone = new ManualResetEvent(false);
@@ -116,13 +151,16 @@ namespace ROMSharp
             Socket handler = listener.EndAccept(ar);
 
             // Create the state object.
-            StateObject state = new StateObject();
+            ClientConnection state = new ClientConnection();
             state.workSocket = handler;
+
+			// Add the state object to ClientConnections
+			ClientConnections.Add(state);
 
             // Log the connection
             Console.WriteLine("[{0}]: Connection established with {1} on local port {2}", state.ID, IPAddress.Parse(((IPEndPoint)handler.RemoteEndPoint).Address.ToString()), ((IPEndPoint)handler.RemoteEndPoint).Port);
 
-            handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
+            handler.BeginReceive(state.buffer, 0, ClientConnection.BufferSize, 0,
                 new AsyncCallback(ReadCallback), state);
         }
 
@@ -133,7 +171,7 @@ namespace ROMSharp
             String content = String.Empty;
 
             // Retrieve the state object and the handler socket from the asynchronous state object.
-            StateObject state = (StateObject)ar.AsyncState;
+            ClientConnection state = (ClientConnection)ar.AsyncState;
             Socket handler = state.workSocket;
 
             // Read data from the client socket. 
@@ -158,7 +196,7 @@ namespace ROMSharp
                 else
                 {
                     // Not all data received. Get more.
-                    handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
+                    handler.BeginReceive(state.buffer, 0, ClientConnection.BufferSize, 0,
                     new AsyncCallback(ReadCallback), state);
                 }
             }
@@ -169,7 +207,7 @@ namespace ROMSharp
         /// </summary>
         /// <param name="handler">The user's socket</param>
         /// <param name="state">The user's current StateObject</param>
-        public static void EndSession(StateObject state)
+        public static void EndSession(ClientConnection state)
         {
             // Send the goodbye message to the user
             byte[] byteData = Encoding.ASCII.GetBytes(Strings.Goodbye);
@@ -183,7 +221,7 @@ namespace ROMSharp
             try
             {
                 // Read the state object
-                StateObject state = (StateObject)ar.AsyncState;
+                ClientConnection state = (ClientConnection)ar.AsyncState;
 
                 // Pull the socket from the state
                 Socket handler = state.workSocket;
@@ -206,12 +244,12 @@ namespace ROMSharp
 		/// </summary>
 		/// <param name="data">Data to send to the client</param>
 		/// <param name="state">State object of the client to interact with</param>
-		public static void Send(string data, StateObject state)
+		public static void Send(string data, ClientConnection state)
 		{
 			Send(state.workSocket, data, state);
 		}
 
-        public static void Send(Socket handler, String data, StateObject state)
+        public static void Send(Socket handler, String data, ClientConnection state)
         {
             // Convert the string data to byte data using ASCII encoding.
             byte[] byteData = Encoding.ASCII.GetBytes(data);
@@ -226,7 +264,7 @@ namespace ROMSharp
             try
             {
                 // Read the state object
-                StateObject state = (StateObject)ar.AsyncState;
+                ClientConnection state = (ClientConnection)ar.AsyncState;
 
                 // Pull the Socket from the state object
                 Socket handler = state.workSocket;
@@ -240,11 +278,11 @@ namespace ROMSharp
                 //Console.WriteLine("Sent {0} bytes to client.", bytesSent);
 
                 // Clear the buffer and reset the StringBuilder
-                state.buffer = new byte[StateObject.BufferSize];
+                state.buffer = new byte[ClientConnection.BufferSize];
                 state.sb.Clear();
 
                 // Receive more data
-                handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(ReadCallback), state);
+                handler.BeginReceive(state.buffer, 0, ClientConnection.BufferSize, 0, new AsyncCallback(ReadCallback), state);
 
                 //handler.Shutdown(SocketShutdown.Both);
                 //handler.Close();
