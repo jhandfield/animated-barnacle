@@ -147,26 +147,13 @@ namespace ROMSharp
                 // There might be more data, so store the data received so far.
                 state.sb.Append(Encoding.ASCII.GetString(state.buffer, 0, bytesRead));
 
-                // Check for end-of-file tag. If it is not there, read more data.
+                // Check for a newline. If it is not there, read more data.
                 content = state.sb.ToString();
+
                 if (content.IndexOf((char)13) > -1)
                 {
-                    // Process the data that was received
-                    switch (content.Trim().ToLower())
-                    {
-                        case "exit":
-                            // The user has requested the session end - do so.
-                            EndSession(handler, state);
-                            break;
-                        case "shutdown":
-                            // The user has requested the server shut down - do so.
-                            Program.Shutdown();
-                            break;
-                        default:
-                            // For now, just mirror the data back to the client. Every command from the client should receive a response from the server for good UX.
-                            Send(handler, content, state);
-                            break;
-                    }
+					// Send the input off to be processed
+					Program.ParseCommand(content.Trim(), state);
                 }
                 else
                 {
@@ -182,13 +169,13 @@ namespace ROMSharp
         /// </summary>
         /// <param name="handler">The user's socket</param>
         /// <param name="state">The user's current StateObject</param>
-        private static void EndSession(Socket handler, StateObject state)
+        public static void EndSession(StateObject state)
         {
             // Send the goodbye message to the user
             byte[] byteData = Encoding.ASCII.GetBytes(Strings.Goodbye);
 
             // Send the data to the remote user then end the session
-            handler.BeginSend(byteData, 0, byteData.Length, SocketFlags.None, new AsyncCallback(EndSessionCallback), state);
+			state.workSocket.BeginSend(byteData, 0, byteData.Length, SocketFlags.None, new AsyncCallback(EndSessionCallback), state);
         }
 
         private static void EndSessionCallback(IAsyncResult ar)
@@ -214,7 +201,17 @@ namespace ROMSharp
             }
         }
 
-        private static void Send(Socket handler, String data, StateObject state)
+		/// <summary>
+		/// Sends data <paramref name="data"/> to the client
+		/// </summary>
+		/// <param name="data">Data to send to the client</param>
+		/// <param name="state">State object of the client to interact with</param>
+		public static void Send(string data, StateObject state)
+		{
+			Send(state.workSocket, data, state);
+		}
+
+        public static void Send(Socket handler, String data, StateObject state)
         {
             // Convert the string data to byte data using ASCII encoding.
             byte[] byteData = Encoding.ASCII.GetBytes(data);

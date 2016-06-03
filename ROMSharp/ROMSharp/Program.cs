@@ -40,5 +40,44 @@ namespace ROMSharp
             Console.WriteLine("Shutdown request received, shutting down...");
             Environment.Exit(0);
         }
+
+		public static void ParseCommand(string commandString, Network.StateObject state)
+		{
+			// If we have no data, there's nothing to do
+			if (String.IsNullOrWhiteSpace (commandString))
+				return;
+			
+			// Split commandString for easier handling
+			string[] commandArr = commandString.Split(' ');
+
+			// The first word of a user input is the command - isolate it
+			string command = commandArr[0].ToLower();
+
+			// Act on the command
+			switch (command) 
+			{
+				// Shut down the server
+				case "shutdown":
+					Shutdown ();
+					break;
+
+				// Disconnect the client
+				case "exit":
+					Network.EndSession (state);
+					break;
+
+				// Request the current time
+				case "whattimeisit":
+					Commands.WhatTimeIsIt (state);
+					break;
+			}
+		}
+
+		public class Commands {
+			public static void WhatTimeIsIt(Network.StateObject state)
+			{
+				Network.Send(String.Format ("The current server time is {0}", DateTime.Now.ToString ()), state);
+			}
+		}
     }
 }
