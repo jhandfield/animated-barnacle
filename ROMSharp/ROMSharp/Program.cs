@@ -84,6 +84,11 @@ namespace ROMSharp
 				case "!":
 					ParseCommand (state.LastCommand, state);
 					break;
+
+				// Unknown command
+				default:
+					Commands.UnknownCommand (state.ID);
+					break;
 			}
 
 			// Store the active command as the client's last command, if it wasn't !
@@ -92,11 +97,30 @@ namespace ROMSharp
 		}
 
 		public class Commands {
-			public static void WhatTimeIsIt(Network.ClientConnection state)
+			public static void WhatTimeIsIt(int connID)
 			{
-				Network.Send(String.Format ("The current server time is {0}", DateTime.Now.ToString ()), state);
+				// For now, get a ClientConnection since I haven't reworked everything to just use the ID yet
+				Network.ClientConnection state = Network.ClientConnections.Single(c => c.ID == connID);
+
+				Network.Send(String.Format ("The current server time is {0}\n\r", DateTime.Now.ToString ()), state);
 			}
 
+			/// <summary>
+			/// Tells the user we don't know what they're asking us to do
+			/// </summary>
+			/// <param name="connID">Connection ID of the requesting user</param>
+			public static void UnknownCommand(int connID)
+			{
+				// For now, get a ClientConnection since I haven't reworked everything to just use the ID yet
+				Network.ClientConnection state = Network.ClientConnections.Single(c => c.ID == connID);
+
+				Network.Send ("Sorry, I don't know what you're asking.\n\r", state);
+			}
+
+			/// <summary>
+			/// Sends a list of open connections to the user
+			/// </summary>
+			/// <param name="connID">Connection ID of the requesting user</param>
 			public static void ListConnections(int connID)
 			{
 				// For now, get a ClientConnection since I haven't reworked everything to just use the ID yet
