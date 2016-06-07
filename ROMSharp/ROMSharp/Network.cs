@@ -17,7 +17,7 @@ namespace ROMSharp
             // Client  socket.
             public Socket workSocket = null;
             // Size of receive buffer.
-            public const int BufferSize = 1024;
+            public const int BufferSize = 32;
             // Receive buffer.
             public byte[] buffer = new byte[BufferSize];
             // Received data string.
@@ -67,6 +67,23 @@ namespace ROMSharp
 			#region Constructors
 			public ClientConnection() {
 				this.ConnectedAt = DateTime.Now;
+
+				// Set TCP Keepalive properties
+				ConfigureSocketKeepalive(this.workSocket);
+			}
+			#endregion
+
+			#region Helper Methods
+			private void ConfigureSocketKeepalive(Socket socket)
+			{
+				int size = sizeof(UInt32);
+				UInt32 on = 1;
+				UInt32 keepAliveInterval = 10000; //Send a packet once every 10 seconds.
+				UInt32 retryInterval = 1000; //If no response, resend every second.
+				byte[] inArray = new byte[size * 3];
+				Array.Copy(BitConverter.GetBytes(on), 0, inArray, 0, size);
+				Array.Copy(BitConverter.GetBytes(keepAliveInterval), 0, inArray, size, size);
+				Array.Copy(BitConverter.GetBytes(retryInterval), 0, inArray, size * 2, size);
 			}
 			#endregion
         }
@@ -117,6 +134,8 @@ namespace ROMSharp
 				// Start an asynchronous socket to listen for connections.
 				Console.WriteLine("Waiting for a connection on address {0} port {1}...", addr.ToString(), port);
 
+
+				//Timer socketTimeoutTimer = new Timer(
                 while (true)
                 {
                     // Set the event to nonsignaled state.
@@ -140,6 +159,11 @@ namespace ROMSharp
             Console.Read();
 
         }
+
+		private void CheckSocketTimeout(Object state)
+		{
+			// Loop over each socket
+		}
 
         public static void AcceptCallback(IAsyncResult ar)
         {
@@ -168,6 +192,8 @@ namespace ROMSharp
         // TODO: Implement required telnet commands
         public static void ReadCallback(IAsyncResult ar)
         {
+			Console.WriteLine ("ReadCallback() called");
+
             String content = String.Empty;
 
             // Retrieve the state object and the handler socket from the asynchronous state object.
@@ -175,32 +201,60 @@ namespace ROMSharp
             Socket handler = state.workSocket;
 
             // Read data from the client socket. 
-            int bytesRead = handler.EndReceive(ar);
+			try {
+	            int bytesRead = handler.EndReceive(ar);
 
-            if (bytesRead > 0)
-            {
-                // Increment the state's received count
-                state.bytesReceived += (UInt64)bytesRead;
+				Console.WriteLine("bytesRead: " + bytesRead);
 
-                // There might be more data, so store the data received so far.
-                state.sb.Append(Encoding.ASCII.GetString(state.buffer, 0, bytesRead));
+	            if (bytesRead > 0)
+	            {
+	                // Increment the state's received count
+	                state.bytesReceived += (UInt64)bytesRead;
 
-                // Check for a newline. If it is not there, read more data.
-                content = state.sb.ToString();
+	                // There might be more data, so store the data received so far.
+	                state.sb.Append(Encoding.ASCII.GetString(state.buffer, 0, bytesRead));
 
-                if (content.IndexOf((char)13) > -1)
-                {
-					// Send the input off to be processed
-					Program.ParseCommand(content.Trim(), state);
-                }
-                else
-                {
-                    // Not all data received. Get more.
-                    handler.BeginReceive(state.buffer, 0, ClientConnection.BufferSize, 0,
-                    new AsyncCallback(ReadCallback), state);
-                }
-            }
-        }
+					// Debugging - Output the contents of the buffer in ASCII, also output the raw character codes
+					Console.Write("Data: " + Encoding.ASCII.GetString(state.buffer, 0, bytesRead) + " / ");
+					foreach(char c in state.buffer)
+					{
+						Console.Write(Convert.ToInt32(c));
+					}
+					Console.Write("\n");						
+
+	                // Read the StringBuffer
+					content = state.sb.ToString();
+
+					// Check for a null character at the end of the buffer; if we don't have it, continue reading until we've gotten the whole message
+					//if (content.IndexOf('\n') > -1 && content.IndexOf('\r') > -1 || content.Equals(String.Empty))
+					if (state.buffer[ClientConnection.BufferSize - 1] == '\0')
+	                {
+						Console.WriteLine("Processing command");
+
+						// Send the input off to be processed
+						Program.ParseCommand(content.TrimEnd('\n', '\r', ' '), state.ID);
+	                }
+	                else
+	                {
+						Console.WriteLine("Don't believe we have all the data, receiving more. " + content.IndexOf('\n') + "/" + content.IndexOf('\r'));
+	                    // Not all data received. Get more. Clear the buffer first.
+						state.buffer = new byte[ClientConnection.BufferSize];
+
+	                    handler.BeginReceive(state.buffer, 0, ClientConnection.BufferSize, 0,
+	                    new AsyncCallback(ReadCallback), state);
+	                }
+				}
+			}
+			catch (System.Net.Sockets.SocketException ex) {
+				Console.WriteLine ("Error communicating with connection ID {0}, closing connection.", state.ID);
+
+				// End the session
+				handler.Close();
+
+				// Remove the connection from ClientConnections
+				ClientConnections.RemoveAt(ClientConnections.FindIndex(c => c.ID.Equals(state.ID)));
+			}
+		}
 
         /// <summary>
         /// Ends the remote session with the user
@@ -229,9 +283,13 @@ namespace ROMSharp
                 // Log
                 Console.WriteLine("[{0}]: Closing connection with {1} on local port {2}. Data sent/recv: {3:n0}/{4:n0}", state.ID, IPAddress.Parse(((IPEndPoint)handler.RemoteEndPoint).Address.ToString()), ((IPEndPoint)handler.RemoteEndPoint).Port, state.bytesSent, state.bytesReceived);
 
+
                 // End the session
                 handler.Shutdown(SocketShutdown.Both);
                 handler.Close();
+
+				// Remove the connection from ClientConnections
+				ClientConnections.RemoveAt(ClientConnections.FindIndex(c => c.ID.Equals(state.ID)));
             }
             catch (Exception e)
             {
@@ -246,18 +304,33 @@ namespace ROMSharp
 		/// <param name="state">State object of the client to interact with</param>
 		public static void Send(string data, ClientConnection state)
 		{
-			Send(state.workSocket, data, state);
+			Send(state.workSocket, data, state, false);
 		}
 
-        public static void Send(Socket handler, String data, ClientConnection state)
+		public static void Send(string data, ClientConnection state, bool sendOnly)
+		{
+			Send (state.workSocket, data, state, sendOnly);
+		}
+
+		public static void SendOnly(string data, ClientConnection state)
+		{
+			Send (state.workSocket, data, state, true);
+		}
+
+		public static void Send(Socket handler, String data, ClientConnection state, bool sendOnly)
         {
             // Convert the string data to byte data using ASCII encoding.
             byte[] byteData = Encoding.ASCII.GetBytes(data);
 
-            // Begin sending the data to the remote device.
-            handler.BeginSend(byteData, 0, byteData.Length, 0,
-                new AsyncCallback(SendCallback), state);
-        }
+			// Check sendOnly, if true we don't care about a callback
+			if (sendOnly)
+				handler.BeginSend (byteData, 0, byteData.Length, 0, null, state);
+			else {
+				state.buffer = new byte[ClientConnection.BufferSize];
+				state.sb.Clear ();
+				handler.BeginSend (byteData, 0, byteData.Length, 0, new AsyncCallback (SendCallback), state);
+			}
+		}
 
         private static void SendCallback(IAsyncResult ar)
         {
@@ -278,8 +351,8 @@ namespace ROMSharp
                 //Console.WriteLine("Sent {0} bytes to client.", bytesSent);
 
                 // Clear the buffer and reset the StringBuilder
-                state.buffer = new byte[ClientConnection.BufferSize];
-                state.sb.Clear();
+                //state.buffer = new byte[ClientConnection.BufferSize];
+                //state.sb.Clear();
 
                 // Receive more data
                 handler.BeginReceive(state.buffer, 0, ClientConnection.BufferSize, 0, new AsyncCallback(ReadCallback), state);

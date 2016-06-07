@@ -11,6 +11,8 @@ namespace ROMSharp
 {
     public class Program
     { 
+		public static Timer pointTimer;
+
         public static int Main(string[] args)
         {
             // Configure the Console.CancelKeyPress event
@@ -26,12 +28,29 @@ namespace ROMSharp
             if (!ServerConfiguration.ParseArguments(args, out config))
                 Console.WriteLine("Fatal error parsing config parameters, server startup aborted.");
 
+			// Set up Pulses
+			TimerCallback pointTimerCallback = PointTimerCallback;
+			pointTimer = new Timer (pointTimerCallback, null, Consts.Time.PointPulseInterval, Consts.Time.PointPulseInterval	);
+
             // Listen for connections
             Network.StartListening(config);
 
             // Return success
             return 0;
         }
+
+		private static void PointTimerCallback(object stateInfo)
+		{
+			Console.WriteLine ("PointTimerCallback() called");
+
+			// Loop over all connections
+			foreach (Network.ClientConnection connection in Network.ClientConnections) {
+				Console.WriteLine ("Processing character on connection ID " + connection.ID);
+
+				// Send a message to them
+				Network.SendOnly("Tick!\n\r", connection);
+			}
+		}
 
         private static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
         {
@@ -45,11 +64,15 @@ namespace ROMSharp
             Environment.Exit(0);
         }
 
-		public static void ParseCommand(string commandString, Network.ClientConnection state)
+		public static void ParseCommand(string commandString, int connID)
 		{
+			Network.ClientConnection state = Network.ClientConnections.Single(c => c.ID == connID);
+
 			// If we have no data, there's nothing to do
-			if (String.IsNullOrWhiteSpace (commandString))
+			if (String.IsNullOrWhiteSpace (commandString)) {
+				Network.Send ("", state);
 				return;
+			}
 			
 			// Split commandString for easier handling
 			string[] commandArr = commandString.Split(' ');
@@ -72,7 +95,7 @@ namespace ROMSharp
 
 				// Request the current time
 				case "whattimeisit":
-					Commands.WhatTimeIsIt (state);
+					Commands.WhatTimeIsIt (state.ID);
 					break;
 
 				// Request a list of current connections
@@ -80,14 +103,19 @@ namespace ROMSharp
 					Commands.ListConnections (state.ID);
 					break;
 
+				// Force a point tick
+				case "forcepointtick":
+					Commands.ForcePointTick (state.ID);
+					break;
+
 				// Repeats the last command
 				case "!":
-					ParseCommand (state.LastCommand, state);
+					ParseCommand (state.LastCommand, state.ID);
 					break;
 
 				// Unknown command
-				default:
-					Commands.UnknownCommand (state.ID);
+					default:
+					Commands.UnknownCommand (state.ID, command);
 					break;
 			}
 
@@ -97,6 +125,14 @@ namespace ROMSharp
 		}
 
 		public class Commands {
+			public static void ForcePointTick(int connID)
+			{
+				Network.ClientConnection state = Network.ClientConnections.Single (c => c.ID == connID);
+
+				PointTimerCallback (state);
+				Network.Send ("Point tick forced.\n\r", state);
+			}
+
 			public static void WhatTimeIsIt(int connID)
 			{
 				// For now, get a ClientConnection since I haven't reworked everything to just use the ID yet
@@ -109,12 +145,12 @@ namespace ROMSharp
 			/// Tells the user we don't know what they're asking us to do
 			/// </summary>
 			/// <param name="connID">Connection ID of the requesting user</param>
-			public static void UnknownCommand(int connID)
+			public static void UnknownCommand(int connID, string command)
 			{
 				// For now, get a ClientConnection since I haven't reworked everything to just use the ID yet
 				Network.ClientConnection state = Network.ClientConnections.Single(c => c.ID == connID);
 
-				Network.Send ("Sorry, I don't know what you're asking.\n\r", state);
+				Network.Send ("Sorry, I don't know what you're asking - " + command + "\n\r", state);
 			}
 
 			/// <summary>
