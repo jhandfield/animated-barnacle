@@ -192,9 +192,7 @@ namespace ROMSharp
         // TODO: Implement required telnet commands
         public static void ReadCallback(IAsyncResult ar)
         {
-			Console.WriteLine ("ReadCallback() called");
-
-            String content = String.Empty;
+			String content = String.Empty;
 
             // Retrieve the state object and the handler socket from the asynchronous state object.
             ClientConnection state = (ClientConnection)ar.AsyncState;
@@ -204,8 +202,6 @@ namespace ROMSharp
 			try {
 	            int bytesRead = handler.EndReceive(ar);
 
-				Console.WriteLine("bytesRead: " + bytesRead);
-
 	            if (bytesRead > 0)
 	            {
 	                // Increment the state's received count
@@ -214,34 +210,21 @@ namespace ROMSharp
 	                // There might be more data, so store the data received so far.
 	                state.sb.Append(Encoding.ASCII.GetString(state.buffer, 0, bytesRead));
 
-					// Debugging - Output the contents of the buffer in ASCII, also output the raw character codes
-					Console.Write("Data: " + Encoding.ASCII.GetString(state.buffer, 0, bytesRead) + " / ");
-					foreach(char c in state.buffer)
-					{
-						Console.Write(Convert.ToInt32(c));
-					}
-					Console.Write("\n");						
-
 	                // Read the StringBuffer
 					content = state.sb.ToString();
 
 					// Check for a null character at the end of the buffer; if we don't have it, continue reading until we've gotten the whole message
 					//if (content.IndexOf('\n') > -1 && content.IndexOf('\r') > -1 || content.Equals(String.Empty))
 					if (state.buffer[ClientConnection.BufferSize - 1] == '\0')
-	                {
-						Console.WriteLine("Processing command");
-
-						// Send the input off to be processed
+	                {	// Send the input off to be processed
 						Program.ParseCommand(content.TrimEnd('\n', '\r', ' '), state.ID);
 	                }
 	                else
 	                {
-						Console.WriteLine("Don't believe we have all the data, receiving more. " + content.IndexOf('\n') + "/" + content.IndexOf('\r'));
 	                    // Not all data received. Get more. Clear the buffer first.
 						state.buffer = new byte[ClientConnection.BufferSize];
 
-	                    handler.BeginReceive(state.buffer, 0, ClientConnection.BufferSize, 0,
-	                    new AsyncCallback(ReadCallback), state);
+	                    handler.BeginReceive(state.buffer, 0, ClientConnection.BufferSize, 0, new AsyncCallback(ReadCallback), state);
 	                }
 				}
 			}
