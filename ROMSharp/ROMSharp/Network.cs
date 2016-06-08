@@ -68,11 +68,21 @@ namespace ROMSharp
 			/// </summary>
 			/// <value><c>true</c> if this instance is waiting for data; otherwise, <c>false</c>.</value>
 			public bool IsWaitingForData { get; set; }
+
+			/// <summary>
+			/// Indicates what the client is currently doing; used to give context to various inputs from the client.
+			/// </summary>
+			/// <value>The state.</value>
+			public Enums.ClientState State { get; set; }
 			#endregion
 
 			#region Constructors
 			public ClientConnection() {
+				// Record the connected time of the client
 				this.ConnectedAt = DateTime.Now;
+
+				// Set the default client state
+				this.State = ROMSharp.Enums.ClientState.Idle;
 
 				// Set TCP Keepalive properties
 				ConfigureSocketKeepalive(this.workSocket);
@@ -190,14 +200,8 @@ namespace ROMSharp
             // Log the connection
             Console.WriteLine("[{0}]: Connection established with {1} on local port {2}", state.ID, IPAddress.Parse(((IPEndPoint)handler.RemoteEndPoint).Address.ToString()), ((IPEndPoint)handler.RemoteEndPoint).Port);
 
-			// Ensure we don't call BeginReceive() multiple times
-			if (!state.IsWaitingForData) {
-				// Flag that we're waiting for data
-				state.IsWaitingForData = true;
-
-				// Wait for data
-				handler.BeginReceive (state.buffer, 0, ClientConnection.BufferSize, 0, new AsyncCallback (ReadCallback), state);
-			}
+			// Call the greeting method
+			Commands.DoGreeting(state.ID);
         }
 
         // TODO: Implement EC / backspace characters
@@ -238,7 +242,7 @@ namespace ROMSharp
 						state.sb.Clear();
 
 						// Send the input off to be processed
-						Program.ParseCommand(content.TrimEnd('\n', '\r', ' '), state.ID);
+						Interpreter.InterpretInput(content.TrimEnd('\n', '\r', ' '), state.ID);
 					}
 	                else
 	                {
@@ -276,7 +280,7 @@ namespace ROMSharp
         public static void EndSession(ClientConnection state)
         {
             // Send the goodbye message to the user
-            byte[] byteData = Encoding.ASCII.GetBytes(Strings.Goodbye);
+            byte[] byteData = Encoding.ASCII.GetBytes(Consts.Strings.Goodbye);
 
             // Send the data to the remote user then end the session
 			state.workSocket.BeginSend(byteData, 0, byteData.Length, SocketFlags.None, new AsyncCallback(EndSessionCallback), state);
@@ -294,7 +298,6 @@ namespace ROMSharp
 
                 // Log
                 Console.WriteLine("[{0}]: Closing connection with {1} on local port {2}. Data sent/recv: {3:n0}/{4:n0}", state.ID, IPAddress.Parse(((IPEndPoint)handler.RemoteEndPoint).Address.ToString()), ((IPEndPoint)handler.RemoteEndPoint).Port, state.bytesSent, state.bytesReceived);
-
 
                 // End the session
                 handler.Shutdown(SocketShutdown.Both);
@@ -317,11 +320,6 @@ namespace ROMSharp
 		public static void Send(string data, ClientConnection state)
 		{
 			Send(state.workSocket, data, state);
-		}
-
-		public static void SendOnly(string data, ClientConnection state)
-		{
-			Send (state.workSocket, data, state);
 		}
 
 		public static void Send(Socket handler, String data, ClientConnection state)

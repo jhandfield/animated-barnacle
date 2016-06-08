@@ -64,8 +64,13 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServerConfiguration.cs" />
-    <Compile Include="Strings.cs" />
     <Compile Include="Consts\Time.cs" />
+    <Compile Include="Commands.cs" />
+    <Compile Include="Enums\ClientState.cs" />
+    <Compile Include="Interpreter.cs" />
+    <Compile Include="Character.cs" />
+    <Compile Include="Consts\Strings.cs" />
+    <Compile Include="Consts\Misc.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
