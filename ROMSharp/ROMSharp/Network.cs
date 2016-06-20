@@ -17,7 +17,7 @@ namespace ROMSharp
             // Client  socket.
             public Socket workSocket = null;
             // Size of receive buffer.
-            public const int BufferSize = 32;
+            public const int BufferSize = 1024;
             // Receive buffer.
             public byte[] buffer = new byte[BufferSize];
             // Received data string.
@@ -74,10 +74,36 @@ namespace ROMSharp
 			/// </summary>
 			/// <value>The state.</value>
 			public Enums.ClientState State { get; set; }
-			#endregion
 
-			#region Constructors
-			public ClientConnection() {
+            /// <summary>
+            /// Holds the PlayerCharacter object
+            /// </summary>
+            public Character PlayerCharacter { get; set; }
+
+            /// <summary>
+            /// Temporary storage for password during character creation - is erased on the first read
+            /// </summary>
+            public string TempPass
+            {
+                get
+                {
+                    string output = _tempPass;
+                    _tempPass = null;
+                    return output;
+                }
+                set
+                {
+                    _tempPass = value;
+                }
+            }
+            #endregion
+
+            #region Fields
+            private string _tempPass;
+            #endregion
+
+            #region Constructors
+            public ClientConnection() {
 				// Record the connected time of the client
 				this.ConnectedAt = DateTime.Now;
 
@@ -235,8 +261,8 @@ namespace ROMSharp
 					content = state.sb.ToString();
 
 					// Check for a null character at the end of the buffer; if we don't have it, continue reading until we've gotten the whole message
-					//if (content.IndexOf('\n') > -1 && content.IndexOf('\r') > -1 || content.Equals(String.Empty))
-					if (state.buffer[ClientConnection.BufferSize - 1] == '\0')
+					if (content.IndexOf('\n') > -1 && content.IndexOf('\r') > -1)
+					//if (state.buffer[ClientConnection.BufferSize - 1] == '\0')
 	                {
 						state.buffer = new byte[ClientConnection.BufferSize];
 						state.sb.Clear();
@@ -322,14 +348,31 @@ namespace ROMSharp
 			Send(state.workSocket, data, state);
 		}
 
-		public static void Send(Socket handler, String data, ClientConnection state)
+        public static void Send(Socket handler, string data, ClientConnection state)
         {
+            Send(state.workSocket, data, state, true);
+        }
+
+		public static void Send(Socket handler, String data, ClientConnection state, bool waitForResponse)
+        {
+            AsyncCallback callback = null;
+
             // Convert the string data to byte data using ASCII encoding.
             byte[] byteData = Encoding.ASCII.GetBytes(data);
 
+            // Package up the callback
+            if (waitForResponse)
+                callback = new AsyncCallback(SendCallback);
+
 			// Begin sending data
-			handler.BeginSend (byteData, 0, byteData.Length, 0, new AsyncCallback (SendCallback), state);
+			handler.BeginSend (byteData, 0, byteData.Length, 0, callback, state);
 		}
+
+        public static void SendCommand(Socket handler, byte[] command, ClientConnection state)
+        {
+            // Send the command as passed
+            handler.BeginSend(command, 0, command.Length, 0, new AsyncCallback(SendCallback), state);
+        }
 
         private static void SendCallback(IAsyncResult ar)
         {

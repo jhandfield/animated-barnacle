@@ -10,7 +10,9 @@ namespace ROMSharp.Consts
     {
 		public const string LoginPasswordPrompt = "Password: ";
 		public const string CreationPasswordPrompt = "Give me a password for";
-		public const string LoginCharacterNameIllegal = "Illegal name, try another.\nName: ";
+        public const string CreationPasswordConfirmPrompt = "Please retype password: ";
+        public const string CreationInvalidPassword = "Your password is too simple. At least 6 characters, one upper, one lower, and one number or symbol";
+        public const string LoginCharacterNameIllegal = "Illegal name, try another.\nName: ";
         public const string Goodbye = "Goodbye!";
 		public const string Greeting = @"THIS IS A MUD BASED ON.....
 

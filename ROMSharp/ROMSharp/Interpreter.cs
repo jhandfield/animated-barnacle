@@ -26,9 +26,12 @@ namespace ROMSharp
 				// Waiting for the character name (logging in)
 				case ClientState.Login_WaitingForCharacterName:
 					// Is the name legal?
-					if (Character.IsLegalName (input)) {
-						// Do we recognize this username?
-						if (Character.Exists (input)) {
+					if (Character.IsLegalName (input.Trim())) {
+                        // Instantiate a new Character in the user's state and set the name
+                        state.PlayerCharacter = new Character(input.Trim());
+
+                        // Do we recognize this username?
+                        if (Character.Exists (input)) {
 							// It's a known character, start the login process - update the user state.
 							state.State = ClientState.Login_WaitingForPassword;
 
@@ -38,14 +41,39 @@ namespace ROMSharp
 							// It's an unknown character, start the creation process - update the user state.
 							state.State = ClientState.Creation_WaitingForPassword;
 
-							// Send the password prompt
-							Network.Send (String.Format ("{0} {1}: ", Consts.Strings.CreationPasswordPrompt, input), state);
+                            // Send the password prompt
+							Network.Send (state.workSocket, String.Format ("{0} {1}: ", Consts.Strings.CreationPasswordPrompt, input), state, false);
+
+                            // Send the local echo off command
+                            Network.SendCommand(state.workSocket, Consts.Misc.TelnetCommands.LocalEchoOff, state);
 						}
 					} else {
 						// Illegal name - leave the state as is, tell the user to try again
 						Network.Send (Consts.Strings.LoginCharacterNameIllegal, state);
 					}
 					break;
+
+                case ClientState.Creation_WaitingForPassword:
+                    // Ensure the password meets requirements
+                    if (Password.MeetsComplexityRequirements(input))
+                    {
+                        // Password is good - update the user state then prompt for the user to repeat the password
+                        state.State = ClientState.Creation_WaitingForPasswordConfirm;
+
+                        // Store the password temporarily
+                        state.TempPass = input;
+
+                        // Prompt for confirmation
+                        Network.Send("\n\r" + Consts.Strings.CreationPasswordConfirmPrompt, state);
+                    }
+                    else
+                    {
+                        // Password isn't good - roll the user state back then re-prompt for a password
+                        state.State = ClientState.Creation_WaitingForPassword;
+
+                        Network.Send("\n\r" + Consts.Strings.CreationInvalidPassword + "\n\r" + Consts.Strings.CreationPasswordPrompt, state);
+                    }
+                    break;
 			}
 		}
 
