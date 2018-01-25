@@ -7,6 +7,11 @@ namespace ROMSharp.Enums
 	/// </summary>
 	public enum ClientState
 	{
+        /// <summary>
+        /// The client is currently playing the game
+        /// </summary>
+        Playing,
+
 		/// <summary>
 		/// The next input from the client will be treated as the character name being logged into
 		/// </summary>
