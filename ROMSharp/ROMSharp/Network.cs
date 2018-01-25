@@ -173,11 +173,11 @@ namespace ROMSharp
                 listener.Bind(localEndPoint);
                 listener.Listen(100);
 
-				// Start an asynchronous socket to listen for connections.
-				Console.WriteLine("Waiting for a connection on address {0} port {1}...", addr.ToString(), port);
+                // Start an asynchronous socket to listen for connections.
+                Program.log.Info(String.Format("Waiting for a connection on address {0} port {1}...", addr.ToString(), port));
 
 
-				//Timer socketTimeoutTimer = new Timer(
+                //Timer socketTimeoutTimer = new Timer(
                 while (true)
                 {
                     // Set the event to nonsignaled state.
@@ -194,12 +194,8 @@ namespace ROMSharp
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.ToString());
+                Program.log.Error(e.ToString());
             }
-
-            Console.WriteLine("\nPress ENTER to continue...");
-            Console.Read();
-
         }
 
 		private void CheckSocketTimeout(Object state)
@@ -224,7 +220,7 @@ namespace ROMSharp
 			ClientConnections.Add(state);
 
             // Log the connection
-            Console.WriteLine("[{0}]: Connection established with {1} on local port {2}", state.ID, IPAddress.Parse(((IPEndPoint)handler.RemoteEndPoint).Address.ToString()), ((IPEndPoint)handler.RemoteEndPoint).Port);
+            Program.log.Info(String.Format("[{0}]: Incoming connection with {1} on local port {2}", state.ID, IPAddress.Parse(((IPEndPoint)handler.RemoteEndPoint).Address.ToString()), ((IPEndPoint)handler.RemoteEndPoint).Port));
 
 			// Call the greeting method
 			Commands.DoGreeting(state.ID);
@@ -288,7 +284,7 @@ namespace ROMSharp
 				}
 			}
 			catch (System.Net.Sockets.SocketException) {
-				Console.WriteLine ("Error communicating with connection ID {0}, closing connection.", state.ID);
+                Program.log.Warn(String.Format("Error communicating with connection ID {0}, closing connection.", state.ID));
 
 				// End the session
 				handler.Close();
@@ -323,7 +319,7 @@ namespace ROMSharp
                 Socket handler = state.workSocket;
 
                 // Log
-                Console.WriteLine("[{0}]: Closing connection with {1} on local port {2}. Data sent/recv: {3:n0}/{4:n0}", state.ID, IPAddress.Parse(((IPEndPoint)handler.RemoteEndPoint).Address.ToString()), ((IPEndPoint)handler.RemoteEndPoint).Port, state.bytesSent, state.bytesReceived);
+                    Program.log.Info(String.Format("[{0}]: Closing connection with {1} on local port {2}. Data sent/recv: {3:n0}/{4:n0}", state.ID, IPAddress.Parse(((IPEndPoint)handler.RemoteEndPoint).Address.ToString()), ((IPEndPoint)handler.RemoteEndPoint).Port, state.bytesSent, state.bytesReceived));
 
                 // End the session
                 handler.Shutdown(SocketShutdown.Both);
@@ -334,7 +330,7 @@ namespace ROMSharp
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.ToString());
+                Program.log.Error(e.ToString());
             }
         }
 
@@ -390,12 +386,6 @@ namespace ROMSharp
                 // Increment the connection's bytesSent count
                 state.bytesSent += (UInt64)bytesSent;
 
-                //Console.WriteLine("Sent {0} bytes to client.", bytesSent);
-
-                // Clear the buffer and reset the StringBuilder
-                //state.buffer = new byte[ClientConnection.BufferSize];
-                //state.sb.Clear();
-
 				// Be careful not to call BeginReceive() twice
 				if (!state.IsWaitingForData)
 				{
@@ -411,7 +401,7 @@ namespace ROMSharp
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.ToString());
+                Program.log.Error(e.ToString());
             }
         }
     }

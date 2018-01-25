@@ -8,14 +8,12 @@ namespace ROMSharp
     {
         public static void Boot(string[] args)
         {
-            Console.WriteLine("Server startup beginning...");
+            Program.log.Info("Server startup beginning");
 
             try
             {
                 // Set the server configuration from any command line arguments
                 Program.config = ServerConfiguration.ParseArguments(args);
-
-                Console.WriteLine("Fatal error parsing config parameters, server startup aborted.");
 
                 // Instantiate our ClientConnections object which will contain all active connections
                 Network.ClientConnections = new List<Network.ClientConnection>();
@@ -26,10 +24,10 @@ namespace ROMSharp
             }
             catch (Exception e)
             {
-                Console.WriteLine(String.Format("Unhandled exception caught: {0}: {1}\n{2}", e.GetType(), e.Message, e.StackTrace));
+                Program.log.Error(String.Format("Unhandled exception caught: {0}: {1}\n{2}", e.GetType(), e.Message, e.StackTrace));
             }
 
-            Console.WriteLine("Server setup complete, starting server...");
+            Program.log.Info("Server setup complete, starting server...");
 
             // Listen for connections
             Network.StartListening(Program.config);

@@ -5,7 +5,16 @@ namespace ROMSharp
     {
         public static void Shutdown()
         {
-            Console.WriteLine("Shutdown request received, shutting down...");
+            // Log
+            Program.log.Info("Shutdown request received, shutting down...");
+
+            // TODO: Close connections, file handles, write player data to storage, etc.
+
+            // Shut down logging
+            Program.log.Info("ROMSharp is shut down - goodbye.");
+            Program.log.Logger.Repository.Shutdown();
+
+            // Exit the application
             Environment.Exit(0);
         }
     }

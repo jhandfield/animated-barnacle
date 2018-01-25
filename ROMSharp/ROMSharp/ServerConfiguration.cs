@@ -67,7 +67,7 @@ namespace ROMSharp
                 if (IPAddress.TryParse(parsedArgs["-address"], out parsedAddr))
                     tempConfig.listenAddress = parsedAddr;
                 else
-                    Console.WriteLine("Skipping invalid value {0} for parameter {1}", parsedArgs["-address"], "-address");
+                    Program.log.Warn(String.Format("Skipping invalid value {0} for parameter {1}", parsedArgs["-address"], "-address"));
             }
 
             // -port (override TCP port to listen on)
@@ -78,7 +78,7 @@ namespace ROMSharp
                 if (Int32.TryParse(parsedArgs["-port"], out parsedPort))
                     tempConfig.listenPort = parsedPort;
                 else
-                    Console.WriteLine("Skipping invalid value {0} for parameter {1}", parsedArgs["-port"], "-port");
+                    Program.log.Warn(String.Format("Skipping invalid value {0} for parameter {1}", parsedArgs["-port"], "-port"));
             }
 
             // -maxConnections (override maximum allowed connections)
@@ -89,7 +89,7 @@ namespace ROMSharp
                 if (Int32.TryParse(parsedArgs["-maxconnections"], out parsedMaxConn))
                     tempConfig.maxConnections = parsedMaxConn;
                 else
-                    Console.WriteLine("Skipping invalid value {0} for parameter {1}", parsedArgs["-maxconnections"], "-maxConnections");
+                        Program.log.Warn(String.Format("Skipping invalid value {0} for parameter {1}", parsedArgs["-maxconnections"], "-maxConnections"));
             }
             #endregion
 
