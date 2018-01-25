@@ -43,12 +43,11 @@ namespace ROMSharp
         /// Parses command-line parameters into a ServerConfiguration object
         /// </summary>
         /// <param name="args">String array of keys and values to parse</param>
-        /// <param name="outConfig">Parsed ServerConfiguration object resulting from the supplied parameters</param>
-        /// <returns>True if no fatal errors parsing the parameters, false if fatal errors were encountered</returns>
-        public static bool ParseArguments(string[] args, out ServerConfiguration outConfig)
+        /// <returns>ServerConfiguration object with any overrides applied to the default values</returns>
+        public static ServerConfiguration ParseArguments(string[] args)
         {
             // Declare a ServerConfiguration to hold the configuration
-            ServerConfiguration config = new ServerConfiguration();
+            ServerConfiguration tempConfig = new ServerConfiguration();
 
             // Declare a Dictionary<> to hold parsed arguments
             Dictionary<string, string> parsedArgs = new Dictionary<string, string>();
@@ -58,7 +57,7 @@ namespace ROMSharp
                 parsedArgs.Add(args[i].ToLower(), args[i + 1].ToLower());
 
             #region Assign config params
-            // -address
+            // -address (override address to listen on)
             if (parsedArgs.ContainsKey("-address"))
             {
                 // Variable to hold the parsed address, if it succeeds
@@ -66,39 +65,36 @@ namespace ROMSharp
 
                 // Attempt to parse the input
                 if (IPAddress.TryParse(parsedArgs["-address"], out parsedAddr))
-                    config.listenAddress = parsedAddr;
+                    tempConfig.listenAddress = parsedAddr;
                 else
                     Console.WriteLine("Skipping invalid value {0} for parameter {1}", parsedArgs["-address"], "-address");
             }
 
-            // -port
+            // -port (override TCP port to listen on)
             if (parsedArgs.ContainsKey("-port"))
             {
                 int parsedPort;
 
                 if (Int32.TryParse(parsedArgs["-port"], out parsedPort))
-                    config.listenPort = parsedPort;
+                    tempConfig.listenPort = parsedPort;
                 else
                     Console.WriteLine("Skipping invalid value {0} for parameter {1}", parsedArgs["-port"], "-port");
             }
 
-            // -maxConnections
+            // -maxConnections (override maximum allowed connections)
             if (parsedArgs.ContainsKey("-maxconnections"))
             {
                 int parsedMaxConn;
 
                 if (Int32.TryParse(parsedArgs["-maxconnections"], out parsedMaxConn))
-                    config.maxConnections = parsedMaxConn;
+                    tempConfig.maxConnections = parsedMaxConn;
                 else
                     Console.WriteLine("Skipping invalid value {0} for parameter {1}", parsedArgs["-maxconnections"], "-maxConnections");
             }
             #endregion
 
-            // Assign the output variable
-            outConfig = config;
-
-            // Return
-            return true;
+            // Return the configuration
+            return tempConfig;
         }
         #endregion
     }

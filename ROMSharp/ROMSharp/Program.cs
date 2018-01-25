@@ -1,25 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Net;
-using System.Net.Sockets;
+using ROMSharp.Consts;
 
 namespace ROMSharp
 {
     public class Program
-    { 
+    {
+        /// <summary>
+        /// The current state of the game
+        /// </summary>
+        public static GameState GameMode;
+
+        /// <summary>
+        /// The master timer for the game - triggers periodic updates (ticks)
+        /// </summary>
 		public static Timer pointTimer;
+
+        /// <summary>
+        /// The overall server configuration
+        /// </summary>
+        public static ServerConfiguration config;
 
         public static int Main(string[] args)
         {
+            // Set game state to Starting
+            GameMode = GameState.Starting;
+
+            // Instantiate the server configuration
+            config = new ServerConfiguration();
+
             // Configure the Console.CancelKeyPress event
             Console.CancelKeyPress += Console_CancelKeyPress;
 
-			// Start the server
-			Startup(args);
+			// Begin server startup
+            ServerControl.Boot(args);
 
             // Return success
             return 0;
@@ -41,37 +56,7 @@ namespace ROMSharp
         private static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
         {
             // Call Shutdown()
-            Shutdown();
-        }
-
-		public static void Startup(string[] args)
-		{
-			Console.WriteLine ("Server startup beginning...");
-
-			// Instantiate a new ServerConfiguration - this may be modified prior to starting the server
-			ServerConfiguration config = new ServerConfiguration();
-
-			// Parse any command-line arguments
-			if (!ServerConfiguration.ParseArguments(args, out config))
-				Console.WriteLine("Fatal error parsing config parameters, server startup aborted.");
-
-			// Instantiate our ClientConnections object which will contain all active connections
-			Network.ClientConnections = new List<Network.ClientConnection>();
-
-			// Set up Pulses
-			TimerCallback pointTimerCallback = PointTimerCallback;
-			pointTimer = new Timer (pointTimerCallback, null, Consts.Time.PointPulseInterval, Consts.Time.PointPulseInterval	);
-
-			Console.WriteLine ("Server setup complete, starting server...");
-
-			// Listen for connections
-			Network.StartListening(config);
-		}
-
-        public static void Shutdown()
-        {
-            Console.WriteLine("Shutdown request received, shutting down...");
-            Environment.Exit(0);
+            ServerControl.Shutdown();
         }
     }
 }

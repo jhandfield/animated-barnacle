@@ -87,43 +87,44 @@ namespace ROMSharp
 			// The first word of a user input is the command - isolate it
 			string command = commandArr [0].ToLower ();
 
-			// Determine what command was requested
-			switch (command) {
-			// Shut down the server
-			case "shutdown":
-				Program.Shutdown ();
-				break;
+            // Determine what command was requested
+            switch (command)
+            {
+                // Shut down the server
+                case "shutdown":
+                    ServerControl.Shutdown();
+                    break;
 
-				// Disconnect the client
-			case "exit":
-				Network.EndSession (state);
-				break;
+                // Disconnect the client
+                case "exit":
+                    Network.EndSession(state);
+                    break;
 
-				// Request the current time
-			case "whattimeisit":
-				Commands.WhatTimeIsIt (state.ID);
-				break;
+                // Request the current time
+                case "whattimeisit":
+                    Commands.WhatTimeIsIt(state.ID);
+                    break;
 
-				// Request a list of current connections
-			case "listconnections":
-				Commands.ListConnections (state.ID);
-				break;
+                // Request a list of current connections
+                case "listconnections":
+                    Commands.ListConnections(state.ID);
+                    break;
 
-				// Force a point pulse
-			case "forcepointtick":
-				Commands.ForcePointPulse (state.ID);
-				break;
+                // Force a point pulse
+                case "forcepointtick":
+                    Commands.ForcePointPulse(state.ID);
+                    break;
 
-				// Repeats the last command
-			case "!":
-				ParseCommand (state.LastCommand, state.ID);
-				break;
+                // Repeats the last command
+                case "!":
+                    ParseCommand(state.LastCommand, state.ID);
+                    break;
 
-				// Unknown command
-			default:
-				Commands.UnknownCommand (state.ID, command);
-				break;
-			}
+                // Unknown command
+                default:
+                    Commands.UnknownCommand(state.ID, command);
+                    break;
+            }
 
 			// Store the active command as the client's last command, if it wasn't !
 			if (!command.Equals ("!"))

@@ -72,6 +72,9 @@
     <Compile Include="Character.cs" />
     <Compile Include="Consts\Strings.cs" />
     <Compile Include="Consts\Misc.cs" />
+    <Compile Include="ServerControl\Boot.cs" />
+    <Compile Include="Consts\GameState.cs" />
+    <Compile Include="ServerControl\Shutdown.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -87,4 +90,7 @@
   </Target>
   -->
   <ItemGroup />
+  <ItemGroup>
+    <Folder Include="ServerControl\" />
+  </ItemGroup>
 </Project>
