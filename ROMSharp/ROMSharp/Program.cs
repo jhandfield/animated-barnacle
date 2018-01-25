@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Sockets;
 using System.Threading;
 using ROMSharp.Consts;
-using log4net;
-[assembly: log4net.Config.XmlConfigurator(Watch = true)]
 
 namespace ROMSharp
 {
@@ -24,12 +23,12 @@ namespace ROMSharp
         /// </summary>
         public static ServerConfiguration config;
 
-        public static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        public static Socket listener;
 
         public static int Main(string[] args)
         {
             // Notify that the logger is running
-            log.Info("Logger initialized");
+            Logging.Log.Info("Logger initialized");
 
             // Set game state to Starting
             GameMode = GameState.Starting;
@@ -49,11 +48,11 @@ namespace ROMSharp
 
 		public static void PointTimerCallback(object stateInfo)
 		{
-            log.Debug("PointTimerCallback() called");
+            Logging.Log.Debug("PointTimerCallback() called");
 
 			// Loop over all connections
 			foreach (Network.ClientConnection connection in Network.ClientConnections) {
-                log.Debug("Processing character on connection ID " + connection.ID);
+                Logging.Log.Debug("Processing character on connection ID " + connection.ID);
 
 				// Send a message to them
 				Network.Send("Tick!\n\r", connection);

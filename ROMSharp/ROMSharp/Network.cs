@@ -165,16 +165,16 @@ namespace ROMSharp
             IPEndPoint localEndPoint = new IPEndPoint(addr, port);
 
             // Create a TCP/IP socket.
-            Socket listener = new Socket(AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
+            Program.listener = new Socket(AddressFamily.InterNetworkV6, SocketType.Stream, ProtocolType.Tcp);
 
             // Bind the socket to the local endpoint and listen for incoming connections.
             try
             {
-                listener.Bind(localEndPoint);
-                listener.Listen(100);
+                Program.listener.Bind(localEndPoint);
+                Program.listener.Listen(100);
 
                 // Start an asynchronous socket to listen for connections.
-                Program.log.Info(String.Format("Waiting for a connection on address {0} port {1}...", addr.ToString(), port));
+                Logging.Log.Info(String.Format("Waiting for a connection on address {0} port {1}...", ((IPEndPoint)Program.listener.LocalEndPoint).Address, port));
 
 
                 //Timer socketTimeoutTimer = new Timer(
@@ -183,18 +183,17 @@ namespace ROMSharp
                     // Set the event to nonsignaled state.
                     allDone.Reset();
 
-                    listener.BeginAccept(
+                    Program.listener.BeginAccept(
                         new AsyncCallback(AcceptCallback),
-                        listener);
+                        Program.listener);
 
                     // Wait until a connection is made before continuing.
                     allDone.WaitOne();
                 }
-
             }
             catch (Exception e)
             {
-                Program.log.Error(e.ToString());
+                Logging.Log.Error(e.ToString());
             }
         }
 
@@ -205,25 +204,32 @@ namespace ROMSharp
 
         public static void AcceptCallback(IAsyncResult ar)
         {
-            // Signal the main thread to continue.
-            allDone.Set();
+            try
+            {
+                // Signal the main thread to continue.
+                allDone.Set();
 
-            // Get the socket that handles the client request.
-            Socket listener = (Socket)ar.AsyncState;
-            Socket handler = listener.EndAccept(ar);
+                // Get the socket that handles the client request.
+                Socket listener = (Socket)ar.AsyncState;
+                Socket handler = listener.EndAccept(ar);
 
-            // Create the state object.
-            ClientConnection state = new ClientConnection();
-            state.workSocket = handler;
+                // Create the state object.
+                ClientConnection state = new ClientConnection();
+                state.workSocket = handler;
 
-			// Add the state object to ClientConnections
-			ClientConnections.Add(state);
+                // Add the state object to ClientConnections
+                ClientConnections.Add(state);
 
-            // Log the connection
-            Program.log.Info(String.Format("[{0}]: Incoming connection with {1} on local port {2}", state.ID, IPAddress.Parse(((IPEndPoint)handler.RemoteEndPoint).Address.ToString()), ((IPEndPoint)handler.RemoteEndPoint).Port));
+                // Log the connection
+                Logging.Log.Info(String.Format("[{0}]: Incoming connection with {1} on local port {2}", state.ID, IPAddress.Parse(((IPEndPoint)handler.RemoteEndPoint).Address.ToString()), ((IPEndPoint)handler.RemoteEndPoint).Port));
 
-			// Call the greeting method
-			Commands.DoGreeting(state.ID);
+                // Call the greeting method
+                Commands.DoGreeting(state.ID);
+            }
+            catch (ObjectDisposedException)
+            {
+                Logging.Log.Warn("Handling attempt to access disposed socket");
+            }
         }
 
         // TODO: Implement EC / backspace characters
@@ -284,7 +290,7 @@ namespace ROMSharp
 				}
 			}
 			catch (System.Net.Sockets.SocketException) {
-                Program.log.Warn(String.Format("Error communicating with connection ID {0}, closing connection.", state.ID));
+                Logging.Log.Warn(String.Format("Error communicating with connection ID {0}, closing connection.", state.ID));
 
 				// End the session
 				handler.Close();
@@ -319,7 +325,7 @@ namespace ROMSharp
                 Socket handler = state.workSocket;
 
                 // Log
-                    Program.log.Info(String.Format("[{0}]: Closing connection with {1} on local port {2}. Data sent/recv: {3:n0}/{4:n0}", state.ID, IPAddress.Parse(((IPEndPoint)handler.RemoteEndPoint).Address.ToString()), ((IPEndPoint)handler.RemoteEndPoint).Port, state.bytesSent, state.bytesReceived));
+                    Logging.Log.Info(String.Format("[{0}]: Closing connection with {1} on local port {2}. Data sent/recv: {3:n0}/{4:n0}", state.ID, IPAddress.Parse(((IPEndPoint)handler.RemoteEndPoint).Address.ToString()), ((IPEndPoint)handler.RemoteEndPoint).Port, state.bytesSent, state.bytesReceived));
 
                 // End the session
                 handler.Shutdown(SocketShutdown.Both);
@@ -330,7 +336,7 @@ namespace ROMSharp
             }
             catch (Exception e)
             {
-                Program.log.Error(e.ToString());
+                Logging.Log.Error(e.ToString());
             }
         }
 
@@ -401,7 +407,7 @@ namespace ROMSharp
             }
             catch (Exception e)
             {
-                Program.log.Error(e.ToString());
+                Logging.Log.Error(e.ToString());
             }
         }
     }
