@@ -3,8 +3,12 @@ namespace ROMSharp.Models
 {
     public class ObjectData
     {
-        public ObjectData()
-        {
-        }
+        #region Properties
+
+        #endregion
+
+        #region Constructors
+        public ObjectData() { }
+        #endregion
     }
 }
