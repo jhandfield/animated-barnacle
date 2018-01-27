@@ -237,3 +237,6 @@ _Pvt_Extensions
 
 # macOS files
 .DS_Store
+
+# Data files
+/ROMSharp/ROMSharp/data/
