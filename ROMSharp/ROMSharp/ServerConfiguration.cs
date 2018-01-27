@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 
 namespace ROMSharp
@@ -24,6 +25,21 @@ namespace ROMSharp
         /// Maximum number of simultaneous connections (default: 20)
         /// </summary>
         public int maxConnections { get; set; }
+
+        /// <summary>
+        /// Location of the directory containing all area files
+        /// </summary>
+        public string AreaDirectory { get; set; }
+
+        /// <summary>
+        /// Location of the direcory containing all player files
+        /// </summary>
+        public string PlayerDirectory { get; set; }
+
+        /// <summary>
+        /// Location of the directory containing all god files
+        /// </summary>
+        public string GodDirectory { get; set; }
         #endregion
 
         #region Constructors
@@ -35,6 +51,9 @@ namespace ROMSharp
             this.listenAddress = IPAddress.Any;
             this.listenPort = 9000;
             this.maxConnections = 20;
+            this.AreaDirectory = "./area/";
+            this.PlayerDirectory = "./player/";
+            this.GodDirectory = "./gods/";
         }
         #endregion
 
@@ -90,6 +109,42 @@ namespace ROMSharp
                     tempConfig.maxConnections = parsedMaxConn;
                 else
                         Logging.Log.Warn(String.Format("Skipping invalid value {0} for parameter {1}", parsedArgs["-maxconnections"], "-maxConnections"));
+            }
+
+            // -areaDir (override area directory)
+            if (parsedArgs.ContainsKey("-areadir"))
+            {
+                if (Directory.Exists(parsedArgs["-areadir"]))
+                {
+                    tempConfig.AreaDirectory = parsedArgs["-areadir"];
+                    Logging.Log.Info(String.Format("Setting area directory to {0}", tempConfig.AreaDirectory));
+                }
+                else
+                    Logging.Log.Warn(String.Format("Specified area directory {0} does not exist or the server does not have access to it", parsedArgs["-areadir"]));
+            }
+
+            // -playerDir (override area directory)
+            if (parsedArgs.ContainsKey("-playerdir"))
+            {
+                if (Directory.Exists(parsedArgs["-playerdir"]))
+                {
+                    tempConfig.AreaDirectory = parsedArgs["-playerdir"];
+                    Logging.Log.Info(String.Format("Setting player directory to {0}", tempConfig.PlayerDirectory));
+                }
+                else
+                    Logging.Log.Warn(String.Format("Specified player directory {0} does not exist or the server does not have access to it", parsedArgs["-playerdir"]));
+            }
+
+            // -godDir (override area directory)
+            if (parsedArgs.ContainsKey("-goddir"))
+            {
+                if (Directory.Exists(parsedArgs["-goddir"]))
+                {
+                    tempConfig.AreaDirectory = parsedArgs["-goddir"];
+                    Logging.Log.Info(String.Format("Setting god directory to {0}", tempConfig.GodDirectory));
+                }
+                else
+                    Logging.Log.Warn(String.Format("Specified god directory {0} does not exist or the server does not have access to it", parsedArgs["-goddir"]));
             }
             #endregion
 

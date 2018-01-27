@@ -1,0 +1,127 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading;
+
+namespace ROMSharp
+{
+    public class World
+    {
+        #region Fields
+        private Enums.GameState _state;
+        #endregion
+
+        #region Properties
+        public Enums.GameState State
+        {
+            get { return _state; }
+            set
+            {
+                // Fire OnStatechanging() event
+                OnStateChanging(_state, value);
+
+                // Set value
+                _state = value;
+            }
+        }
+
+        /// <summary>
+        /// Collection of areas that make up the world
+        /// </summary>
+        /// <value>The areas.</value>
+        public List<Models.AreaData> Areas { get; set; }
+        #endregion
+
+        #region Constructors
+        public World()
+        {
+            this.Areas = new List<Models.AreaData>();
+            this.State = Enums.GameState.Loading;
+        }
+        #endregion
+
+        #region Methods
+        private void OnStateChanging(Enums.GameState oldState, Enums.GameState newState)
+        {
+            Logging.Log.Debug(String.Format("Game state changing from {0} to {1}", oldState, newState));
+            Logging.Log.Info(String.Format("Game state is now {0}", newState));
+        }
+
+        /// <summary>
+        /// Instantiate the World from area files stored on disk
+        /// </summary>
+        /// <param name="areaPath">Path to the area folder</param>
+        public void LoadFromDisk(string areaPath) {
+            // Validate that the path exists
+            if (!Directory.Exists(areaPath))
+            {
+                // Log a fatal error and exit
+                Logging.Log.Fatal(String.Format("Unable to load area files - direcory does not exist: {0}", areaPath));
+                Environment.Exit(1);
+            }
+            else
+                Logging.Log.Debug(String.Format("Area directory {0} located", areaPath));
+
+            // Build the path to the area.lst file
+            string areaListPath = Path.Combine(areaPath, "area.lst");
+
+            // Check for the existence of the area.lst file in the area folder
+            if (!File.Exists(areaListPath))
+            {
+                // Log a fatal error and exit
+                Logging.Log.Fatal(String.Format("Unable to find area.lst file in expected location: {0}", areaListPath));
+                Environment.Exit(1);
+            }
+            else
+                Logging.Log.Debug(String.Format("Area list file {0} located", areaListPath));
+
+            // Load the area list
+            string[] areaFileList = File.ReadAllLines(areaListPath);
+            Logging.Log.Debug(String.Format("Area list file {0} loaded: {1} areas in list.", areaListPath, areaFileList.Length));
+
+            // Loop over the area file list
+            foreach (string areaFile in areaFileList)
+            {
+                // Load the area
+                Logging.Log.Debug(String.Format("Loading area file {0}", areaFile));
+                Models.AreaData newArea = Models.AreaData.LoadFromFile(areaFile);
+
+                // Append to the world
+                this.Areas.Add(newArea);
+                Logging.Log.Info(String.Format("Area {0} loaded; {1} areas in world.", newArea.Name, this.Areas.Count));
+            }
+        }
+
+        /// <summary>
+        /// Starts the simulation - enables ticks, mob autonomy, etc.
+        /// </summary>
+        public void StartSimulation()
+        {
+            // Set up Pulses
+            TimerCallback pointTimerCallback = Program.PointTimerCallback;
+            Program.pointTimer = new Timer(pointTimerCallback, null, Consts.Time.PointPulseInterval, Consts.Time.PointPulseInterval);
+
+            // Set world state to running
+            Program.World.State = Enums.GameState.Running;
+
+            // Log
+            Logging.Log.Info("Simulation started");
+        }
+
+        /// <summary>
+        /// Pauses the simulation - disables ticks, mob autonomy, etc.
+        /// </summary>
+        public void PauseSimulation()
+        {
+            // Disable pulses
+            Program.pointTimer.Dispose();
+
+            // Update the world state
+            State = Enums.GameState.Paused;
+
+            // Log
+            Logging.Log.Info("Simulation paused");
+        }
+        #endregion
+    }
+}

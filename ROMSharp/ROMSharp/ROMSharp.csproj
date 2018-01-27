@@ -71,6 +71,8 @@
     <Compile Include="Models\ExtraDescription.cs" />
     <Compile Include="Models\Exits.cs" />
     <Compile Include="Enums\Direction.cs" />
+    <Compile Include="Enums\GameState.cs" />
+    <Compile Include="World.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

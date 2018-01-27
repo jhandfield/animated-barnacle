@@ -11,7 +11,11 @@ namespace ROMSharp.Models
         /// Contains the next area in the sequence of loading
         /// </summary>
         /// <remarks>Is this needed in this code? I'm not so sure.</remarks>
-        public AreaData NextArea { get; set; }
+        public AreaData NextArea
+        {
+            get { throw new NotImplementedException(); }
+            set { throw new NotSupportedException(); }
+        }
 
         /// <summary>
         /// Used when resetting area, identifies the first object to be reset
@@ -28,18 +32,18 @@ namespace ROMSharp.Models
         /// <summary>
         /// Filename the area was loaded from
         /// </summary>
-        public string Filename { get; set;  }
+        public string Filename { get; set; }
 
         /// <summary>
         /// Name of the area
         /// </summary>
-        public string Name { get; set;  }
+        public string Name { get; set; }
 
         /// <summary>
         /// Credits data for the information (author, license, etc.)
         /// </summary>
         /// <value>The credits.</value>
-        public string Credits { get; set;  }
+        public string Credits { get; set; }
 
         /// <summary>
         /// Age of the area - used to determine when the area should be reset
@@ -50,18 +54,18 @@ namespace ROMSharp.Models
         /// <summary>
         /// Number of players currently in the area
         /// </summary>
-        public int NumPlayers { get; set;  }
+        public int NumPlayers { get; set; }
 
         /// <summary>
         /// Minimum VNum in the area's range
         /// </summary>
-        public int MinVNum { get; set;  }
+        public int MinVNum { get; set; }
 
         /// <summary>
         /// Maximum VNum in the area's range
         /// </summary>
         /// <value>The max VN um.</value>
-        public int MaxVNum { get; set;  }
+        public int MaxVNum { get; set; }
 
         /// <summary>
         /// Indicates whether the area is empty (has no PC's within it)
@@ -70,7 +74,18 @@ namespace ROMSharp.Models
         #endregion
 
         #region Constructors
-        public AreaData() { }
+        public AreaData()
+        {
+            this.ResetFirst = new ResetData();
+            this.ResetFirst = new ResetData();
+        }
+        #endregion
+
+        #region Methods
+        public static AreaData LoadFromFile(string areaFile)
+        {
+            return new AreaData() { Name = "Example Area" };
+        }
         #endregion
     }
 }
