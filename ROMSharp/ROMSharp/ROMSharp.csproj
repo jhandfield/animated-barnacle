@@ -61,10 +61,8 @@
     <Compile Include="Consts\Strings.cs" />
     <Compile Include="Consts\Misc.cs" />
     <Compile Include="ServerControl\Boot.cs" />
-    <Compile Include="Consts\GameState.cs" />
     <Compile Include="ServerControl\Shutdown.cs" />
     <Compile Include="Logging.cs" />
-    <Compile Include="Areas.cs" />
     <Compile Include="Models\AreaData.cs" />
     <Compile Include="Models\ResetData.cs" />
     <Compile Include="Models\RoomIndexData.cs" />
