@@ -1,18 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Threading;
-using ROMSharp.Consts;
 
 namespace ROMSharp
 {
     public class Program
     {
-        /// <summary>
-        /// The current state of the game
-        /// </summary>
-        public static GameState GameMode;
-
         /// <summary>
         /// The master timer for the game - triggers periodic updates (ticks)
         /// </summary>
@@ -25,13 +18,13 @@ namespace ROMSharp
 
         public static Socket listener;
 
+        // Instantiate the World
+        public static World World = new World();
+
         public static int Main(string[] args)
         {
             // Notify that the logger is running
             Logging.Log.Info("Logger initialized");
-
-            // Set game state to Starting
-            GameMode = GameState.Starting;
 
             // Instantiate the server configuration
             config = new ServerConfiguration();
@@ -41,6 +34,8 @@ namespace ROMSharp
 
 			// Begin server startup
             ServerControl.Boot(args);
+
+            while (true) { }
 
             // Return success
             return 0;

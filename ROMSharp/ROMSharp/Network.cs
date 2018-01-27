@@ -176,20 +176,7 @@ namespace ROMSharp
                 // Start an asynchronous socket to listen for connections.
                 Logging.Log.Info(String.Format("Waiting for a connection on address {0} port {1}...", ((IPEndPoint)Program.listener.LocalEndPoint).Address, port));
 
-
-                //Timer socketTimeoutTimer = new Timer(
-                while (true)
-                {
-                    // Set the event to nonsignaled state.
-                    allDone.Reset();
-
-                    Program.listener.BeginAccept(
-                        new AsyncCallback(AcceptCallback),
-                        Program.listener);
-
-                    // Wait until a connection is made before continuing.
-                    allDone.WaitOne();
-                }
+                Program.listener.BeginAccept(new AsyncCallback(AcceptCallback), Program.listener);
             }
             catch (Exception e)
             {
@@ -207,7 +194,7 @@ namespace ROMSharp
             try
             {
                 // Signal the main thread to continue.
-                allDone.Set();
+                //allDone.Set();
 
                 // Get the socket that handles the client request.
                 Socket listener = (Socket)ar.AsyncState;
@@ -222,6 +209,9 @@ namespace ROMSharp
 
                 // Log the connection
                 Logging.Log.Info(String.Format("[{0}]: Incoming connection with {1} on local port {2}", state.ID, IPAddress.Parse(((IPEndPoint)handler.RemoteEndPoint).Address.ToString()), ((IPEndPoint)handler.RemoteEndPoint).Port));
+
+                // Reset the socket for the next user
+                Program.listener.BeginAccept(new AsyncCallback(AcceptCallback), Program.listener);
 
                 // Call the greeting method
                 Commands.DoGreeting(state.ID);
