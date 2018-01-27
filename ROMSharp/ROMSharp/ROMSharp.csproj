@@ -65,6 +65,14 @@
     <Compile Include="ServerControl\Shutdown.cs" />
     <Compile Include="Logging.cs" />
     <Compile Include="Areas.cs" />
+    <Compile Include="Models\AreaData.cs" />
+    <Compile Include="Models\ResetData.cs" />
+    <Compile Include="Models\RoomIndexData.cs" />
+    <Compile Include="Models\CharacterData.cs" />
+    <Compile Include="Models\ObjectData.cs" />
+    <Compile Include="Models\ExtraDescription.cs" />
+    <Compile Include="Models\Exits.cs" />
+    <Compile Include="Enums\Direction.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -74,5 +82,6 @@
   <ItemGroup />
   <ItemGroup>
     <Folder Include="ServerControl\" />
+    <Folder Include="Models\" />
   </ItemGroup>
 </Project>
