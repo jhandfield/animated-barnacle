@@ -16,25 +16,42 @@ namespace ROMSharp
         /// </summary>
         public static ServerConfiguration config;
 
+        /// <summary>
+        /// The server socket through which players will connect and communicate
+        /// </summary>
         public static Socket listener;
 
-        // Instantiate the World
-        public static World World = new World();
+        /// <summary>
+        /// Represents the game World
+        /// </summary>
+        public static World World;
+
+        /// <summary>
+        /// The command line arguments from server startup
+        /// </summary>
+        public static string[] commandArgs;
 
         public static int Main(string[] args)
         {
-            // Notify that the logger is running
-            Logging.Log.Info("Logger initialized");
-
-            // Instantiate the server configuration
-            config = new ServerConfiguration();
-
             // Configure the Console.CancelKeyPress event
             Console.CancelKeyPress += Console_CancelKeyPress;
 
-			// Begin server startup
-            ServerControl.Boot(args);
+            // Notify that the logger is running
+            Logging.Log.Info("Logger initialized");
 
+            // Copy arguments to the global
+            commandArgs = args;
+
+            // Instantiate the World object
+            Program.World = new World();
+
+            // Advance the World state to Starting
+            Program.World.State = Enums.GameState.Starting;
+
+            // Start the simulation
+            Program.World.StartSimulation();
+
+            // Main blocking loop
             while (true) { }
 
             // Return success

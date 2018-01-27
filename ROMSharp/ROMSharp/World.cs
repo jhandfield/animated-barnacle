@@ -44,6 +44,70 @@ namespace ROMSharp
         private void OnStateChanging(Enums.GameState oldState, Enums.GameState newState)
         {
             Logging.Log.Debug(String.Format("Game state changing from {0} to {1}", oldState, newState));
+
+            switch(newState){
+                case Enums.GameState.Loading:
+                    // Instantiate the server configuration
+                    Program.config = new ServerConfiguration();
+
+                    // Set the server configuration from any command line arguments
+                    Program.config = ServerConfiguration.ParseArguments(Program.commandArgs);
+
+                    // Logging
+                    Logging.Log.Info("Server configuration loaded");
+
+                    break;
+                case Enums.GameState.Starting:
+                    Logging.Log.Info("Server starting up");
+
+                    try
+                    {
+                        // Instantiate our ClientConnections object which will contain all active connections
+                        Network.ClientConnections = new List<Network.ClientConnection>();
+
+                        // Instantiate and load the World
+                        Program.World.LoadFromDisk(Program.config.AreaDirectory);
+
+                        Logging.Log.Info(String.Format("World loaded - {0} areas consisting of {1} rooms", Program.World.Areas.Count, 0));
+                    }
+                    catch (Exception e)
+                    {
+                        Logging.Log.Fatal(String.Format("Unhandled exception caught: {0}: {1}\n{2}", e.GetType(), e.Message, e.StackTrace));
+                    }
+
+                    // Listen for connections
+                    Network.StartListening(Program.config);
+
+                    // Log
+                    Logging.Log.Info("Server startup complete, starting simulation");
+
+                    break;
+                case Enums.GameState.Stopping:
+                    // Loop over active connections and close each
+                    foreach(Network.ClientConnection conn in Network.ClientConnections)
+                    {
+                        // TODO: Save the character first
+                        // TODO: Disconnect the character in a cleaner method than this
+                        Logging.Log.Info(String.Format("Closing connection {0} for character {1}", conn.ID, conn.PlayerCharacter.Name));
+                        conn.workSocket.Close();
+                    }
+
+                    // Stop the main timer
+                    Program.pointTimer.Dispose();
+
+                    // Close the litening socket
+                    Program.listener.Close();
+
+                    // Shut down logging
+                    Logging.Log.Info("ROMSharp is shut down - goodbye.");
+                    Logging.Log.Logger.Repository.Shutdown();
+
+                    // Exit the application
+                    Environment.Exit(0);
+
+                    break;
+            }
+
             Logging.Log.Info(String.Format("Game state is now {0}", newState));
         }
 
@@ -82,13 +146,16 @@ namespace ROMSharp
             // Loop over the area file list
             foreach (string areaFile in areaFileList)
             {
-                // Load the area
-                Logging.Log.Debug(String.Format("Loading area file {0}", areaFile));
-                Models.AreaData newArea = Models.AreaData.LoadFromFile(areaFile);
+                // Skip the EOF line
+                if (!areaFile.Equals("$"))
+                {
+                    // Load the area
+                    Logging.Log.Debug(String.Format("Loading area file {0}", areaFile));
+                    Models.AreaData newArea = Models.AreaData.LoadFromFile(areaFile);
 
-                // Append to the world
-                this.Areas.Add(newArea);
-                Logging.Log.Info(String.Format("Area {0} loaded; {1} areas in world.", newArea.Name, this.Areas.Count));
+                    // Append to the world
+                    this.Areas.Add(newArea);
+                }
             }
         }
 
