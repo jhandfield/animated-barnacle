@@ -30,6 +30,12 @@ namespace ROMSharp
         /// </summary>
         /// <value>The areas.</value>
         public List<Models.AreaData> Areas { get; set; }
+
+        /// <summary>
+        /// Collection of rooms that make up the areas of the world
+        /// </summary>
+        /// <value>The rooms.</value>
+        public List<Models.RoomIndexData> Rooms { get; set; }
         #endregion
 
         #region Constructors
@@ -59,6 +65,7 @@ namespace ROMSharp
                     break;
                 case Enums.GameState.Starting:
                     Logging.Log.Info("Server starting up");
+                    Logging.Log.Info(String.Format("Server memory usage: {0:N0}KiB", GC.GetTotalMemory(true) / 1024));
 
                     try
                     {
@@ -69,6 +76,7 @@ namespace ROMSharp
                         Program.World.LoadFromDisk(Program.config.AreaDirectory);
 
                         Logging.Log.Info(String.Format("World loaded - {0} areas consisting of {1} rooms", Program.World.Areas.Count, 0));
+
                     }
                     catch (Exception e)
                     {
@@ -80,6 +88,7 @@ namespace ROMSharp
 
                     // Log
                     Logging.Log.Info("Server startup complete, starting simulation");
+                    Logging.Log.Info(String.Format("Server memory usage: {0:N0}KiB", GC.GetTotalMemory(true) / 1024));
 
                     break;
                 case Enums.GameState.Stopping:
@@ -151,10 +160,17 @@ namespace ROMSharp
                 {
                     // Load the area
                     Logging.Log.Debug(String.Format("Loading area file {0}", areaFile));
-                    Models.AreaData newArea = Models.AreaData.LoadFromFile(areaFile);
+                    Models.AreaData newArea = Models.AreaData.LoadFromFile(Path.Combine(Program.config.AreaDirectory,areaFile));
 
-                    // Append to the world
-                    this.Areas.Add(newArea);
+                    // Check that we successfully loaded the area
+                    if (newArea != null)
+                    {
+                        // Log
+                        Logging.Log.Info(String.Format("Area {0} loadedd", newArea.Name));
+
+                        // Append to the world
+                        this.Areas.Add(newArea);
+                    }
                 }
             }
         }

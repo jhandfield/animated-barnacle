@@ -72,6 +72,8 @@
     <Compile Include="Enums\Direction.cs" />
     <Compile Include="Enums\GameState.cs" />
     <Compile Include="World.cs" />
+    <Compile Include="Enums\AlphaMacros.cs" />
+    <Compile Include="Helpers\AlphaMacroConversion.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -82,5 +84,6 @@
   <ItemGroup>
     <Folder Include="ServerControl\" />
     <Folder Include="Models\" />
+    <Folder Include="Helpers\" />
   </ItemGroup>
 </Project>
