@@ -74,6 +74,7 @@
     <Compile Include="World.cs" />
     <Compile Include="Enums\AlphaMacros.cs" />
     <Compile Include="Helpers\AlphaMacroConversion.cs" />
+    <Compile Include="Models\Rooms.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

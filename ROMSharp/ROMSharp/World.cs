@@ -35,7 +35,7 @@ namespace ROMSharp
         /// Collection of rooms that make up the areas of the world
         /// </summary>
         /// <value>The rooms.</value>
-        public List<Models.RoomIndexData> Rooms { get; set; }
+        public Models.Rooms Rooms { get; set; }
         #endregion
 
         #region Constructors
@@ -43,6 +43,7 @@ namespace ROMSharp
         {
             this.Areas = new List<Models.AreaData>();
             this.State = Enums.GameState.Loading;
+            this.Rooms = new Models.Rooms();
         }
         #endregion
 
@@ -75,7 +76,7 @@ namespace ROMSharp
                         // Instantiate and load the World
                         Program.World.LoadFromDisk(Program.config.AreaDirectory);
 
-                        Logging.Log.Info(String.Format("World loaded - {0} areas consisting of {1} rooms", Program.World.Areas.Count, 0));
+                        Logging.Log.Info(String.Format("World loaded - {0} areas consisting of {1} rooms", Program.World.Areas.Count, Program.World.Rooms.Count));
 
                     }
                     catch (Exception e)

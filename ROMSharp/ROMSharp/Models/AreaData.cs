@@ -115,177 +115,186 @@ namespace ROMSharp.Models
                     return null;
                 }
 
+                // Instantiate a StreamReader and read the entire file
+                StreamReader sr = new StreamReader(areaPath);
+                string fileData = sr.ReadToEnd();
+                sr.Dispose();
+
                 // Instantiate a StreamReader for the file
-                using (StreamReader sr = new StreamReader(areaPath))
+                StringReader strRdr = new StringReader(fileData);
+
+                // Parse the file, one line at a time.
+                while ((lineData = strRdr.ReadLine()) != null)
                 {
-                    // Parse the file, one line at a time.
-                    while ((lineData = sr.ReadLine()) != null)
+                    // Increment lineNum
+                    lineNum++;
+
+                    switch (state)
                     {
-                        // Increment lineNum
-                        lineNum++;
+                        case AreaReadingState.WaitingForSection:
+                            // Skip blank lines while in this state
+                            if (lineData.Trim().Equals(String.Empty))
+                            {
+                                Logging.Log.Debug(String.Format("Skipping empty line at {0}:{1}", areaFile, lineNum));
+                                continue;
+                            }
 
-                        switch (state)
-                        {
-                            case AreaReadingState.WaitingForSection:
-                                // Skip blank lines while in this state
-                                if (lineData.Trim().Equals(String.Empty))
-                                {
-                                    Logging.Log.Debug(String.Format("Skipping empty line at {0}:{1}", areaFile, lineNum));
-                                    continue;
-                                }
+                            // Expect the first data line we come across to start with #
+                            if (!lineData.StartsWith("#", StringComparison.InvariantCulture))
+                            {
+                                // Log an error and return null
+                                Logging.Log.Error(String.Format("Error parsing {0} line {1}: Expected a section identifier, instead got {2}", areaFile, lineNum, lineData));
+                                return null;
+                            }
 
-                                // Expect the first data line we come across to start with #
-                                if (!lineData.StartsWith("#", StringComparison.InvariantCulture))
-                                {
-                                    // Log an error and return null
-                                    Logging.Log.Error(String.Format("Error parsing {0} line {1}: Expected a section identifier, instead got {2}", areaFile, lineNum, lineData));
-                                    return null;
-                                }
+                            // We've encountered a section heading; which one?
+                            switch (lineData.Trim().ToUpper())
+                            {
+                                #region #$
+                                // End-of-File Heading
+                                case "#$":
+                                    // Log
+                                    Logging.Log.Debug(String.Format("Found #$ EOF marker in file {0} on line {1}, finishing up", areaFile, lineNum));
 
-                                // We've encountered a section heading; which one?
-                                switch (lineData.Trim().ToUpper())
-                                {
-                                    #region #$
-                                    // End-of-File Heading
-                                    case "#$":
-                                        // Log
-                                        Logging.Log.Debug(String.Format("Found #$ EOF marker in file {0} on line {1}, finishing up", areaFile, lineNum));
+                                    // Set state to finished
+                                    state = AreaReadingState.Finished;
 
-                                        // Set state to finished
-                                        state = AreaReadingState.Finished;
+                                    break;
+                                #endregion
 
-                                        break;
-                                    #endregion
+                                #region #ROOMS
+                                case "#ROOMS":
+                                    Logging.Log.Debug(String.Format("Found #ROOMS heading in file {0} on line {1}", areaFile, lineNum));
 
-                                    #region #ROOMS
-                                    case "#ROOMS":
-                                        Logging.Log.Debug(String.Format("Found #ROOMS heading in file {0} on line {1}", areaFile, lineNum));
+                                    // Continue reading until we hit a #0
+                                    bool readingRooms = true;
+                                    while (readingRooms)
+                                    {
+                                        // Read a line
+                                        lineData = strRdr.ReadLine();
+                                        lineNum++;
 
-                                        // Instantiate a StringBuilder
-                                        StringBuilder sb = new StringBuilder();
-
-                                        bool readingRecord = true;
-                                        int startLine = 0;
-
-                                        // Keep reading lines until we find an S by itself to mark the end of the record
-                                        while (readingRecord)
+                                        if (lineData == null)
+                                            readingRooms = false;
+                                        else if (!lineData.Trim().Equals("#0") && !lineData.Trim().Equals("#$") && !lineData.Trim().Equals(""))
                                         {
-                                            // Read the line
-                                            lineData = sr.ReadLine();
-                                            lineNum++;
-                                            startLine = lineNum;
+                                            RoomIndexData newRoom = RoomIndexData.ParseRoomData(ref strRdr, areaFile, ref lineNum, lineData);
 
-                                            // Append to the StringBuilder
-                                            sb.Append(lineData + "\n");
-
-                                            // Is the current line the end-of-record marker?
-                                            if (lineData.Equals("S"))
-                                                // Flag that we're done
-                                                readingRecord = false;
+                                            // If we have a loaded room, add it to the world
+                                            if (newRoom != null)
+                                                Program.World.Rooms.Add(newRoom);
                                         }
+                                    }
+                                    break;
 
-                                        // Pass the record to be parsed
-                                        RoomIndexData newRoom = RoomIndexData.ParseRoomData(sb.ToString(), areaFile, startLine, lineNum);
-                                        break;
+                                default:
+                                    break;
+                                #endregion
+
+                                #region #AREA
+                                // AREA Heading
+                                case "#AREA":
+                                    Logging.Log.Debug(String.Format("Found #AREA heading in file {0} on line {1}", areaFile, lineNum));
+
+                                    #region Filename
+                                    // Read the next line - will be the area filename
+                                    lineData = strRdr.ReadLine();
+                                    lineNum++;
+
+                                    // Trim the trailing tilde
+                                    lineData = lineData.Substring(0, lineData.Trim().Length - 1);
+
+                                    // Set filename
+                                    areaOut.Filename = lineData;
+
+                                    Logging.Log.Debug(String.Format("Read area filename in file {0} on line {1}", areaFile, lineNum));
                                     #endregion
 
-                                    #region #AREA
-                                    // AREA Heading
-                                    case "#AREA":
-                                        Logging.Log.Debug(String.Format("Found #AREA heading in file {0} on line {1}", areaFile, lineNum));
+                                    #region Name
+                                    // Read the next line - will be the area name
+                                    lineData = strRdr.ReadLine();
+                                    lineNum++;
 
-                                        #region Filename
-                                        // Read the next line - will be the area filename
-                                        lineData = sr.ReadLine();
-                                        lineNum++;
+                                    // Trim the trailing tilde
+                                    lineData = lineData.Substring(0, lineData.Trim().Length - 1);
 
-                                        // Trim the trailing tilde
-                                        lineData = lineData.Substring(0, lineData.Trim().Length - 1);
+                                    // Set name
+                                    areaOut.Name = lineData;
 
-                                        // Set filename
-                                        areaOut.Filename = lineData;
-                                        #endregion
+                                    Logging.Log.Debug(String.Format("Read area name in file {0} on line {1}", areaFile, lineNum));
+                                    #endregion
 
-                                        #region Name
-                                        // Read the next line - will be the area name
-                                        lineData = sr.ReadLine();
-                                        lineNum++;
+                                    #region Credits
+                                    // Read the next line - will be the credits
+                                    lineData = strRdr.ReadLine();
+                                    lineNum++;
 
-                                        // Trim the trailing tilde
-                                        lineData = lineData.Substring(0, lineData.Trim().Length - 1);
+                                    // Trim the trailing tilde
+                                    lineData = lineData.Substring(0, lineData.Trim().Length - 1);
 
-                                        // Set name
-                                        areaOut.Name = lineData;
-                                        #endregion
+                                    // Set credits
+                                    areaOut.Credits = lineData;
 
-                                        #region Credits
-                                        // Read the next line - will be the credits
-                                        lineData = sr.ReadLine();
-                                        lineNum++;
+                                    Logging.Log.Debug(String.Format("Read credits information in file {0} on line {1}", areaFile, lineNum));
+                                    #endregion
 
-                                        // Trim the trailing tilde
-                                        lineData = lineData.Substring(0, lineData.Trim().Length - 1);
+                                    #region MinVNUM and MaxVNUM
+                                    // Read the next line - will be the VNUM values
+                                    lineData = strRdr.ReadLine();
+                                    lineNum++;
 
-                                        // Set credits
-                                        areaOut.Credits = lineData;
-                                        #endregion
+                                    // Split the line on space
+                                    string[] vnumData = lineData.Trim().Split(' ');
 
-                                        #region MinVNUM and MaxVNUM
-                                        // Read the next line - will be the VNUM values
-                                        lineData = sr.ReadLine();
-                                        lineNum++;
+                                    // Should be two values
+                                    if (!vnumData.Length.Equals(2))
+                                    {
+                                        // Log an error and return null
+                                        Logging.Log.Error(String.Format("Error parsing {0} line {1}: Expected two numbers separated by space for VNUM limits, instead found {2}", areaFile, lineNum, lineData));
+                                        return null;
+                                    }
 
-                                        // Split the line on space
-                                        string[] vnumData = lineData.Trim().Split(' ');
+                                    // Tracks which of the two numbers we're on
+                                    bool firstNum = true;
 
-                                        // Should be two values
-                                        if (!vnumData.Length.Equals(2))
+                                    // Loop over the two values, each should convert to an integer
+                                    foreach (string vnum in vnumData)
+                                    {
+                                        int intVal;
+
+                                        // Try to parse the value as a 32-bit integer
+                                        if (!Int32.TryParse(vnum, out intVal))
                                         {
                                             // Log an error and return null
-                                            Logging.Log.Error(String.Format("Error parsing {0} line {1}: Expected two numbers separated by space for VNUM limits, instead found {2}", areaFile, lineNum, lineData));
+                                            Logging.Log.Error(String.Format("Error parsing {0} line {1}: Error converting VNUM value {2} to an integer", areaFile, lineNum, vnum));
                                             return null;
                                         }
-
-                                        // Tracks which of the two numbers we're on
-                                        bool firstNum = true;
-
-                                        // Loop over the two values, each should convert to an integer
-                                        foreach (string vnum in vnumData)
+                                        else
                                         {
-                                            int intVal;
-
-                                            // Try to parse the value as a 32-bit integer
-                                            if (!Int32.TryParse(vnum, out intVal))
+                                            if (firstNum)
                                             {
-                                                // Log an error and return null
-                                                Logging.Log.Error(String.Format("Error parsing {0} line {1}: Error converting VNUM value {2} to an integer", areaFile, lineNum, vnum));
-                                                return null;
+                                                areaOut.MinVNum = intVal;
+                                                firstNum = false;
                                             }
                                             else
-                                            {
-                                                if (firstNum)
-                                                {
-                                                    areaOut.MinVNum = intVal;
-                                                    firstNum = false;
-                                                }
-                                                else
-                                                    areaOut.MaxVNum = intVal;
-                                            }
+                                                areaOut.MaxVNum = intVal;
                                         }
+                                    }
 
-                                        Logging.Log.Debug(String.Format("Finished processing #AREA section of file {0} at line {1}", areaFile, lineNum));
-                                        #endregion
+                                    Logging.Log.Debug(String.Format("Finished processing #AREA section of file {0} at line {1}", areaFile, lineNum));
+                                    #endregion
 
-                                        break;
-                                        #endregion
-                                }
-                                break;
+                                    break;
+                                    #endregion
+                            }
+                            break;
 
-                            default:
-                                break;
-                        }
+                        default:
+                            break;
                     }
                 }
+
+                strRdr.Dispose();
 
                 // Return the output area
                 return areaOut;
