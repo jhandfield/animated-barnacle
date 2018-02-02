@@ -268,8 +268,14 @@ namespace ROMSharp.Models
                 if (lineData.Equals("~"))
                     readingExitDescription = false;
                 else
-                    // Append to the exit's description
-                    exit.Description += lineData;
+                {
+                    // Append to the exit's description - trim any trailing tildes (stock Quifael does this)
+                    exit.Description += lineData.TrimEnd('~');
+
+                    // If the line ends with ~, we're done reading
+                    if (lineData.EndsWith("~", StringComparison.CurrentCulture))
+                        readingExitDescription = false;
+                }
             }
 
             // Pull the next line and store as the keywords
@@ -456,8 +462,12 @@ namespace ROMSharp.Models
                     break;
                 }
 
-                // Append to the output string
-                sb.AppendLine(lineData);
+                // Append to the output string - trim any trailing tildes to be safe
+                sb.AppendLine(lineData.TrimEnd('~'));
+
+                // If there is a trailing tilde, mark that we're done
+                if (lineData.EndsWith("~"))
+                    foundEnd = true;
             }
 
             // Check if we exited the loop due to the safety valve
