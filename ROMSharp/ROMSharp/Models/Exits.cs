@@ -33,6 +33,9 @@ namespace ROMSharp.Models
                 else
                     return this._exits[index];
             }
+            set {
+                this._exits[index] = value;
+            }
         }
         #endregion
     }
