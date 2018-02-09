@@ -75,6 +75,22 @@
     <Compile Include="Enums\AlphaMacros.cs" />
     <Compile Include="Helpers\AlphaMacroConversion.cs" />
     <Compile Include="Models\Rooms.cs" />
+    <Compile Include="Models\MobileData.cs" />
+    <Compile Include="Consts\SpecialBehaviors.cs" />
+    <Compile Include="Helpers\SpecialBehaviorMethods.cs" />
+    <Compile Include="Enums\ActionFlag.cs" />
+    <Compile Include="Enums\DamageClass.cs" />
+    <Compile Include="Enums\OffensiveFlag.cs" />
+    <Compile Include="Enums\ImmunityFlag.cs" />
+    <Compile Include="Enums\ResistanceFlag.cs" />
+    <Compile Include="Enums\VulnerabilityFlag.cs" />
+    <Compile Include="Enums\FormFlag.cs" />
+    <Compile Include="Enums\PartFlag.cs" />
+    <Compile Include="Enums\AffectedByFlag.cs" />
+    <Compile Include="Enums\Sex.cs" />
+    <Compile Include="Enums\ArmorClass.cs" />
+    <Compile Include="Enums\Dice.cs" />
+    <Compile Include="Enums\Size.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
