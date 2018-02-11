@@ -91,6 +91,10 @@
     <Compile Include="Enums\ArmorClass.cs" />
     <Compile Include="Enums\Dice.cs" />
     <Compile Include="Enums\Size.cs" />
+    <Compile Include="Models\DiceRoll.cs" />
+    <Compile Include="Models\ArmorRating.cs" />
+    <Compile Include="Enums\Condition.cs" />
+    <Compile Include="Enums\Position.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

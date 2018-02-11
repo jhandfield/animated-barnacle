@@ -29,6 +29,6 @@ namespace ROMSharp.Consts
             new Models.SpecialBehavior("spec_troll_member", SpecialBehaviorMethods.Spec_TrollMember),
             new Models.SpecialBehavior("spec_ogre_member", SpecialBehaviorMethods.Spec_OgreMember),
             new Models.SpecialBehavior("spec_patrolman", SpecialBehaviorMethods.Spec_Patrolman)
-        }
+        };
     }
 }
