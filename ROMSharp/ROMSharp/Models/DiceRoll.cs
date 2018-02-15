@@ -63,6 +63,28 @@ namespace ROMSharp.Models
 
         #region Methods
         /// <summary>
+        /// Tests that <paramref name="input"/> is a valid string representation of a dice roll
+        /// </summary>
+        /// <returns><c>true</c>, if <paramref name="input"/> is a valid dice roll string representation, <c>false</c> otherwise.</returns>
+        /// <param name="input">String to test</param>
+        /// <param name="output">Parsed dice roll, if <paramref name="input"/> is valid</param>
+        public static bool TryParse(string input, out DiceRoll output)
+        {
+            Regex validationRegex = new Regex(@"^(\d+)d(\d+)(\+(\d+))*$");
+            output = new DiceRoll();
+
+            if (!validationRegex.IsMatch(input))
+            {
+                return false;
+            }
+            else
+            {
+                output = new DiceRoll(input);
+                return true;
+            }
+        }
+
+        /// <summary>
         /// Roll the dice!
         /// </summary>
         /// <returns>The sum of the dice roll</returns>
