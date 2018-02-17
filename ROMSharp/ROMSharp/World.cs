@@ -34,8 +34,12 @@ namespace ROMSharp
         /// <summary>
         /// Collection of rooms that make up the areas of the world
         /// </summary>
-        /// <value>The rooms.</value>
         public Models.Rooms Rooms { get; set; }
+
+        /// <summary>
+        /// Collection of mobiles that make up the fauna of the world
+        /// </summary>
+        public Models.Mobs Mobs { get; set; }
         #endregion
 
         #region Constructors
@@ -44,6 +48,7 @@ namespace ROMSharp
             this.Areas = new List<Models.AreaData>();
             this.State = Enums.GameState.Loading;
             this.Rooms = new Models.Rooms();
+            this.Mobs = new Models.Mobs();
         }
         #endregion
 
@@ -68,21 +73,21 @@ namespace ROMSharp
                     Logging.Log.Info("Server starting up");
                     Logging.Log.Info(String.Format("Server memory usage: {0:N0}KiB", GC.GetTotalMemory(true) / 1024));
 
-                    try
-                    {
+                    //try
+                    //{
                         // Instantiate our ClientConnections object which will contain all active connections
                         Network.ClientConnections = new List<Network.ClientConnection>();
 
                         // Instantiate and load the World
                         Program.World.LoadFromDisk(Program.config.AreaDirectory);
 
-                        Logging.Log.Info(String.Format("World loaded - {0} areas consisting of {1} rooms", Program.World.Areas.Count, Program.World.Rooms.Count));
+                    Logging.Log.Info(String.Format("World loaded - {0} areas consisting of {1} rooms, with {2} mobs", Program.World.Areas.Count, Program.World.Rooms.Count, Program.World.Mobs.Count));
 
-                    }
-                    catch (Exception e)
-                    {
-                        Logging.Log.Fatal(String.Format("Unhandled exception caught: {0}: {1}\n{2}", e.GetType(), e.Message, e.StackTrace));
-                    }
+                    //}
+                    //catch (Exception e)
+                    //{
+                    //    Logging.Log.Fatal(String.Format("Unhandled exception caught: {0}: {1}\n{2}", e.GetType(), e.Message, e.StackTrace));
+                    //}
 
                     // Listen for connections
                     Network.StartListening(Program.config);
@@ -167,7 +172,7 @@ namespace ROMSharp
                     if (newArea != null)
                     {
                         // Log
-                        Logging.Log.Info(String.Format("Area {0} loadedd", newArea.Name));
+                        Logging.Log.Info(String.Format("Area {0} loaded", newArea.Name));
 
                         // Append to the world
                         this.Areas.Add(newArea);

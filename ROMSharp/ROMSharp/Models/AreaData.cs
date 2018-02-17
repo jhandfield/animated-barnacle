@@ -100,13 +100,15 @@ namespace ROMSharp.Models
         public static AreaData LoadFromFile(string areaPath)
         {
             // Check that the file exists
-            try
-            {
+            //try
+            //{
                 int lineNum = 0;
                 string lineData;
                 string areaFile = Path.GetFileName(areaPath);
                 AreaReadingState state = AreaReadingState.WaitingForSection;
                 AreaData areaOut = new AreaData();
+            int errors = 0;
+            bool backFromError = false;
 
                 if (!File.Exists(areaPath))
                 {
@@ -160,7 +162,236 @@ namespace ROMSharp.Models
                                     state = AreaReadingState.Finished;
 
                                     break;
-                                #endregion
+                            #endregion
+
+                            #region #OBJECTS
+                            case "#OBJECTS":
+                                Logging.Log.Debug(String.Format("Found #OBJECTS heading in file {0} on line {1}", areaFile, lineNum));
+
+                                // Continue reading until we hit a #0
+                                bool readingObjects = true;
+                                backFromError = false;
+
+                                while (readingObjects)
+                                {
+                                    // Read a line
+                                    lineData = strRdr.ReadLine();
+                                    lineNum++;
+
+                                    // If we've recently come back from failing to load a mob, we need to ignore some lines
+                                    // until we get to the start of the next mob definition
+                                    if (backFromError)
+                                        // If the line is not the section terminator but it does begin with #, it is
+                                        // (should be) a new mob definition, so un-set the backFromError flag
+                                        if (!lineData.Trim().Equals("#0") && lineData.Trim().Length > 0 && lineData.Trim()[0].Equals('#'))
+                                        {
+                                            // Un-set the backFromError flag; it's time to resume loading
+                                            backFromError = false;
+
+                                            Logging.Log.Debug(String.Format("Resuming loading of #OBJECTS section in area {0} on line {1} with mob {2}", areaFile, lineNum, lineData.Trim()));
+                                        }
+                                        // Otherwise, just move on to the next iteration of the loop
+                                        else
+                                            continue;
+                                    
+                                    if (lineData == null)
+                                        readingObjects = false;
+                                    else if (lineData.Trim().Equals("#0"))
+                                        readingObjects = false;
+                                    else if (!lineData.Trim().Equals("#0") && !lineData.Trim().Equals("#$") && !lineData.Trim().Equals(""))
+                                    {
+                                        // TODO: Implement #OBJECTS parsing
+                                    }
+                                }
+
+                                break;
+                            #endregion
+
+                            #region #RESETS
+                            case "#RESETS":
+                                Logging.Log.Debug(String.Format("Found #RESETS heading in file {0} on line {1}", areaFile, lineNum));
+
+                                // Continue reading until we hit a #0
+                                bool readingResets = true;
+                                backFromError = false;
+
+                                while (readingResets)
+                                {
+                                    // Read a line
+                                    lineData = strRdr.ReadLine();
+                                    lineNum++;
+
+                                    // If we've recently come back from failing to load a mob, we need to ignore some lines
+                                    // until we get to the start of the next mob definition
+                                    if (backFromError)
+                                        // If the line is not the section terminator but it does begin with #, it is
+                                        // (should be) a new mob definition, so un-set the backFromError flag
+                                        if (!lineData.Trim().Equals("#0") && lineData.Trim().Length > 0 && lineData.Trim()[0].Equals('#'))
+                                        {
+                                            // Un-set the backFromError flag; it's time to resume loading
+                                            backFromError = false;
+
+                                            Logging.Log.Debug(String.Format("Resuming loading of #RESETS section in area {0} on line {1} with mob {2}", areaFile, lineNum, lineData.Trim()));
+                                        }
+                                        // Otherwise, just move on to the next iteration of the loop
+                                        else
+                                            continue;
+                                    
+                                    if (lineData == null)
+                                        readingResets= false;
+                                    else if (lineData.Trim().Equals("#0"))
+                                        readingResets = false;
+                                    else if (!lineData.Trim().Equals("#0") && !lineData.Trim().Equals("#$") && !lineData.Trim().Equals(""))
+                                    {
+                                        // TODO: Implement #RESETS parsing
+                                    }
+                                }
+
+                                break;
+                            #endregion
+
+                            #region #SHOPS
+                            case "#SHOPS":
+                                Logging.Log.Debug(String.Format("Found #SHOPS heading in file {0} on line {1}", areaFile, lineNum));
+
+                                // Continue reading until we hit a #0
+                                bool readingShops = true;
+                                backFromError = false;
+
+                                while (readingShops)
+                                {
+                                    // Read a line
+                                    lineData = strRdr.ReadLine();
+                                    lineNum++;
+
+                                    // If we've recently come back from failing to load a mob, we need to ignore some lines
+                                    // until we get to the start of the next mob definition
+                                    if (backFromError)
+                                        // If the line is not the section terminator but it does begin with #, it is
+                                        // (should be) a new mob definition, so un-set the backFromError flag
+                                        if (!lineData.Trim().Equals("#0") && lineData.Trim().Length > 0 && lineData.Trim()[0].Equals('#'))
+                                        {
+                                            // Un-set the backFromError flag; it's time to resume loading
+                                            backFromError = false;
+
+                                            Logging.Log.Debug(String.Format("Resuming loading of #SHOPS section in area {0} on line {1} with mob {2}", areaFile, lineNum, lineData.Trim()));
+                                        }
+                                        // Otherwise, just move on to the next iteration of the loop
+                                        else
+                                            continue;
+                                    
+                                    if (lineData == null)
+                                        readingShops = false;
+                                    else if (lineData.Trim().Equals("#0"))
+                                        readingShops = false;
+                                    else if (!lineData.Trim().Equals("#0") && !lineData.Trim().Equals("#$") && !lineData.Trim().Equals(""))
+                                    {
+                                        // TODO: Implement #SHOPS parsing
+                                    }
+                                }
+
+                                break;
+                            #endregion
+
+                            #region #SPECIALS
+                            case "#SPECIALS":
+                                Logging.Log.Debug(String.Format("Found #SPECIALS heading in file {0} on line {1}", areaFile, lineNum));
+
+                                // Continue reading until we hit a #0
+                                bool readingSpecials = true;
+                                backFromError = false;
+
+                                while (readingSpecials)
+                                {
+                                    // Read a line
+                                    lineData = strRdr.ReadLine();
+                                    lineNum++;
+
+                                    // If we've recently come back from failing to load a mob, we need to ignore some lines
+                                    // until we get to the start of the next mob definition
+                                    if (backFromError)
+                                        // If the line is not the section terminator but it does begin with #, it is
+                                        // (should be) a new mob definition, so un-set the backFromError flag
+                                        if (!lineData.Trim().Equals("#0") && lineData.Trim().Length > 0 && lineData.Trim()[0].Equals('#'))
+                                        {
+                                            // Un-set the backFromError flag; it's time to resume loading
+                                            backFromError = false;
+
+                                            Logging.Log.Debug(String.Format("Resuming loading of #SPECIALS section in area {0} on line {1} with mob {2}", areaFile, lineNum, lineData.Trim()));
+                                        }
+                                        // Otherwise, just move on to the next iteration of the loop
+                                        else
+                                            continue;
+                                    
+                                    if (lineData == null)
+                                        readingSpecials = false;
+                                    else if (lineData.Trim().Equals("#0"))
+                                        readingSpecials = false;
+                                    else if (!lineData.Trim().Equals("#0") && !lineData.Trim().Equals("#$") && !lineData.Trim().Equals(""))
+                                    {
+                                        // TODO: Implement #SPECIALS parsing
+                                    }
+                                }
+
+                                break;
+                            #endregion
+
+                            #region #MOBILES
+                            case "#MOBILES":
+                                errors = 0;
+                                backFromError = false;
+
+                                Logging.Log.Debug(String.Format("Found #MOBILES heading in file {0} on line {1}", areaFile, lineNum));
+
+                                // Continue reading until we hit a #0
+                                bool readingMobs = true;
+                                while (readingMobs)
+                                {
+                                    // Read a line
+                                    lineData = strRdr.ReadLine();
+                                    lineNum++;
+
+                                    // If we've recently come back from failing to load a mob, we need to ignore some lines
+                                    // until we get to the start of the next mob definition
+                                    if (backFromError)
+                                        // If the line is not the section terminator but it does begin with #, it is
+                                        // (should be) a new mob definition, so un-set the backFromError flag
+                                    if (!lineData.Trim().Equals("#0") && lineData.Trim().Length > 0 && lineData.Trim()[0].Equals('#'))
+                                        {
+                                            // Un-set the backFromError flag; it's time to resume loading
+                                            backFromError = false;
+
+                                            Logging.Log.Debug(String.Format("Resuming loading of #MOBILES section in area {0} on line {1} with mob {2}", areaFile, lineNum, lineData.Trim()));
+                                        }
+                                        // Otherwise, just move on to the next iteration of the loop
+                                        else
+                                            continue;
+
+                                    if (lineData == null)
+                                        readingMobs = false;
+                                    else if (lineData.Trim().Equals("#0"))
+                                        readingMobs = false;
+                                    else if (!lineData.Trim().Equals("#0") && !lineData.Trim().Equals("#$") && !lineData.Trim().Equals(""))
+                                    {
+                                        MobData newMob = MobData.ParseMobData(ref strRdr, areaFile, ref lineNum, lineData);
+
+                                        // If we have a loaded room, add it to the world
+                                        if (newMob != null)
+                                            Program.World.Mobs.Add(newMob);
+                                        else
+                                        {
+                                            // Record a failed mob load, and set the indicator that we're back because of an error and should keep reading
+                                            // but do nothing until we find a new mob
+                                            errors++;
+                                            backFromError = true;
+                                        }
+                                    }
+                                }
+                                
+                                Logging.Log.Debug(String.Format("Finished reading #MOBILES section of file {0} on line {1} - failed loading {2} mobs", areaFile, lineNum, errors));
+
+                                break;
+                            #endregion
 
                                 #region #ROOMS
                                 case "#ROOMS":
@@ -168,13 +399,33 @@ namespace ROMSharp.Models
 
                                     // Continue reading until we hit a #0
                                     bool readingRooms = true;
+                                backFromError = false;
+
                                     while (readingRooms)
                                     {
                                         // Read a line
                                         lineData = strRdr.ReadLine();
                                         lineNum++;
 
+                                    // If we've recently come back from failing to load a mob, we need to ignore some lines
+                                    // until we get to the start of the next mob definition
+                                    if (backFromError)
+                                        // If the line is not the section terminator but it does begin with #, it is
+                                        // (should be) a new mob definition, so un-set the backFromError flag
+                                        if (!lineData.Trim().Equals("#0") && lineData.Trim().Length > 0 && lineData.Trim()[0].Equals('#'))
+                                        {
+                                            // Un-set the backFromError flag; it's time to resume loading
+                                            backFromError = false;
+
+                                            Logging.Log.Debug(String.Format("Resuming loading of #ROOMS section in area {0} on line {1} with mob {2}", areaFile, lineNum, lineData.Trim()));
+                                        }
+                                        // Otherwise, just move on to the next iteration of the loop
+                                        else
+                                            continue;
+                                    
                                         if (lineData == null)
+                                            readingRooms = false;
+                                        else if (lineData.Trim().Equals("#0"))
                                             readingRooms = false;
                                         else if (!lineData.Trim().Equals("#0") && !lineData.Trim().Equals("#$") && !lineData.Trim().Equals(""))
                                         {
@@ -298,13 +549,13 @@ namespace ROMSharp.Models
 
                 // Return the output area
                 return areaOut;
-            }
-            catch (Exception e)
-            {
-                // Log the exception and rethrow
-                Logging.Log.Fatal(String.Format("Unhandled exception caught: {0}: {1}\n{2}", e.GetType(), e.Message, e.StackTrace));
-                throw (e);
-            }
+            //}
+            //catch (Exception e)
+            //{
+            //    // Log the exception and rethrow
+            //    Logging.Log.Fatal(String.Format("Unhandled exception caught: {0}: {1}\n{2}", e.GetType(), e.Message, e.StackTrace));
+            //    throw (e);
+            //}
         }
         #endregion
 

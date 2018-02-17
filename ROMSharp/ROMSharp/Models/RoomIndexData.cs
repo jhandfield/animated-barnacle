@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using ROMSharp.Helpers;
 
 namespace ROMSharp.Models
 {
@@ -116,7 +117,7 @@ namespace ROMSharp.Models
             //lineNum++;
 
             // First, pull the vnum; then set it, if it's valid
-            int vnum = ParseVNUM(lineData);
+            int vnum = Data.ParseVNUM(lineData);
 
             if (!vnum.Equals(0))
             {
@@ -136,7 +137,7 @@ namespace ROMSharp.Models
             lineNum++;
 
             // Next, read the description
-            outRoom.Description = ParseRoomDescription(sr, ref lineNum, areaFile, outRoom.VNUM);
+            outRoom.Description = Data.ReadLongText(sr, ref lineNum, areaFile, outRoom.VNUM);
 
             // Then, read the next line and parse as room flags and sector type
             lineData = sr.ReadLine();
@@ -403,7 +404,7 @@ namespace ROMSharp.Models
 
             // First part is obsolete - start with part 2, room flags
             // Convert the ROM flags to RoomAttributes
-            outRoom.Attributes = Helpers.ConvertROMAlphaToRoomAttributes(splitLine[1]);
+            outRoom.Attributes = AlphaConversions.ConvertROMAlphaToRoomAttributes(splitLine[1]);
 
             int sectType = 0;
             if (!Int32.TryParse(splitLine[2], out sectType))
@@ -426,55 +427,6 @@ namespace ROMSharp.Models
 
             // All done
             return true;
-        }
-
-        /// <summary>
-        /// Reads the room description from StringReader <paramref name="sr"/>, which should be on the line preceding the start of the description
-        /// </summary>
-        /// <returns>The room description</returns>
-        /// <param name="sr">StringReader from which to read the description</param>
-        /// <param name="lineNum">The starting line number, by reference</param>
-        /// <param name="areaFile">Filename of the current area</param>
-        /// <param name="vNUM">VNUM of the room</param>
-        private static string ParseRoomDescription(StringReader sr, ref int lineNum, string areaFile, int vNUM)
-        {
-            StringBuilder sb = new StringBuilder();
-            string lineData = String.Empty;
-            bool foundEnd = false;
-
-            // Flag to break us out of the loop
-            int safetyValve = 0;
-
-            // Loop up to a defined maximum number of times
-            while (safetyValve < Consts.Misc.Safety.MaxRoomDescLines)
-            {
-                // Increment safetyValve
-                safetyValve++;
-
-                // Read a line
-                lineData = sr.ReadLine();
-                lineNum++;
-
-                // If the line is a sole tilde, we're done reading
-                if (lineData.Trim().Equals("~"))
-                {
-                    foundEnd = true;
-                    break;
-                }
-
-                // Append to the output string - trim any trailing tildes to be safe
-                sb.AppendLine(lineData.TrimEnd('~'));
-
-                // If there is a trailing tilde, mark that we're done
-                if (lineData.EndsWith("~"))
-                    foundEnd = true;
-            }
-
-            // Check if we exited the loop due to the safety valve
-            if (!foundEnd)
-                Logging.Log.Warn(String.Format("When reading description of room {0} in area {1}, did not find the description's end in the expected {2} lines", vNUM, areaFile, Consts.Misc.Safety.MaxRoomDescLines));
-            
-            return sb.ToString();
         }
 
         /// <summary>
@@ -518,80 +470,7 @@ namespace ROMSharp.Models
             else
                 return healRate;
         }
-
-        /// <summary>
-        /// Reads and parses the room's VNUM from the first line of a room declaration
-        /// </summary>
-        /// <returns>The room's vnum if valid, 0 otherwise</returns>
-        /// <param name="lineData">Line from an area file containing a VNUM definition</param>
-        private static int ParseVNUM(string lineData)
-        {
-            // First character of first line should be #
-            if (lineData[0].Equals("#"))
-            {
-                Logging.Log.Error(String.Format("Error parsing VNUM: Expected # in character 1, found {2}", lineData[0]));
-                return 0;
-            }
-            else
-            {
-                int vnum = 0;
-
-                if (!Int32.TryParse(lineData.TrimStart('#'), out vnum))
-                {
-                    Logging.Log.Error(String.Format("Error parsing VNUM: Expected integer, got {2}", lineData.TrimStart('#')));
-                    return 0;
-                }
-                else
-                    return vnum;
-            }
-        }
         #endregion
-
-        public static class Helpers
-        {
-            /// <summary>
-            /// Converts legacy ROM macro-based room flags to a RoomAttributes object
-            /// </summary>
-            /// <returns>A RoomAttributes object representation of the input flags</returns>
-            /// <param name="inputFlags">Legacy ROM room flags to convert; must contain no characters other than A-ee</param>
-            public static RoomAttributes ConvertROMAlphaToRoomAttributes(string inputFlags)
-            {
-                // Will hold the sum of the flags for conversion
-                int inFlagsSum = 0;
-
-                // Buffer to hold multi-character flags
-                string charFlagBuffer = String.Empty;
-
-                // Loop over each character
-                foreach (char c in inputFlags)
-                {
-                    // Set or append the current character
-                    if (String.IsNullOrEmpty((charFlagBuffer)))
-                        charFlagBuffer = c.ToString();
-                    else
-                        charFlagBuffer += c.ToString();
-
-                    // If the character is lower case, move to the next iteration
-                    if (Char.IsLower(c))
-                        continue;
-
-                    // Declare an AlphaMacros object to hold the (potentially) parsed value below
-                    Enums.AlphaMacros parsed;
-
-                    // Attempt to parse each character as an AlphaMacro and add to the running sum
-                    if (Enum.TryParse<Enums.AlphaMacros>(charFlagBuffer, out parsed))
-                        inFlagsSum += (int)parsed;
-                    else
-                        throw new ArgumentException(String.Format("Invalid character found in inFlags: {0}", c));
-
-                    // Empty the buffer
-                    charFlagBuffer = String.Empty;
-                }
-
-                // Convert the sum to a RoomAttributes value and return it
-                return (RoomAttributes)inFlagsSum;
-            }
-        }
     }
 
     /// <summary>
