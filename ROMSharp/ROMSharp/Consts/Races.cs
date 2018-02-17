@@ -71,7 +71,7 @@ namespace ROMSharp.Consts
                 Affects=AffectedByFlag.DarkVision,
                 Offenses=OffensiveFlag.Offense_Fast | OffensiveFlag.Offense_Dodge,
                 Form=AlphaConversions.ConvertROMAlphaToFormFlag("AGV"),
-                Parts=AlphaConversions.ConvertROMAlphaToPartFlag("ACDEFhJKQUV")
+                Parts=AlphaConversions.ConvertROMAlphaToPartFlag("ACDEFHJKQUV")
             },
             new Race() {
                 Name="centipede",
@@ -252,5 +252,7 @@ namespace ROMSharp.Consts
             }
             #endregion
         };
+
+        public Races() { }
     }
 }

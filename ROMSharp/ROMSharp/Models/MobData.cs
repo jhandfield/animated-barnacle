@@ -89,7 +89,7 @@ namespace ROMSharp.Models
         /// <summary>
         /// Gender of the mob
         /// </summary>
-        public Sex Gender { get; set; }
+        public Gender Gender { get; set; }
 
         /// <summary>
         /// Race of the mob
@@ -182,7 +182,7 @@ namespace ROMSharp.Models
             // If we can't find the race, log a warning and return null
             if (mobRace == null)
             {
-                Logging.Log.Warn(String.Format("Encountered unknown race {0} for mob {1} of area {2} on line {3}", mobRaceName, outMob.VNUM, areaFile, lineNum));
+                Logging.Log.Error(String.Format("Encountered unknown race {0} for mob {1} of area {2} on line {3}", mobRaceName, outMob.VNUM, areaFile, lineNum));
                 return null;
             }
             else
@@ -365,6 +365,91 @@ namespace ROMSharp.Models
 
             // Fourth segment, vulnerability flags
             outMob.Vulnerability = AlphaConversions.ConvertROMAlphaToVulnerabilityFlag(splitLine[3]);
+
+            // Read the next line and split again, start pos/default pos/sex/wealth - epect four segments
+            lineData = sr.ReadLine();
+            lineNum++;
+            splitLine = lineData.Split(' ');
+
+            if (splitLine.Length != 4)
+            {
+                Logging.Log.Error(String.Format("Error parsing mobile {0} in area {1}: invalid start pos/default pos/sex/wealth line, expected 4 segments but got {2} - value {3} on line {4}", outMob.VNUM, areaFile, splitLine.Length, lineData, lineNum));
+                return null;
+            }
+
+            // First segment, start position
+            Position startPos = Consts.Positions.PositionTable.SingleOrDefault(p => p.ShortName.Equals(splitLine[0]));
+            if (startPos == null)
+            {
+                Logging.Log.Error(String.Format("Error parsing mobile {0} in area {1}: invalid start position \"{2}\" found on line {3}", outMob.VNUM, areaFile, splitLine[0], lineNum));
+                return null;
+            }
+            else
+                outMob.StartingPosition = startPos;
+            
+            // Second segment, default position
+            Position defPos = Consts.Positions.PositionTable.SingleOrDefault(p => p.ShortName.Equals(splitLine[1]));
+            if (startPos == null)
+            {
+                Logging.Log.Error(String.Format("Error parsing mobile {0} in area {1}: invalid default position \"{2}\" found on line {3}", outMob.VNUM, areaFile, splitLine[1], lineNum));
+                return null;
+            }
+            else
+                outMob.DefaultPosition = defPos;
+
+            // Third segment, gender
+            Gender mobGender = Consts.Gender.GenderTable.SingleOrDefault(g => g.Name.Equals(splitLine[2]));
+            if (mobGender == null)
+            {
+                Logging.Log.Error(String.Format("Error parsing mobile {0} in area {1}: invalid gender \"{2}\" found on line {3}", outMob.VNUM, areaFile, splitLine[2], lineNum));
+                return null;
+            }
+            else
+                outMob.Gender = mobGender;
+
+            // Fourth segment, wealth
+            int wealth = 0;
+            if (!Int32.TryParse(splitLine[3], out wealth))
+            {
+                Logging.Log.Error(String.Format("Error parsing mobile {0} in area {1}: invalid wealth \"{2}\" found on line {3}, expected an integer", outMob.VNUM, areaFile, splitLine[3], lineNum));
+                return null;
+            }
+            else
+                outMob.Wealth = wealth;
+
+            // Read the next line and split again, form/parts/size/material - epect four segments
+            lineData = sr.ReadLine();
+            lineNum++;
+            splitLine = lineData.Split(' ');
+
+            if (splitLine.Length != 4)
+            {
+                Logging.Log.Error(String.Format("Error parsing mobile {0} in area {1}: invalid start pos/default pos/sex/wealth line, expected 4 segments but got {2} - value {3} on line {4}", outMob.VNUM, areaFile, splitLine.Length, lineData, lineNum));
+                return null;
+            }
+
+            Logging.Log.Debug("Prepping to load form");
+
+            // First segment, form
+            outMob.Form = AlphaConversions.ConvertROMAlphaToFormFlag(splitLine[0]);
+
+            // Second segment, parts
+            outMob.Parts = AlphaConversions.ConvertROMAlphaToPartFlag(splitLine[1]);
+
+            // Third segment, size
+            Models.Size mobSize = Consts.Size.SizeTable.SingleOrDefault(s => s.Name.Equals(splitLine[2]));
+            if (mobSize == null)
+            {
+                Logging.Log.Error(String.Format("Error parsing mobile {0} in area {1}: invalid size \"{2}\" found on line {3}", outMob.VNUM, areaFile, splitLine[2], lineNum));
+                return null;
+            }
+            else
+                outMob.Size = mobSize;
+
+            // Fourth segment, material
+            outMob.Material = splitLine[3];
+
+            Logging.Log.Debug(String.Format("Mobile {0} in area {1} loaded", outMob.VNUM, areaFile));
 
             return outMob;
         }

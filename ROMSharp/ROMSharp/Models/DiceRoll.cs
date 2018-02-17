@@ -49,12 +49,12 @@ namespace ROMSharp.Models
                 Match result = validationRegex.Match(input);
 
                 // Matches will contain 2-4 captures, set pieces
-                NumDice = Convert.ToInt32(result.Captures[0].Value);
-                DiceType = Convert.ToInt32(result.Captures[1].Value);
+                NumDice = Convert.ToInt32(result.Groups[1].Value);
+                DiceType = Convert.ToInt32(result.Groups[2].Value);
 
-                // If we have 4 captures, also set the bonux
-                if (result.Captures.Count == 4)
-                    Bonus = Convert.ToInt32(result.Captures[3].Value);
+                // If we have 5 captures, also set the bonus
+                if (result.Groups.Count == 5)
+                    Bonus = Convert.ToInt32(result.Groups[4].Value);
                 else
                     Bonus = 0;
             }

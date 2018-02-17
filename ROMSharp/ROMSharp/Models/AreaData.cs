@@ -100,8 +100,8 @@ namespace ROMSharp.Models
         public static AreaData LoadFromFile(string areaPath)
         {
             // Check that the file exists
-            try
-            {
+            //try
+            //{
                 int lineNum = 0;
                 string lineData;
                 string areaFile = Path.GetFileName(areaPath);
@@ -160,6 +160,135 @@ namespace ROMSharp.Models
                                     state = AreaReadingState.Finished;
 
                                     break;
+                            #endregion
+
+                            #region #OBJECTS
+                            case "#OBJECTS":
+                                Logging.Log.Debug(String.Format("Found #OBJECTS heading in file {0} on line {1}", areaFile, lineNum));
+
+                                // Continue reading until we hit a #0
+                                bool readingObjects = true;
+                                while (readingObjects)
+                                {
+                                    // Read a line
+                                    lineData = strRdr.ReadLine();
+                                    lineNum++;
+
+                                    if (lineData == null)
+                                        readingObjects = false;
+                                    else if (lineData.Trim().Equals("#0"))
+                                        readingObjects = false;
+                                    else if (!lineData.Trim().Equals("#0") && !lineData.Trim().Equals("#$") && !lineData.Trim().Equals(""))
+                                    {
+                                        // TODO: Implement #OBJECTS parsing
+                                    }
+                                }
+
+                                break;
+                            #endregion
+
+                            #region #RESETS
+                            case "#RESETS":
+                                Logging.Log.Debug(String.Format("Found #RESETS heading in file {0} on line {1}", areaFile, lineNum));
+
+                                // Continue reading until we hit a #0
+                                bool readingResets = true;
+                                while (readingResets)
+                                {
+                                    // Read a line
+                                    lineData = strRdr.ReadLine();
+                                    lineNum++;
+
+                                    if (lineData == null)
+                                        readingResets= false;
+                                    else if (lineData.Trim().Equals("#0"))
+                                        readingResets = false;
+                                    else if (!lineData.Trim().Equals("#0") && !lineData.Trim().Equals("#$") && !lineData.Trim().Equals(""))
+                                    {
+                                        // TODO: Implement #RESETS parsing
+                                    }
+                                }
+
+                                break;
+                            #endregion
+
+                            #region #SHOPS
+                            case "#SHOPS":
+                                Logging.Log.Debug(String.Format("Found #SHOPS heading in file {0} on line {1}", areaFile, lineNum));
+
+                                // Continue reading until we hit a #0
+                                bool readingShops = true;
+                                while (readingShops)
+                                {
+                                    // Read a line
+                                    lineData = strRdr.ReadLine();
+                                    lineNum++;
+
+                                    if (lineData == null)
+                                        readingShops = false;
+                                    else if (lineData.Trim().Equals("#0"))
+                                        readingShops = false;
+                                    else if (!lineData.Trim().Equals("#0") && !lineData.Trim().Equals("#$") && !lineData.Trim().Equals(""))
+                                    {
+                                        // TODO: Implement #SHOPS parsing
+                                    }
+                                }
+
+                                break;
+                            #endregion
+
+                            #region #SPECIALS
+                            case "#SPECIALS":
+                                Logging.Log.Debug(String.Format("Found #SPECIALS heading in file {0} on line {1}", areaFile, lineNum));
+
+                                // Continue reading until we hit a #0
+                                bool readingSpecials = true;
+                                while (readingSpecials)
+                                {
+                                    // Read a line
+                                    lineData = strRdr.ReadLine();
+                                    lineNum++;
+
+                                    if (lineData == null)
+                                        readingSpecials = false;
+                                    else if (lineData.Trim().Equals("#0"))
+                                        readingSpecials = false;
+                                    else if (!lineData.Trim().Equals("#0") && !lineData.Trim().Equals("#$") && !lineData.Trim().Equals(""))
+                                    {
+                                        // TODO: Implement #SPECIALS parsing
+                                    }
+                                }
+
+                                break;
+                            #endregion
+
+                            #region #MOBILES
+                            case "#MOBILES":
+                                    Logging.Log.Debug(String.Format("Found #MOBILES heading in file {0} on line {1}", areaFile, lineNum));
+
+                                    // Continue reading until we hit a #0
+                                    bool readingMobs = true;
+                                    while (readingMobs)
+                                    {
+                                        // Read a line
+                                        lineData = strRdr.ReadLine();
+                                        lineNum++;
+
+                                        if (lineData == null)
+                                            readingMobs = false;
+                                        else if (lineData.Trim().Equals("#0"))
+                                            readingMobs = false;
+                                        else if (!lineData.Trim().Equals("#0") && !lineData.Trim().Equals("#$") && !lineData.Trim().Equals(""))
+                                        {
+                                            MobData newMob = MobData.ParseMobData(ref strRdr, areaFile, ref lineNum, lineData);
+
+                                            // If we have a loaded room, add it to the world
+                                            if (newMob != null)
+                                                Program.World.Mobs.Add(newMob);
+                                        }
+                                    }
+
+                                    break;
                                 #endregion
 
                                 #region #ROOMS
@@ -175,6 +304,8 @@ namespace ROMSharp.Models
                                         lineNum++;
 
                                         if (lineData == null)
+                                            readingRooms = false;
+                                        else if (lineData.Trim().Equals("#0"))
                                             readingRooms = false;
                                         else if (!lineData.Trim().Equals("#0") && !lineData.Trim().Equals("#$") && !lineData.Trim().Equals(""))
                                         {
@@ -298,13 +429,13 @@ namespace ROMSharp.Models
 
                 // Return the output area
                 return areaOut;
-            }
-            catch (Exception e)
-            {
-                // Log the exception and rethrow
-                Logging.Log.Fatal(String.Format("Unhandled exception caught: {0}: {1}\n{2}", e.GetType(), e.Message, e.StackTrace));
-                throw (e);
-            }
+            //}
+            //catch (Exception e)
+            //{
+            //    // Log the exception and rethrow
+            //    Logging.Log.Fatal(String.Format("Unhandled exception caught: {0}: {1}\n{2}", e.GetType(), e.Message, e.StackTrace));
+            //    throw (e);
+            //}
         }
         #endregion
 

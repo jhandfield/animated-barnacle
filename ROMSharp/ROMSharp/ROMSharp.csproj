@@ -101,6 +101,11 @@
     <Compile Include="Models\DamageType.cs" />
     <Compile Include="Models\Position.cs" />
     <Compile Include="Consts\Positions.cs" />
+    <Compile Include="Models\Gender.cs" />
+    <Compile Include="Consts\GenderTable.cs" />
+    <Compile Include="Models\Size.cs" />
+    <Compile Include="Consts\Size.cs" />
+    <Compile Include="Models\Mobs.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

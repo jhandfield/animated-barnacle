@@ -14,9 +14,9 @@ namespace ROMSharp.Helpers
         public static int ParseVNUM(string lineData)
         {
             // First character of first line should be #
-            if (lineData[0].Equals("#"))
+            if (!lineData[0].Equals('#'))
             {
-                Logging.Log.Error(String.Format("Error parsing VNUM: Expected # in character 1, found {2}", lineData[0]));
+                Logging.Log.Error(String.Format("Error parsing VNUM: Expected # in character 1, found {0}", lineData[0]));
                 return 0;
             }
             else
@@ -25,7 +25,7 @@ namespace ROMSharp.Helpers
 
                 if (!Int32.TryParse(lineData.TrimStart('#'), out vnum))
                 {
-                    Logging.Log.Error(String.Format("Error parsing VNUM: Expected integer, got {2}", lineData.TrimStart('#')));
+                    Logging.Log.Error(String.Format("Error parsing VNUM: Expected integer, got {0}", lineData.TrimStart('#')));
                     return 0;
                 }
                 else
