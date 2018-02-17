@@ -186,8 +186,19 @@ namespace ROMSharp.Models
                 return null;
             }
             else
+            {
                 // Otherwise, store the race
                 outMob.Race = mobRace;
+
+                // Race defaults a number of flags; set these now
+                outMob.Form = outMob.Race.Form;
+                outMob.Parts = outMob.Race.Parts;
+                outMob.Actions = outMob.Race.Actions;
+                outMob.AffectedBy = outMob.Race.Affects;
+                outMob.Immunity = outMob.Race.Immunities;
+                outMob.Resistance = outMob.Race.Resistances;
+                outMob.Vulnerability = outMob.Race.Vulnerabilities;
+            }
 
             // Split the next line into an array that should have four elements
             lineData = sr.ReadLine();
@@ -204,8 +215,8 @@ namespace ROMSharp.Models
 
             int parsedValue = 0;
 
-            // First segment, action flags
-            outMob.Actions = AlphaConversions.ConvertROMAlphaToActionFlag(splitLine[0]);
+            // First segment, action flags - also add IsNPC to all mobs
+            outMob.Actions |= AlphaConversions.ConvertROMAlphaToActionFlag(splitLine[0]) | ActionFlag.IsNPC;
 
             // Second segment, affected by flags
             outMob.AffectedBy = AlphaConversions.ConvertROMAlphaToAffectedByFlag(splitLine[1]);
@@ -355,16 +366,16 @@ namespace ROMSharp.Models
             }
 
             // First segment, offense flags
-            outMob.Offense = AlphaConversions.ConvertROMAlphaToOffensiveFlag(splitLine[0]);
+            outMob.Offense |= AlphaConversions.ConvertROMAlphaToOffensiveFlag(splitLine[0]);
 
             // Second segment, immunity flags
-            outMob.Immunity = AlphaConversions.ConvertROMAlphaToImmunitylag(splitLine[1]);
+            outMob.Immunity |= AlphaConversions.ConvertROMAlphaToImmunitylag(splitLine[1]);
 
             // Third segment, resistance flags
-            outMob.Resistance = AlphaConversions.ConvertROMAlphaToResistanceFlag(splitLine[2]);
+            outMob.Resistance |= AlphaConversions.ConvertROMAlphaToResistanceFlag(splitLine[2]);
 
             // Fourth segment, vulnerability flags
-            outMob.Vulnerability = AlphaConversions.ConvertROMAlphaToVulnerabilityFlag(splitLine[3]);
+            outMob.Vulnerability |= AlphaConversions.ConvertROMAlphaToVulnerabilityFlag(splitLine[3]);
 
             // Read the next line and split again, start pos/default pos/sex/wealth - epect four segments
             lineData = sr.ReadLine();
@@ -428,13 +439,11 @@ namespace ROMSharp.Models
                 return null;
             }
 
-            Logging.Log.Debug("Prepping to load form");
-
             // First segment, form
-            outMob.Form = AlphaConversions.ConvertROMAlphaToFormFlag(splitLine[0]);
+            outMob.Form |= AlphaConversions.ConvertROMAlphaToFormFlag(splitLine[0]);
 
             // Second segment, parts
-            outMob.Parts = AlphaConversions.ConvertROMAlphaToPartFlag(splitLine[1]);
+            outMob.Parts |= AlphaConversions.ConvertROMAlphaToPartFlag(splitLine[1]);
 
             // Third segment, size
             Models.Size mobSize = Consts.Size.SizeTable.SingleOrDefault(s => s.Name.Equals(splitLine[2]));
@@ -448,6 +457,87 @@ namespace ROMSharp.Models
 
             // Fourth segment, material
             outMob.Material = splitLine[3];
+
+            // Peek ahead to the next line, see if it starts with F, which tells us to un-set some flags
+            while ((char)sr.Peek() == 'F')
+            {
+                // Read the line
+                lineData = sr.ReadLine();
+                lineNum++;
+
+                // Split the line, expect 3 segments
+                splitLine = lineData.Split(' ');
+
+                if (splitLine.Length != 3)
+                {
+                    Logging.Log.Error(String.Format("Error parsing mobile {0} in area {1}: invalid flag modification line, expected 3 segments but got {2} - value {3} on line {4}", outMob.VNUM, areaFile, splitLine.Length, lineData, lineNum));
+                    return null;
+                }
+
+                // First segment is line identifier, ignore it. Second segment is which flag to modify, third segment is flag(s) to remove.
+                switch(splitLine[1])
+                {
+                    case "act": // Actions
+                        Logging.Log.Debug(String.Format("Removing action flags {0} from mob {1} in area {2} on line {3}", splitLine[2], outMob.VNUM, areaFile, lineNum));
+
+                        // Remove flags
+                        outMob.Actions &= ~AlphaConversions.ConvertROMAlphaToActionFlag(splitLine[2]);
+
+                        break;
+                    case "aff": // AffectedBy
+                        Logging.Log.Debug(String.Format("Removing affected by flags {0} from mob {1} in area {2} on line {3}", splitLine[2], outMob.VNUM, areaFile, lineNum));
+
+                        // Remove flags
+                        outMob.AffectedBy &= ~AlphaConversions.ConvertROMAlphaToAffectedByFlag(splitLine[2]);
+
+                        break;
+                    case "off": // Offense
+                        Logging.Log.Debug(String.Format("Removing offense flags {0} from mob {1} in area {2} on line {3}", splitLine[2], outMob.VNUM, areaFile, lineNum));
+
+                        // Remove flags
+                        outMob.Offense &= ~AlphaConversions.ConvertROMAlphaToOffensiveFlag(splitLine[2]);
+
+                        break;
+                    case "imm": // Immunities
+                        Logging.Log.Debug(String.Format("Removing immunity flags {0} from mob {1} in area {2} on line {3}", splitLine[2], outMob.VNUM, areaFile, lineNum));
+
+                        // Remove flags
+                        outMob.Immunity &= ~AlphaConversions.ConvertROMAlphaToImmunitylag(splitLine[2]);
+
+                        break;
+                    case "res": // Resistances
+                        Logging.Log.Debug(String.Format("Removing restistance flags {0} from mob {1} in area {2} on line {3}", splitLine[2], outMob.VNUM, areaFile, lineNum));
+
+                        // Remove flags
+                        outMob.Resistance &= ~AlphaConversions.ConvertROMAlphaToResistanceFlag(splitLine[2]);
+
+                        break;
+                    case "vul": // Vulnerabilities
+                        Logging.Log.Debug(String.Format("Removing vulnerability flags {0} from mob {1} in area {2} on line {3}", splitLine[2], outMob.VNUM, areaFile, lineNum));
+
+                        // Remove flags
+                        outMob.Vulnerability &= ~AlphaConversions.ConvertROMAlphaToVulnerabilityFlag(splitLine[2]);
+
+                        break;
+                    case "for": // Form
+                        Logging.Log.Debug(String.Format("Removing form flags {0} from mob {1} in area {2} on line {3}", splitLine[2], outMob.VNUM, areaFile, lineNum));
+
+                        // Remove flags
+                        outMob.Form &= ~AlphaConversions.ConvertROMAlphaToFormFlag(splitLine[2]);
+
+                        break;
+                    case "par": // Parts
+                        Logging.Log.Debug(String.Format("Removing parts flags {0} from mob {1} in area {2} on line {3}", splitLine[2], outMob.VNUM, areaFile, lineNum));
+
+                        // Remove flags
+                        outMob.Parts &= ~AlphaConversions.ConvertROMAlphaToPartFlag(splitLine[2]);
+
+                        break;
+                    default:
+                        Logging.Log.Warn(String.Format("Encountered unexpected mob flag modifier type {0} for mob {1} in file {2} on line {3}", splitLine[1], outMob.VNUM, areaFile, lineNum));
+                        break;
+                }
+            }
 
             Logging.Log.Debug(String.Format("Mobile {0} in area {1} loaded", outMob.VNUM, areaFile));
 
