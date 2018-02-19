@@ -48,7 +48,7 @@ namespace ROMSharp
         /// </summary>
         public ServerConfiguration()
         {
-            this.listenAddress = IPAddress.Any;
+            this.listenAddress = IPAddress.IPv6Any;
             this.listenPort = 9000;
             this.maxConnections = 20;
             this.AreaDirectory = "./area/";
