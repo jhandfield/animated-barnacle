@@ -1,0 +1,33 @@
+diff /Users/jhandfield/Projects/Rom24/area/canyon.are /Users/jhandfield/Projects/animated-barnacle/ROMSharp/ROMSharp/Data/area/canyon.are
+97c97,98
+< A large elemental, a resident of the canyon.~
+---
+> A large elemental, a resident of the canyon.
+> ~
+diff /Users/jhandfield/Projects/Rom24/area/dylan.are /Users/jhandfield/Projects/animated-barnacle/ROMSharp/ROMSharp/Data/area/dylan.are
+77c77,78
+< moves surprisingly fast for something of its size.~
+---
+> moves surprisingly fast for something of its size.
+> ~
+diff /Users/jhandfield/Projects/Rom24/area/midgaard.are /Users/jhandfield/Projects/animated-barnacle/ROMSharp/ROMSharp/Data/area/midgaard.are
+239a240
+> ~
+241d241
+< unique~
+diff /Users/jhandfield/Projects/Rom24/area/newthalos.are /Users/jhandfield/Projects/animated-barnacle/ROMSharp/ROMSharp/Data/area/newthalos.are
+5861,5862c5861
+< secret door
+< ~
+---
+> secret door~
+6072,6073c6071
+< cell
+< cell~
+---
+> cell~
+6083,6084c6081
+< cell
+< cell~
+---
+> cell~

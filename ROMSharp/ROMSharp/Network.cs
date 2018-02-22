@@ -293,7 +293,6 @@ namespace ROMSharp
         /// <summary>
         /// Ends the remote session with the user
         /// </summary>
-        /// <param name="handler">The user's socket</param>
         /// <param name="state">The user's current StateObject</param>
         public static void EndSession(ClientConnection state)
         {
@@ -304,6 +303,31 @@ namespace ROMSharp
 			state.workSocket.BeginSend(byteData, 0, byteData.Length, SocketFlags.None, new AsyncCallback(EndSessionCallback), state);
         }
 
+        private static void ShutdownConnection(ClientConnection state)
+        {
+            try
+            {
+
+                // Pull the socket from the state
+                Socket handler = state.workSocket;
+
+                // Log
+                Logging.Log.Info(String.Format("[{0}]: Closing connection with {1} on local port {2}. Data sent/recv: {3:n0}/{4:n0}", state.ID, IPAddress.Parse(((IPEndPoint)handler.RemoteEndPoint).Address.ToString()), ((IPEndPoint)handler.RemoteEndPoint).Port, state.bytesSent, state.bytesReceived));
+
+                // End the session
+                handler.Shutdown(SocketShutdown.Both);
+                handler.Close();
+
+                // Remove the connection from ClientConnections
+                ClientConnections.RemoveAt(ClientConnections.FindIndex(c => c.ID.Equals(state.ID)));
+            }
+            catch (Exception ex)
+            {
+                // Log the exception then just ignore it
+                Logging.Log.Error(String.Format("Exception shutting down connection {0}: {1} {2}", state.ID, ex.Message, ex.StackTrace));
+            }
+        }
+
         private static void EndSessionCallback(IAsyncResult ar)
         {
             try
@@ -311,18 +335,8 @@ namespace ROMSharp
                 // Read the state object
                 ClientConnection state = (ClientConnection)ar.AsyncState;
 
-                // Pull the socket from the state
-                Socket handler = state.workSocket;
-
-                // Log
-                    Logging.Log.Info(String.Format("[{0}]: Closing connection with {1} on local port {2}. Data sent/recv: {3:n0}/{4:n0}", state.ID, IPAddress.Parse(((IPEndPoint)handler.RemoteEndPoint).Address.ToString()), ((IPEndPoint)handler.RemoteEndPoint).Port, state.bytesSent, state.bytesReceived));
-
-                // End the session
-                handler.Shutdown(SocketShutdown.Both);
-                handler.Close();
-
-				// Remove the connection from ClientConnections
-				ClientConnections.RemoveAt(ClientConnections.FindIndex(c => c.ID.Equals(state.ID)));
+                // Shut down the connection
+                ShutdownConnection(state);
             }
             catch (Exception e)
             {
@@ -356,9 +370,21 @@ namespace ROMSharp
             if (waitForResponse)
                 callback = new AsyncCallback(SendCallback);
 
-			// Begin sending data
-			handler.BeginSend (byteData, 0, byteData.Length, 0, callback, state);
-		}
+            // Begin sending data
+            try
+            {
+                handler.BeginSend(byteData, 0, byteData.Length, 0, callback, state);
+            }
+            catch (SocketException ex)
+            {
+                if (ex.SocketErrorCode == SocketError.ConnectionAborted)
+                    // Aborted connection, just shut down the socket - they're gone
+                    ShutdownConnection(state);
+                else
+                    // Other socket error, rethrow 
+                    throw ex;
+            }
+        }
 
         public static void SendCommand(Socket handler, byte[] command, ClientConnection state)
         {
@@ -368,11 +394,11 @@ namespace ROMSharp
 
         private static void SendCallback(IAsyncResult ar)
         {
+            // Read the state object
+            ClientConnection state = (ClientConnection)ar.AsyncState;
+
             try
             {
-                // Read the state object
-                ClientConnection state = (ClientConnection)ar.AsyncState;
-
                 // Pull the Socket from the state object
                 Socket handler = state.workSocket;
 
@@ -395,9 +421,17 @@ namespace ROMSharp
                 //handler.Close();
 
             }
-            catch (Exception e)
+            catch (SocketException ex)
             {
-                Logging.Log.Error(e.ToString());
+                if (ex.SocketErrorCode == SocketError.ConnectionAborted)
+                {
+                    // The remote client has disconnected, so log them out
+                    // TODO: Actually log the user out (save their data, etc.) rather than just dump their connection
+                    Logging.Log.Info(String.Format("[{0}]: Client socket closed, shutting down session.", state.ID));
+                    ShutdownConnection(state);
+                }
+                else
+                    Logging.Log.Error(ex.ToString());
             }
         }
     }
