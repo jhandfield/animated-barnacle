@@ -158,7 +158,7 @@ namespace ROMSharp.Consts
                 Parts=AlphaConversions.ConvertROMAlphaToPartFlag("ACDEFHKQV")
             },
             new Race(){
-                Name="modrom",
+                Name="modron",
                 IsPCRace=false,
                 Affects=AffectedByFlag.Infrared,
                 Offenses=OffensiveFlag.Assist_Race | OffensiveFlag.Assist_Align,

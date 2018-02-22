@@ -203,12 +203,16 @@ namespace ROMSharp.Models
                             outRoom.ExtraDescriptions.Add(desc);
                             break;
                         case 'H':
-                            // Heal rate definition
-                            outRoom.HealRate = ParseHealRateDef(lineData, outRoom.VNUM, ref lineNum, areaFile);
-                            break;
                         case 'M':
-                            // Mana rate definition
-                            outRoom.ManaRate = ParseManaRateDef(lineData, outRoom.VNUM, ref lineNum, areaFile);
+                            int heal, mana;
+
+                            // Parse the line
+                            ParseHealManaRateDef(lineData, outRoom.VNUM, ref lineNum, areaFile, out heal, out mana);
+
+                            // Set the values
+                            outRoom.HealRate = heal;
+                            outRoom.ManaRate = mana;
+
                             break;
                         case 'O':
                             // TODO: Implement room ownership
@@ -368,7 +372,7 @@ namespace ROMSharp.Models
             }
 
             // Exit room VNUMs are zero or greater
-            if (exitRoomVNUM < 0)
+            if (exitRoomVNUM < -1)
             {
                 Logging.Log.Error(String.Format("Error parsing exits of room {0} in area {1}: exit room VNUM is invalid, must be greater than zero - got value {2} on line {3}", outRoom.VNUM, areaFile, exitRoomVNUM, lineNum));
                 return null;
@@ -458,17 +462,42 @@ namespace ROMSharp.Models
         /// <param name="roomVNUM">VNUM of the room, used in error messages.</param>
         /// <param name="lineNum">Current line number in the file, used in error messages..</param>
         /// <param name="areaFile">Filename of the area, used in error messages.</param>
-        private static int ParseHealRateDef(string lineData, int roomVNUM, ref int lineNum, string areaFile)
+        private static bool ParseHealManaRateDef(string lineData, int roomVNUM, ref int lineNum, string areaFile, out int healRate, out int manaRate)
         {
-            int healRate = 100;
+            healRate = 100;
+            manaRate = 100;
 
-            if (!Int32.TryParse(lineData.Substring(0, lineData.Length - 1), out healRate))
+            // Split the line
+            string[] splitLine = lineData.Split(' ');
+
+            // Expect an even number of elements
+            if (splitLine.Length % 2 != 0)
             {
-                Logging.Log.Error(String.Format("Error parsing heal rate in room {0} of area {1}: Expected integer, found {2} on line {3}", roomVNUM, areaFile, lineData, lineNum));
-                return 100;     // Default value
+                Logging.Log.Error(String.Format("Encountered unexpected number of elements in heal/mana rate definition for room {0} of area {1}, line {2}", roomVNUM, areaFile, lineNum));
+                return false;
             }
-            else
-                return healRate;
+            
+            for (int i = 0; i < splitLine.Length; i += 2)
+            {
+                switch (splitLine[i])
+                {
+                    case "H":
+                        int heal = 0;
+                        if (Int32.TryParse(splitLine[i + 1], out heal))
+                            healRate = heal;
+                        break;
+                    case "M":
+                        int mana = 0;
+                        if (Int32.TryParse(splitLine[i + 1], out mana))
+                            manaRate = mana;
+                        break;
+                    default:
+                        Logging.Log.Warn(String.Format("Encountered unexpected identifier in heal/mana rate line, {0}, for room {1} of area {2}, line {3}", splitLine[i], roomVNUM, areaFile, lineNum));
+                        break;
+                }
+            }
+
+            return true;
         }
         #endregion
     }
