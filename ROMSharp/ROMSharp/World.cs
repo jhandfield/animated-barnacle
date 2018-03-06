@@ -40,6 +40,11 @@ namespace ROMSharp
         /// Collection of mobiles that make up the fauna of the world
         /// </summary>
         public Models.Mobs Mobs { get; set; }
+
+        /// <summary>
+        /// Collection of objects that make up the flora of the world
+        /// </summary>
+        public Models.ObjectIndexes Objects { get; set; }
         #endregion
 
         #region Constructors

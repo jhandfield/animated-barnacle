@@ -106,6 +106,18 @@
     <Compile Include="Models\Size.cs" />
     <Compile Include="Consts\Size.cs" />
     <Compile Include="Models\Mobs.cs" />
+    <Compile Include="Models\ObjectIndexes.cs" />
+    <Compile Include="Models\AffectData.cs" />
+    <Compile Include="Models\ObjectIndexData.cs" />
+    <Compile Include="Enums\ItemType.cs" />
+    <Compile Include="Enums\ItemExtraFlag.cs" />
+    <Compile Include="Enums\WearFlag.cs" />
+    <Compile Include="Models\ItemType.cs" />
+    <Compile Include="Consts\ItemTypes.cs" />
+    <Compile Include="Models\WeaponClass.cs" />
+    <Compile Include="Enums\WeaponClass.cs" />
+    <Compile Include="Consts\WeaponClass.cs" />
+    <Compile Include="Enums\WeaponFlag.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
