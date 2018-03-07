@@ -229,72 +229,171 @@ namespace ROMSharp.Models
             switch (outObj.ObjectType)
             {
                 case ItemClass.Weapon:
-                    // Segment 1 - Weapon Type, should be a string matching the Name of a WeaponClass in the WeaponTable
-                    WeaponClass weapClass = Consts.WeaponClass.WeaponTable.SingleOrDefault(w => w.Name.ToLower().Equals(splitLine[0].ToLower()));
-
-                    if (weapClass == null)
-                    {
-                        // Invalid weapon class
-                        Logging.Log.Error(String.Format("Error parsing weapon class for object {0} in area {1}: unknown weapon class \"{2}\" found on line {3}", outObj.VNUM, areaFile, splitLine[0], lineNum));
+                    // Parse and set values
+                    if (!SetWeaponValues(splitLine, outObj, areaFile, lineNum))
+                        // An error was encountered, return a null object
                         return null;
-                    }
-                    else
-                        // Store the weapon class
-                        outObj.Values[0] = weapClass;
-
-                    // Segment 2 - Damage dice number, should be an integer
-                    int damDiceNum;
-                    if (!Int32.TryParse(splitLine[1], out damDiceNum))
-                    {
-                        // Invalid damage dice number
-                        Logging.Log.Error(String.Format("Error parsing weapon damage dice number for object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[1], lineNum));
-                        return null;
-                    }
-                    else
-                        // Store the damage dice number
-                        outObj.Values[1] = damDiceNum;
-
-                    // Segment 3 - Damage dice type, should be an integer
-                    int damDiceType;
-                    if (!Int32.TryParse(splitLine[2], out damDiceType))
-                    {
-                        // Invalid damage dice number
-                        Logging.Log.Error(String.Format("Error parsing weapon damage dice type for object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[2], lineNum));
-                        return null;
-                    }
-                    else
-                        // Store the damage dice number
-                        outObj.Values[2] = damDiceType;
-
-                    // Segment 4 - Attack Type, should be a string matching the Abreviation of a DamageType in the AttackTable
-                    DamageType damType = Consts.DamageTypes.AttackTable.SingleOrDefault(w => w.Abbreviation.ToLower().Equals(splitLine[3].ToLower()));
-
-                    if (weapClass == null)
-                    {
-                        // Invalid weapon class
-                        Logging.Log.Error(String.Format("Error parsing attack type for object {0} in area {1}: unknown attachk type \"{2}\" found on line {3}", outObj.VNUM, areaFile, splitLine[3], lineNum));
-                        return null;
-                    }
-                    else
-                        // Store the weapon class
-                        outObj.Values[3] = damType;
-
-                    // Segment 5 - Weapon Flags
-                    try
-                    {
-                        WeaponFlag weapFlags = AlphaConversions.ConvertROMAlphaToWeaponFlag(splitLine[4]);
-                        outObj.Values[4] = weapFlags;
-                    }
-                    catch (ArgumentException e)
-                    {
-                        // Invalid extra flags
-                        Logging.Log.Error(String.Format("Error parsing weapon flags for object {0} in area {1}: invalid weapon flag value \"{2}\" found on line {3}", outObj.VNUM, areaFile, splitLine[4], lineNum));
-                        return null;
-                    }
+                    
                     break;
 
+                case ItemClass.Container:
+                    // Parse and set values
+                    if (!SetContainerValues(splitLine, outObj, areaFile, lineNum))
+                        // An error was encountered, return a null object
+                        return null;
+
+                    break;
             }
             return outObj;
+        }
+
+        /// <summary>
+        /// Sets the Values array of <paramref name="outObj"/> based on input values from <paramref name="splitLine"/> appropriate where object type is Weapon
+        /// </summary>
+        /// <returns><c>true</c> if values were set without errors, <c>false</c> otherwise. Errors are logged within this method.</returns>
+        /// <param name="splitLine">Array of values to parse</param>
+        /// <param name="outObj">Object whose Values property should be set</param>
+        /// <param name="areaFile">Filename of the area file being parsed, used for error messages</param>
+        /// <param name="lineNum">Line number the values came from, used for error messages</param>
+        private static bool SetContainerValues(string[] splitLine, ObjectIndexData outObj, string areaFile, int lineNum)
+        {
+            // Segment 1 - Capacity, should be an integer
+            int capacity = 0;
+            if(!Int32.TryParse(splitLine[0], out capacity))
+            {
+                // Invalid damage dice number
+                Logging.Log.Error(String.Format("Error parsing capacity for container object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[0], lineNum));
+                return false;
+            }
+            else
+                // Store the damage dice number
+                outObj.Values[0] = capacity;
+
+            // Segment 2 - Flags, should be a string matching Container flags
+            try
+            {
+                ContainerFlag conFlags = AlphaConversions.ConvertROMAlphaToContainerFlag(splitLine[1]);
+                outObj.Values[1] = conFlags;
+            }
+            catch (ArgumentException e)
+            {
+                // Invalid extra flags
+                Logging.Log.Error(String.Format("Error parsing container flags for object {0} in area {1}: invalid weapon flag value \"{2}\" found on line {3}", outObj.VNUM, areaFile, splitLine[1], lineNum));
+                return false;
+            }
+
+            // Segment 3 - Appears to be unused, but should be an integer
+            int unknown = 0;
+            if (!Int32.TryParse(splitLine[2], out unknown))
+            {
+                // Invalid damage dice number
+                Logging.Log.Error(String.Format("Error parsing unknown value (value #3) for container object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[2], lineNum));
+                return false;
+            }
+            else
+                // Store the damage dice number
+                outObj.Values[2] = unknown;
+
+            // Segment 4 - Maximum weight, should be an integer
+            int maxWeight = 0;
+            if (!Int32.TryParse(splitLine[3], out capacity))
+            {
+                // Invalid damage dice number
+                Logging.Log.Error(String.Format("Error parsing maximum weight for container object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[3], lineNum));
+                return false;
+            }
+            else
+                // Store the damage dice number
+                outObj.Values[3] = maxWeight;
+
+            // Segment 5 - Weight multiplier, should be an integer
+            int weightMult = 0;
+            if (!Int32.TryParse(splitLine[4], out capacity))
+            {
+                // Invalid damage dice number
+                Logging.Log.Error(String.Format("Error parsing weight multiplier for container object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[4], lineNum));
+                return false;
+            }
+            else
+                // Store the damage dice number
+                outObj.Values[4] = weightMult;
+
+            return true;
+        }
+        /// <summary>
+        /// Sets the Values array of <paramref name="outObj"/> based on input values from <paramref name="splitLine"/> appropriate where object type is Weapon
+        /// </summary>
+        /// <returns><c>true</c> if values were set without errors, <c>false</c> otherwise. Errors are logged within this method.</returns>
+        /// <param name="splitLine">Array of values to parse</param>
+        /// <param name="outObj">Object whose Values property should be set</param>
+        /// <param name="areaFile">Filename of the area file being parsed, used for error messages</param>
+        /// <param name="lineNum">Line number the values came from, used for error messages</param>
+        private static bool SetWeaponValues(string[] splitLine, ObjectIndexData outObj, string areaFile, int lineNum)
+        {
+            // Segment 1 - Weapon Type, should be a string matching the Name of a WeaponClass in the WeaponTable
+            WeaponClass weapClass = Consts.WeaponClass.WeaponTable.SingleOrDefault(w => w.Name.ToLower().Equals(splitLine[0].ToLower()));
+
+            if (weapClass == null)
+            {
+                // Invalid weapon class
+                Logging.Log.Error(String.Format("Error parsing weapon class for object {0} in area {1}: unknown weapon class \"{2}\" found on line {3}", outObj.VNUM, areaFile, splitLine[0], lineNum));
+                return false;
+            }
+            else
+                // Store the weapon class
+                outObj.Values[0] = weapClass;
+
+            // Segment 2 - Damage dice number, should be an integer
+            int damDiceNum;
+            if (!Int32.TryParse(splitLine[1], out damDiceNum))
+            {
+                // Invalid damage dice number
+                Logging.Log.Error(String.Format("Error parsing weapon damage dice number for object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[1], lineNum));
+                return false;
+            }
+            else
+                // Store the damage dice number
+                outObj.Values[1] = damDiceNum;
+
+            // Segment 3 - Damage dice type, should be an integer
+            int damDiceType;
+            if (!Int32.TryParse(splitLine[2], out damDiceType))
+            {
+                // Invalid damage dice number
+                Logging.Log.Error(String.Format("Error parsing weapon damage dice type for object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[2], lineNum));
+                return false;
+            }
+            else
+                // Store the damage dice number
+                outObj.Values[2] = damDiceType;
+
+            // Segment 4 - Attack Type, should be a string matching the Abreviation of a DamageType in the AttackTable
+            DamageType damType = Consts.DamageTypes.AttackTable.SingleOrDefault(w => w.Abbreviation.ToLower().Equals(splitLine[3].ToLower()));
+
+            if (weapClass == null)
+            {
+                // Invalid weapon class
+                Logging.Log.Error(String.Format("Error parsing attack type for object {0} in area {1}: unknown attachk type \"{2}\" found on line {3}", outObj.VNUM, areaFile, splitLine[3], lineNum));
+                return false;
+            }
+            else
+                // Store the weapon class
+                outObj.Values[3] = damType;
+
+            // Segment 5 - Weapon Flags
+            try
+            {
+                WeaponFlag weapFlags = AlphaConversions.ConvertROMAlphaToWeaponFlag(splitLine[4]);
+                outObj.Values[4] = weapFlags;
+            }
+            catch (ArgumentException e)
+            {
+                // Invalid extra flags
+                Logging.Log.Error(String.Format("Error parsing weapon flags for object {0} in area {1}: invalid weapon flag value \"{2}\" found on line {3}", outObj.VNUM, areaFile, splitLine[4], lineNum));
+                return false;
+            }
+
+            return true;
         }
         #endregion
     }

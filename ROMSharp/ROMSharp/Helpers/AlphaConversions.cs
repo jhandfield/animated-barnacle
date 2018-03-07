@@ -336,7 +336,7 @@ namespace ROMSharp.Helpers
         }
 
         /// <summary>
-        /// Converts legacy ROM macro-based offense flags to a ResistanceFlag object
+        /// Converts legacy ROM macro-based resistace flags to a ResistanceFlag object
         /// </summary>
         /// <returns>A RestistanceFlag object representation of the input flags</returns>
         /// <param name="inputFlags">Legacy ROM room flags to convert; must contain no characters other than A-ee</param>
@@ -383,7 +383,7 @@ namespace ROMSharp.Helpers
         }
 
         /// <summary>
-        /// Converts legacy ROM macro-based offense flags to a VulnerabilityFlag object
+        /// Converts legacy ROM macro-based vulnerability flags to a VulnerabilityFlag object
         /// </summary>
         /// <returns>A VulnerabilityFlag object representation of the input flags</returns>
         /// <param name="inputFlags">Legacy ROM room flags to convert; must contain no characters other than A-ee</param>
@@ -430,7 +430,7 @@ namespace ROMSharp.Helpers
         }
 
         /// <summary>
-        /// Converts legacy ROM macro-based offense flags to a ItemExtraFlag object
+        /// Converts legacy ROM macro-based item extra flags to a ItemExtraFlag object
         /// </summary>
         /// <returns>A ItemExtraFlag object representation of the input flags</returns>
         /// <param name="inputFlags">Legacy ROM room flags to convert; must contain no characters other than A-ee</param>
@@ -477,7 +477,7 @@ namespace ROMSharp.Helpers
         }
 
         /// <summary>
-        /// Converts legacy ROM macro-based offense flags to a WearFlag object
+        /// Converts legacy ROM macro-based wear flags to a WearFlag object
         /// </summary>
         /// <returns>A WearFlag object representation of the input flags</returns>
         /// <param name="inputFlags">Legacy ROM room flags to convert; must contain no characters other than A-ee</param>
@@ -524,7 +524,7 @@ namespace ROMSharp.Helpers
         }
 
         /// <summary>
-        /// Converts legacy ROM macro-based offense flags to a WeaponFlag object
+        /// Converts legacy ROM macro-based weapon flags to a WeaponFlag object
         /// </summary>
         /// <returns>A WeaponFlag object representation of the input flags</returns>
         /// <param name="inputFlags">Legacy ROM room flags to convert; must contain no characters other than A-ee</param>
@@ -568,6 +568,53 @@ namespace ROMSharp.Helpers
 
             // Convert the sum to a WeaponFlag value and return it
             return (WeaponFlag)inFlagsSum;
+        }
+
+        /// <summary>
+        /// Converts legacy ROM macro-based container flags to a WeaponFlag object
+        /// </summary>
+        /// <returns>A WeaponFlag object representation of the input flags</returns>
+        /// <param name="inputFlags">Legacy ROM room flags to convert; must contain no characters other than A-ee</param>
+        public static ContainerFlag ConvertROMAlphaToContainerFlag(string inputFlags)
+        {
+            // Check if input flag is 0
+            if (inputFlags.Equals("0"))
+                return 0;
+
+            // Will hold the sum of the flags for conversion
+            int inFlagsSum = 0;
+
+            // Buffer to hold multi-character flags
+            string charFlagBuffer = String.Empty;
+
+            // Loop over each character
+            foreach (char c in inputFlags)
+            {
+                // Set or append the current character
+                if (String.IsNullOrEmpty((charFlagBuffer)))
+                    charFlagBuffer = c.ToString();
+                else
+                    charFlagBuffer += c.ToString();
+
+                // If the character is lower case, move to the next iteration
+                if (Char.IsLower(c))
+                    continue;
+
+                // Declare an AlphaMacros object to hold the (potentially) parsed value below
+                AlphaMacros parsed;
+
+                // Attempt to parse each character as an AlphaMacro and add to the running sum
+                if (Enum.TryParse<Enums.AlphaMacros>(charFlagBuffer, out parsed))
+                    inFlagsSum += (int)parsed;
+                else
+                    throw new ArgumentException(String.Format("Invalid character found in inFlags: {0}", c));
+
+                // Empty the buffer
+                charFlagBuffer = String.Empty;
+            }
+
+            // Convert the sum to a WeaponFlag value and return it
+            return (ContainerFlag)inFlagsSum;
         }
     }
 }
