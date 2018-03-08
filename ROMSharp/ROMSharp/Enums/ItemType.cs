@@ -16,7 +16,7 @@ namespace ROMSharp.Enums
         Furniture = 12,
         Trash = 13,
         Container = 15,
-        DrinkCon = 17,
+        DrinkContainer = 17,
         Key = 18,
         Food = 19,
         Money = 20,

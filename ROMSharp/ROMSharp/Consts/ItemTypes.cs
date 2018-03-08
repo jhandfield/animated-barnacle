@@ -20,7 +20,7 @@ namespace ROMSharp.Consts
             new ItemType("furniture", ItemClass.Furniture),
             new ItemType("trash", ItemClass.Trash),
             new ItemType("container", ItemClass.Container),
-            new ItemType("drink", ItemClass.DrinkCon),
+            new ItemType("drink", ItemClass.DrinkContainer),
             new ItemType("key", ItemClass.Key),
             new ItemType("food", ItemClass.Food),
             new ItemType("money", ItemClass.Money),

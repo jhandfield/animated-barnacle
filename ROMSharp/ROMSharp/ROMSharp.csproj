@@ -119,6 +119,8 @@
     <Compile Include="Consts\WeaponClass.cs" />
     <Compile Include="Enums\WeaponFlag.cs" />
     <Compile Include="Enums\ContainerFlag.cs" />
+    <Compile Include="Models\LiquidType.cs" />
+    <Compile Include="Consts\Liquids.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

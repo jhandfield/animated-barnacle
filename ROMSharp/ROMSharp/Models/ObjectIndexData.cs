@@ -243,12 +243,96 @@ namespace ROMSharp.Models
                         return null;
 
                     break;
+
+                case ItemClass.DrinkContainer:
+                case ItemClass.Fountain:
+                    // Parse and set values
+                    if (!SetFountainAndDrinkContainerValues(splitLine, outObj, areaFile, lineNum))
+                        // An error was encountered, return a null object
+                        return null;
+
+                    break;
             }
             return outObj;
         }
 
         /// <summary>
-        /// Sets the Values array of <paramref name="outObj"/> based on input values from <paramref name="splitLine"/> appropriate where object type is Weapon
+        /// Sets the Values array of <paramref name="outObj"/> based on input values from <paramref name="splitLine"/> appropriate where object type is DrinkContainer or Fountain
+        /// </summary>
+        /// <returns><c>true</c> if values were set without errors, <c>false</c> otherwise. Errors are logged within this method.</returns>
+        /// <param name="splitLine">Array of values to parse</param>
+        /// <param name="outObj">Object whose Values property should be set</param>
+        /// <param name="areaFile">Filename of the area file being parsed, used for error messages</param>
+        /// <param name="lineNum">Line number the values came from, used for error messages</param>
+        private static bool SetFountainAndDrinkContainerValues(string[] splitLine, ObjectIndexData outObj, string areaFile, int lineNum)
+        {
+            // Segment 1 - Container capacity, should be an integer
+            int capacity = 0;
+            if (!Int32.TryParse(splitLine[0], out capacity))
+            {
+                // Invalid damage dice number
+                Logging.Log.Error(String.Format("Error parsing capacity for fountain/drink container object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[0], lineNum));
+                return false;
+            }
+            else
+                // Store the damage dice number
+                outObj.Values[0] = capacity;
+            
+            // Segment 2 - Container fill level, should be an integer
+            int fillLevel = 0;
+            if (!Int32.TryParse(splitLine[1], out fillLevel))
+            {
+                // Invalid damage dice number
+                Logging.Log.Error(String.Format("Error parsing fill level for fountain/drink container object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[1], lineNum));
+                return false;
+            }
+            else
+                // Store the damage dice number
+                outObj.Values[1] = fillLevel;
+
+
+            // Segment 3 - Liquid Type, should be a string matching the Name of a LiquidType in the LiquidTable
+            LiquidType liqiudType = Consts.Liquids.LiquidTable.SingleOrDefault(l => l.Name.ToLower().Equals(splitLine[2].ToLower()));
+
+            if (liqiudType == null)
+            {
+                // Invalid weapon class
+                Logging.Log.Error(String.Format("Error parsing liquid type for fountain/drink container object {0} in area {1}: unknown weapon class \"{2}\" found on line {3}", outObj.VNUM, areaFile, splitLine[2], lineNum));
+                return false;
+            }
+            else
+                // Store the weapon class
+                outObj.Values[2] = liqiudType;
+
+            // Segment 4 - Appears to be unused, but should be an integer
+            int unknown4 = 0;
+            if (!Int32.TryParse(splitLine[3], out unknown4))
+            {
+                // Invalid damage dice number
+                Logging.Log.Error(String.Format("Error parsing unknown value 4 for fountain/drink container object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[3], lineNum));
+                return false;
+            }
+            else
+                // Store the damage dice number
+                outObj.Values[0] = unknown4;
+
+
+            // Segment 5 - Appears to be unused, but should be an integer
+            int unknown5 = 0;
+            if (!Int32.TryParse(splitLine[4], out unknown5))
+            {
+                // Invalid damage dice number
+                Logging.Log.Error(String.Format("Error parsing unknown value 5 for fountain/drink container object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[4], lineNum));
+                return false;
+            }
+            else
+                // Store the damage dice number
+                outObj.Values[4] = unknown5;
+
+            return true;
+        }
+        /// <summary>
+        /// Sets the Values array of <paramref name="outObj"/> based on input values from <paramref name="splitLine"/> appropriate where object type is Container
         /// </summary>
         /// <returns><c>true</c> if values were set without errors, <c>false</c> otherwise. Errors are logged within this method.</returns>
         /// <param name="splitLine">Array of values to parse</param>
