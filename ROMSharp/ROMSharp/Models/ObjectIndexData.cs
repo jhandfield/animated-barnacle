@@ -252,8 +252,62 @@ namespace ROMSharp.Models
                         return null;
 
                     break;
+
+                case ItemClass.Wand:
+                case ItemClass.Staff:
+                    // Parse and set values
+                    if (!SetWandAndStaffValues(splitLine, outObj, areaFile, lineNum))
+                        // An error was encountered, return a null object
+                        return null;
+
+                    break;
+
             }
             return outObj;
+        }
+
+        private static bool SetValue_Int(string value, ref object objValue, string description, string areaFile, int lineNum, int vnum)
+        {
+            int parsedValue = 0;
+            if (!Int32.TryParse(value, out parsedValue))
+            {
+                // Invalid damage dice number
+                Logging.Log.Error(String.Format("Error parsing capacity for {0} object {1} in area {2}: expected an integer but found \"{3}\" on line {4}", description, vnum, areaFile, value, lineNum));
+                return false;
+            }
+            else
+                // Store the damage dice number
+                objValue = parsedValue;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Sets the Values array of <paramref name="outObj"/> based on input values from <paramref name="splitLine"/> appropriate where object type is Wand or Staff
+        /// </summary>
+        /// <returns><c>true</c> if values were set without errors, <c>false</c> otherwise. Errors are logged within this method.</returns>
+        /// <param name="splitLine">Array of values to parse</param>
+        /// <param name="outObj">Object whose Values property should be set</param>
+        /// <param name="areaFile">Filename of the area file being parsed, used for error messages</param>
+        /// <param name="lineNum">Line number the values came from, used for error messages</param>
+        private static bool SetWandAndStaffValues(string[] splitLine, ObjectIndexData outObj, string areaFile, int lineNum)
+        {
+            // Segment 1 - Level, should be an integer
+            outObj.Values[0] = SetValue_Int(splitLine[0], ref outObj.Values[0], "staff or wand", areaFile, lineNum, outObj.VNUM);
+            
+            // Segment 2 - Current charges, should be an integer
+            outObj.Values[1] = SetValue_Int(splitLine[1], ref outObj.Values[1], "staff or wand", areaFile, lineNum, outObj.VNUM);
+
+            // Segment 3 - Max charges, should be an integer
+            outObj.Values[2] = SetValue_Int(splitLine[2], ref outObj.Values[2], "staff or wand", areaFile, lineNum, outObj.VNUM);
+
+            // Segment 4 - Skill for wielding
+
+
+            // Segment 5 - Appears to be unused, but should be an integer
+            outObj.Values[3] = SetValue_Int(splitLine[3], ref outObj.Values[3], "staff or wand", areaFile, lineNum, outObj.VNUM);
+
+            return true;
         }
 
         /// <summary>

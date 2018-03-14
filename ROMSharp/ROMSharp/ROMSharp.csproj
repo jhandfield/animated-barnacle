@@ -121,6 +121,13 @@
     <Compile Include="Enums\ContainerFlag.cs" />
     <Compile Include="Models\LiquidType.cs" />
     <Compile Include="Consts\Liquids.cs" />
+    <Compile Include="Models\SkillType.cs" />
+    <Compile Include="Models\Class.cs" />
+    <Compile Include="Enums\Attribute.cs" />
+    <Compile Include="Consts\Classes.cs" />
+    <Compile Include="Enums\ObjectVNUMAlias.cs" />
+    <Compile Include="Enums\TargetTypes.cs" />
+    <Compile Include="Consts\Skills.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
