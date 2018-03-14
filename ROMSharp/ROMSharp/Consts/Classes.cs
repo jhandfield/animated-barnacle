@@ -95,9 +95,5 @@ namespace ROMSharp.Consts
                 DefaultSkillGroup = "warrior default"
             }
         };
-
-        public Classes()
-        {
-        }
     }
 }

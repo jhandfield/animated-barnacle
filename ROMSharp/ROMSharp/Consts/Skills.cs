@@ -36,7 +36,7 @@ namespace ROMSharp.Consts
                 Name = "armor",
                 RequiredLevels = new Dictionary<Models.Class, int>() {
                     { Classes.Mage, 7 },
-                    { Classes.Cleric, 2},
+                    { Classes.Cleric, 2 },
                     { Classes.Thief, 10 },
                     { Classes.Warrior, 5 }
                 },
