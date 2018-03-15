@@ -8,35 +8,154 @@ namespace ROMSharp.Enums
     public enum AffectedByFlag
     {
         None = 0,
-        Blind = 1 << 0,         // AFF_BLIND
-        Invisible = 1 << 1,     // AFF_INVISIBLE
-        DetectEvil = 1 << 2,    // AFF_DETECT_EVIL
-        DetectInvis = 1 << 3,   // AFF_DETECT_INVIS
-        DetectMagic = 1 << 4,   // AFF_DETECT_MAGIC
-        DetectHidden = 1 << 5,  // AFF_DETECT_HIDDEN
-        DetectGood = 1 << 6,    // AFF_DETECT_GOOD
-        Sanctuary = 1 << 7,     // AFF_SANCTUARY
-        FaerieFire = 1 << 8,    // AFF_FAERIE_FIRE
-        Infrared = 1 << 9,      // AFF_INFRARED
-        Curse = 1 << 10,        // AFF_CURSE
-        UndeadFlag = 1 << 11,   // AFF_UNDEAD_FLAG, commented "Unused" in ROM
-        Poison = 1 << 12,       // AFF_POISON
-        ProectEvil = 1 << 13,   // AFF_PROTECT_EVIL
-        ProtectGood = 1 << 14,  // AFF_PROTECT_GOOD
-        Sneak = 1 << 15,        // AFF_SNEAK
-        Hide = 1 << 16,         // AFF_HIDE
-        Sleep = 1 << 17,        // AFF_SLEEP
-        Charm = 1 << 18,        // AFF_CHARM
-        Flying = 1 << 19,       // AFF_FLYING
-        PassDoor = 1 << 20,     // AFF_PASS_DOOR
-        Haste = 1 << 21,        // AFF_HASTE
-        Calm = 1 << 22,         // AFF_CALM
-        Plague = 1 << 23,       // AFF_PLAGUE
-        Weaken = 1 << 24,       // AFF_WEAKEN
-        DarkVision = 1 << 25,   // AFF_DARK_VISION
-        Berserk = 1 << 26,      // AFF_BERSERK
-        Swim = 1 << 27,         // AFF_SWIM
-        Regeneration = 1 << 28, // AFF_REGENERATION
-        Slow = 1 << 29          // AFF_SOW
+        /// <summary>
+        /// Legacy AFF_BLIND (A)
+        /// </summary>
+        Blind = AlphaMacros.A,
+
+        /// <summary>
+        /// Legacy AFF_INVISIBLE (B)
+        /// </summary>
+        Invisible = AlphaMacros.B,
+
+        /// <summary>
+        /// Legacy AFF_DETECT_EVIL (C)
+        /// </summary>
+        DetectEvil = AlphaMacros.C,
+
+        /// <summary>
+        /// Legacy AFF_DETECT_INVIS (D)
+        /// </summary>
+        DetectInvis = AlphaMacros.D,
+
+        /// <summary>
+        /// Legacy AFF_DETECT_MAGIC (E)
+        /// </summary>
+        DetectMagic = AlphaMacros.E,
+
+        /// <summary>
+        /// Legacy AFF_DETECT_HIDDEN (F)
+        /// </summary>
+        DetectHidden = AlphaMacros.F,
+
+        /// <summary>
+        /// Legacy AFF_DETECT_GOOD (G)
+        /// </summary>
+        DetectGood = AlphaMacros.G,
+
+        /// <summary>
+        /// Legacy AFF_SANCTUARY (H)
+        /// </summary>
+        Sanctuary = AlphaMacros.H,
+
+        /// <summary>
+        /// Legacy AFF_FAERIE_FIRE (I)
+        /// </summary>
+        FaerieFire = AlphaMacros.I,
+
+        /// <summary>
+        /// Legacy AFF_INFRARED (J)
+        /// </summary>
+        Infrared = AlphaMacros.J,
+
+        /// <summary>
+        /// Legacy AFF_CURSE (K)
+        /// </summary>
+        Curse = AlphaMacros.K,
+
+        /// <summary>
+        /// Legacy AFF_UNDEAD_FLAG (L) - Marked as unused in original source
+		/// </summary>
+        UndeadFlag = AlphaMacros.L,
+
+        /// <summary>
+        /// Legacy AFF_POISON (M)
+        /// </summary>
+        Poison = AlphaMacros.M,
+
+        /// <summary>
+        /// Legacy AFF_PROTECT_EVIL (N)
+        /// </summary>
+        ProectEvil = AlphaMacros.N,
+
+        /// <summary>
+        /// Legacy AFF_PROTECT_GOOD (O)
+        /// </summary>
+        ProtectGood = AlphaMacros.O,
+
+        /// <summary>
+        /// Legacy AFF_SNEAK (P)
+        /// </summary>
+        Sneak = AlphaMacros.P,
+
+        /// <summary>
+        /// Legacy AFF_HIDE (O)
+        /// </summary>
+        Hide = AlphaMacros.Q,
+
+        /// <summary>
+        /// Legacy AFF_SLEEP (R)
+        /// </summary>
+        Sleep = AlphaMacros.R,
+
+        /// <summary>
+        /// Legacy AFF_CHARM (S)
+        /// </summary>
+        Charm = AlphaMacros.S,
+
+        /// <summary>
+        /// Legacy AFF_FLYING (T)
+        /// </summary>
+        Flying = AlphaMacros.T,
+
+        /// <summary>
+        /// Legacy AFF_PASS_DOOR (U)
+        /// </summary>
+        PassDoor = AlphaMacros.U,
+
+        /// <summary>
+        /// Legacy AFF_HASTE (V)
+        /// </summary>
+        Haste = AlphaMacros.V,
+
+        /// <summary>
+        /// Legacy AFF_CALM (W)
+        /// </summary>
+        Calm = AlphaMacros.W,
+
+        /// <summary>
+        /// Legacy AFF_PLAGUE (X)
+        /// </summary>
+        Plague = AlphaMacros.X,
+
+        /// <summary>
+        /// Legacy AFF_WEAKEN (Y)
+        /// </summary>
+        Weaken = AlphaMacros.Y,
+
+        /// <summary>
+        /// Legacy AFF_DARK_VISION (Z)
+        /// </summary>
+        DarkVision = AlphaMacros.Z,
+
+        /// <summary>
+        /// Legacy AFF_BERSERK (aa)
+        /// </summary>
+        Berserk = AlphaMacros.aa,
+
+        /// <summary>
+        /// Legacy AFF_SWIM (bb)
+        /// </summary>
+        Swim = AlphaMacros.bb,
+
+        /// <summary>
+        /// Legacy AFF_REGENERATION (cc)
+        /// </summary>
+        Regeneration = AlphaMacros.cc,
+
+        /// <summary>
+        /// Legacy AFF_SLOW (dd)
+        /// </summary>
+        Slow = AlphaMacros.dd
     }
 }

@@ -105,15 +105,55 @@ namespace ROMSharp.Models
     public enum ExitAttributes
     {
         None = 0,
-        Door = 1 << 0,
-        Closed = 1 << 1,
-        Locked = 1 << 2,
-        PickProof = 1 << 3,
-        NoPass = 1 << 4,
-        LockedEasy = 1 << 5,
-        LockedHard = 1 << 6,
-        LockedInfuriating = 1 << 7,
-        NoClose = 1 << 8,
-        NoLock = 1 << 9
+
+        /// <summary>
+        /// Legacy EX_ISOOR (A)
+        /// </summary>
+        Door = AlphaMacros.A,
+
+        /// <summary>
+        /// Legacy EX_CLOSED (B)
+        /// </summary>
+        Closed = AlphaMacros.B,
+
+        /// <summary>
+        /// Legacy EX_LOCKED (C)
+        /// </summary>
+        Locked = AlphaMacros.C,
+
+        /// <summary>
+        /// Legacy EX_PICKPROOF (F)
+        /// </summary>
+        PickProof = AlphaMacros.F,
+
+        /// <summary>
+        /// Legacy EX_NOPASS (G)
+        /// </summary>
+        NoPass = AlphaMacros.G,
+
+        /// <summary>
+        /// Legacy EX_EASY (H)
+        /// </summary>
+        LockedEasy = AlphaMacros.H,
+
+        /// <summary>
+        /// Legacy EX_HARD (I)
+        /// </summary>
+        LockedHard = AlphaMacros.I,
+
+        /// <summary>
+        /// Legacy EX_INFURIATING (J)
+        /// </summary>
+        LockedInfuriating = AlphaMacros.J,
+
+        /// <summary>
+        /// Legacy EX_NOCLOSE (K)
+        /// </summary>
+        NoClose = AlphaMacros.K,
+
+        /// <summary>
+        /// Legacy EX_NOLOCK (L)
+        /// </summary>
+        NoLock = AlphaMacros.L
     }
 }

@@ -8,28 +8,119 @@ namespace ROMSharp.Enums
     public enum ImmunityFlag
     {
         None = 0,
-        Summon = 1 << 0,
-        Charm = 1 << 1,
-        Magic = 1 << 2,
-        Weapon = 1 << 3,
-        Bash = 1 << 4,
-        Pierce = 1 << 5,
-        Slash = 1 << 6,
-        Fire = 1 << 7,
-        Cold = 1 << 8,
-        Lightning = 1 << 9,
-        Acid = 1 << 10,
-        Poison = 1 << 11,
-        Negative = 1 << 12,
-        Holy = 1 << 13,
-        Energy = 1 << 14,
-        Mental = 1 << 15,
-        Disease = 1 << 16,
-        Drowning = 1 << 17,
-        Light = 1 << 18,
+        /// <summary>
+        /// Legacy IMM_SUMMON (A)
+        /// </summary>
+        Summon = AlphaMacros.A,
+
+        /// <summary>
+        /// Legacy IMM_CHARM (B)
+        /// </summary>
+        Charm = AlphaMacros.B,
+
+        /// <summary>
+        /// Legacy IMM_MAGIC (C)
+        /// </summary>
+        Magic = AlphaMacros.C,
+
+        /// <summary>
+        /// Legacy IMM_WEAPON (D)
+        /// </summary>
+        Weapon = AlphaMacros.D,
+
+        /// <summary>
+        /// Legacy IMM_BASH (E)
+        /// </summary>
+        Bash = AlphaMacros.E,
+
+        /// <summary>
+        /// Legacy IMM_PIERCE (F)
+        /// </summary>
+        Pierce = AlphaMacros.F,
+
+        /// <summary>
+        /// Legacy IMM_SLASH (G)
+        /// </summary>
+        Slash = AlphaMacros.G,
+
+        /// <summary>
+        /// Legacy IMM_FIRE (H)
+        /// </summary>
+        Fire = AlphaMacros.H,
+
+        /// <summary>
+        /// Legacy IMM_COLD (I)
+        /// </summary>
+        Cold = AlphaMacros.I,
+
+        /// <summary>
+        /// Legacy IMM_LIGHTNING (J)
+        /// </summary>
+        Lightning = AlphaMacros.J,
+
+        /// <summary>
+        /// Legacy IMM_ACID (K)
+        /// </summary>
+        Acid = AlphaMacros.K,
+
+        /// <summary>
+        /// Legacy IMM_POISON (L)
+        /// </summary>
+        Poison = AlphaMacros.L,
+
+        /// <summary>
+        /// Legacy IMM_NEGATIVE (M)
+        /// </summary>
+        Negative = AlphaMacros.M,
+
+        /// <summary>
+        /// Legacy IMM_HOLY (N)
+        /// </summary>
+        Holy = AlphaMacros.N,
+
+        /// <summary>
+        /// Legacy IMM_ENERGY (O)
+        /// </summary>
+        Energy = AlphaMacros.O,
+
+        /// <summary>
+        /// Legacy IMM_MENTAL (P)
+        /// </summary>
+        Mental = AlphaMacros.P,
+
+        /// <summary>
+        /// Legacy IMM_DISEASE (Q)
+        /// </summary>
+        Disease = AlphaMacros.Q,
+
+        /// <summary>
+        /// Legacy IMM_DROWNING (R)
+        /// </summary>
+        Drowning = AlphaMacros.R,
+
+        /// <summary>
+        /// Legacy IMM_LIGHT (S)
+        /// </summary>
+        Light = AlphaMacros.S,
+
+        /// <summary>
+        /// Legacy IMM_SOUND (T)
+        /// </summary>
         Sound = 1 << 19,
+
+        /// <summary>
+        /// Legacy IMM_WOOD (X)
+        /// </summary>
         Wood = 1 << 23,
+
+        /// <summary>
+        /// Legacy IMM_SILVER (Y)
+        /// </summary>
         Silver = 1 << 24,
+
+        /// <summary>
+        /// Legacy IMM_IRON (Z)
+        /// </summary>
         Iron = 1 << 25
     }
 }

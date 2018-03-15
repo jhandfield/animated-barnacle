@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using ROMSharp.Enums;
 using ROMSharp.Helpers;
 
 namespace ROMSharp.Models
@@ -515,20 +516,76 @@ namespace ROMSharp.Models
     public enum RoomAttributes
     {
         None = 0,
-        Dark = 1 << 0,
-        NoMobs = 1 << 1,
-        Indoors = 1 << 2,
-        Private = 1 << 3,
-        Safe = 1 << 4,
-        Solitary = 1 << 5,
-        PetShop = 1 << 6,
-        NoRecall = 1 << 7,
-        ImpOnly = 1 << 8,
-        GodsOnly = 1 << 9,
-        HeroesOnly = 1 << 10,
-        NewbiesOnly = 1 << 11,
-        Law = 1 << 12,
-        Nowhere = 1 << 13
+
+        /// <summary>
+        /// Legacy ROOM_DARK (A)
+        /// </summary>
+        Dark = AlphaMacros.A,
+
+        /// <summary>
+        /// Legacy ROOM_NO_NOB (C)
+        /// </summary>
+        NoMobs = AlphaMacros.C,
+
+        /// <summary>
+        /// Legacy ROOM_INDOORS (D)
+        /// </summary>
+        Indoors = AlphaMacros.D,
+
+        /// <summary>
+        /// Legacy ROOM_PRIVATE (J)
+        /// </summary>
+        Private = AlphaMacros.J,
+
+        /// <summary>
+        /// Legacy ROOM_SAFE (K)
+        /// </summary>
+        Safe = AlphaMacros.K,
+
+        /// <summary>
+        /// Legacy ROOM_SOLITARY (L)
+        /// </summary>
+        Solitary = AlphaMacros.L,
+
+        /// <summary>
+        /// Legacy ROOM_PET_SHOP (M)
+        /// </summary>
+        PetShop = AlphaMacros.M,
+
+        /// <summary>
+        /// Legacy ROOM_NO_RECALL (N)
+        /// </summary>
+        NoRecall = AlphaMacros.N,
+
+        /// <summary>
+        /// Legacy ROOM_IMP_ONLY (O)
+        /// </summary>
+        ImpOnly = AlphaMacros.O,
+
+        /// <summary>
+        /// Legacy ROOM_GODS_ONLY (P)
+        /// </summary>
+        GodsOnly = AlphaMacros.P,
+
+        /// <summary>
+        /// Legacy ROOM_HEROES_ONLY (Q)
+        /// </summary>
+        HeroesOnly = AlphaMacros.Q,
+
+        /// <summary>
+        /// Legacy ROOM_NEWBIES_ONLY (R)
+        /// </summary>
+        NewbiesOnly = AlphaMacros.R,
+
+        /// <summary>
+        /// Legacy ROOM_LAW (S)
+        /// </summary>
+        Law = AlphaMacros.S,
+
+        /// <summary>
+        /// Legacy ROOM_NOWHERE (T)
+        /// </summary>
+        Nowhere = AlphaMacros.T
     }
 
     /// <summary>
