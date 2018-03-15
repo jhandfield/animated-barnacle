@@ -1,14 +1,13 @@
-﻿using System;
-using System.IO;
+﻿using NUnit.Framework;
 using ROMSharp.Models;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-
-namespace UnitTests
+using System;
+using System.IO;
+namespace ROMSharp.UnitTests
 {
-    [TestClass]
+    [TestFixture()]
     public class RoomTests
     {
-        [TestMethod]
+        [Test(), TestOf(typeof(RoomIndexData))]
         public void TestValidRoomData()
         {
             // Room data to parse, taken from daycare.are

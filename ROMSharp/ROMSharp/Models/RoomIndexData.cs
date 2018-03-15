@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using ROMSharp.Enums;
 using ROMSharp.Helpers;
 
 namespace ROMSharp.Models
@@ -515,20 +516,20 @@ namespace ROMSharp.Models
     public enum RoomAttributes
     {
         None = 0,
-        Dark = 1 << 0,
-        NoMobs = 1 << 1,
-        Indoors = 1 << 2,
-        Private = 1 << 3,
-        Safe = 1 << 4,
-        Solitary = 1 << 5,
-        PetShop = 1 << 6,
-        NoRecall = 1 << 7,
-        ImpOnly = 1 << 8,
-        GodsOnly = 1 << 9,
-        HeroesOnly = 1 << 10,
-        NewbiesOnly = 1 << 11,
-        Law = 1 << 12,
-        Nowhere = 1 << 13
+        Dark = AlphaMacros.A,
+        NoMobs = AlphaMacros.C,
+        Indoors = AlphaMacros.D,
+        Private = AlphaMacros.J,
+        Safe = AlphaMacros.K,
+        Solitary = AlphaMacros.L,
+        PetShop = AlphaMacros.M,
+        NoRecall = AlphaMacros.N,
+        ImpOnly = AlphaMacros.O,
+        GodsOnly = AlphaMacros.P,
+        HeroesOnly = AlphaMacros.Q,
+        NewbiesOnly = AlphaMacros.R,
+        Law = AlphaMacros.S,
+        Nowhere = AlphaMacros.T
     }
 
     /// <summary>
