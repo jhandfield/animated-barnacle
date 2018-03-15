@@ -8,28 +8,120 @@ namespace ROMSharp.Enums
     public enum ResistanceFlag
     {
         None = 0,
-        Summon = 1 << 0,
-        Charm = 1 << 1,
-        Magic = 1 << 2,
-        Weapon = 1 << 3,
-        Bash = 1 << 4,
-        Pierce = 1 << 5,
-        Slash = 1 << 6,
-        Fire = 1 << 7,
-        Cold = 1 << 8,
-        Lightning = 1 << 9,
-        Acid = 1 << 10,
-        Poison = 1 << 11,
-        Negative = 1 << 12,
-        Holy = 1 << 13,
-        Energy = 1 << 14,
-        Mental = 1 << 15,
-        Disease = 1 << 16,
-        Drowning = 1 << 17,
-        Light = 1 << 18,
-        Sound = 1 << 19,
-        Wood = 1 << 23,
-        Silver = 1 << 24,
-        Iron = 1 << 25
+
+        /// <summary>
+        /// Legacy RES_SUMMON (A)
+        /// </summary>
+        Summon = AlphaMacros.A,
+
+        /// <summary>
+        /// Legacy RES_CHARM (B)
+        /// </summary>
+        Charm = AlphaMacros.B,
+
+        /// <summary>
+        /// Legacy RES_MAGIC (C)
+        /// </summary>
+        Magic = AlphaMacros.C,
+
+        /// <summary>
+        /// Legacy RES_WEAPON (D)
+        /// </summary>
+        Weapon = AlphaMacros.D,
+
+        /// <summary>
+        /// Legacy RES_BASH (E)
+        /// </summary>
+        Bash = AlphaMacros.E,
+
+        /// <summary>
+        /// Legacy RES_PIERCE (F)
+        /// </summary>
+        Pierce = AlphaMacros.F,
+
+        /// <summary>
+        /// Legacy RES_SLASH (G)
+        /// </summary>
+        Slash = AlphaMacros.G,
+
+        /// <summary>
+        /// Legacy RES_FIRE (H)
+        /// </summary>
+        Fire = AlphaMacros.H,
+
+        /// <summary>
+        /// Legacy RES_COLD (I)
+        /// </summary>
+        Cold = AlphaMacros.I,
+
+        /// <summary>
+        /// Legacy RES_LIGHTNING (J)
+        /// </summary>
+        Lightning = AlphaMacros.J,
+
+        /// <summary>
+        /// Legacy RES_ACID (K)
+        /// </summary>
+        Acid = AlphaMacros.K,
+
+        /// <summary>
+        /// Legacy RES_POISON (L)
+        /// </summary>
+        Poison = AlphaMacros.L,
+
+        /// <summary>
+        /// Legacy RES_NEGATIVE (M)
+        /// </summary>
+        Negative = AlphaMacros.M,
+
+        /// <summary>
+        /// Legacy RES_HOLY (N)
+        /// </summary>
+        Holy = AlphaMacros.N,
+
+        /// <summary>
+        /// Legacy RES_ENERGY (O)
+        /// </summary>
+        Energy = AlphaMacros.O,
+
+        /// <summary>
+        /// Legacy RES_MENTAL (P)
+        /// </summary>
+        Mental = AlphaMacros.P,
+
+        /// <summary>
+        /// Legacy RES_DISEASE (Q)
+        /// </summary>
+        Disease = AlphaMacros.Q,
+
+        /// <summary>
+        /// Legacy RES_DROWNING (R)
+        /// </summary>
+        Drowning = AlphaMacros.R,
+
+        /// <summary>
+        /// Legacy RES_LIGHT (S)
+        /// </summary>
+        Light = AlphaMacros.S,
+
+        /// <summary>
+        /// Legacy RES_SOUND (T)
+        /// </summary>
+        Sound = AlphaMacros.T,
+
+        /// <summary>
+        /// Legacy RES_WOOD (X)
+        /// </summary>
+        Wood = AlphaMacros.X,
+
+        /// <summary>
+        /// Legacy RES_SILVER (Y)
+        /// </summary>
+        Silver = AlphaMacros.Y,
+
+        /// <summary>
+        /// Legacy RES_IRON (Z)
+        /// </summary>
+        Iron = AlphaMacros.Z
     }
 }

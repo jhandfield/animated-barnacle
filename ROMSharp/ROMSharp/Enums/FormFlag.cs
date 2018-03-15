@@ -8,36 +8,137 @@ namespace ROMSharp.Enums
     public enum FormFlag
     {
         // Body form
-		None = 0,               
-        Edible = 1 << 0,        // FORM_EDIBLE
-        Poison = 1 << 1,        // FORM_POISON
-        Magical = 1 << 2,       // FORM_MAGICAL
-        InstantDecay = 1 << 3,  // FORM_INSTANT_DECAY
-        Other = 1 << 4,         // FORM_OTHER
+		None = 0,
+
+        /// <summary>
+        /// Legacy FORM_EDIBLE (A)
+        /// </summary>
+        Edible = AlphaMacros.A,
+
+        /// <summary>
+        /// Legacy FORM_POISON (B)
+        /// </summary>
+        Poison = AlphaMacros.B,
+
+        /// <summary>
+        /// Legacy FORM_MAGICAL (C)
+        /// </summary>
+        Magical = AlphaMacros.C,
+
+        /// <summary>
+        /// Legacy FORM_INSTANT_DECAY (D)
+        /// </summary>
+        InstantDecay = AlphaMacros.D,
+
+        /// <summary>
+        /// Legacy FORM_OTHER (E)
+        /// </summary>
+        Other = AlphaMacros.E,
 
         // Actual form
-        Animal = 1 << 6,        // FORM_ANIMAL
-        Sentient = 1 << 7,      // FORM_SENTIENT
-        Undead = 1 << 8,        // FORM_UNDEAD
-        Construct = 1 << 9,     // FORM_CONSTRUCT
-        Mist = 1 << 10,         // FORM_MIST
-        Intangible = 1 << 11,   // FORM_INTANGIBLE
+        /// <summary>
+        /// Legacy FORM_ANIMAL (G)
+        /// </summary>
+        Animal = AlphaMacros.G,
 
-        Biped = 1 << 12,        // FORM_BPIED
-        Centaur = 1 << 13,      // FORM_CENTAUR
-        Insect = 1 << 14,       // FORM_INSECT
-        Spider = 1 << 15,       // FORM_SPIDER
-        Crustacean = 1 << 16,   // FORM_CRUSTACEAN
-        Worm = 1 << 17,         // FORM_WORM
-        Blob = 1 << 18,         // FORM_BLOB
+        /// <summary>
+        /// Legacy FORM_SENTIENT (H)
+        /// </summary>
+        Sentient = AlphaMacros.H,
 
-        Mammal = 1 << 21,       // FORM_MAMMAL
-        Bird = 1 << 22,         // FORM_BIRD
-        Reptile = 1 << 23,      // FORM_REPTILE
-        Snake = 1 << 24,        // FORM_SNAKE
-        Dragon = 1 << 25,       // FORM_DRAGON
-        Amphibian = 1 << 26,    // FORM_AMPHIBIAN
-        Fish = 1 << 27,         // FORM_FISH
-        ColdBlood = 1 << 28     // FORM_COLD_BLOOD
+        /// <summary>
+        /// Legacy FORM_UNDEAD (I)
+        /// </summary>
+        Undead = AlphaMacros.I,
+
+        /// <summary>
+        /// Legacy FORM_CONSTRUCT (J)
+        /// </summary>
+        Construct = AlphaMacros.J,
+
+        /// <summary>
+        /// Legacy FORM_MIST (K)
+        /// </summary>
+        Mist = AlphaMacros.K,
+
+        /// <summary>
+        /// Legacy FORM_INTANGIBLE (L)
+        /// </summary>
+        Intangible = AlphaMacros.L,
+
+        /// <summary>
+        /// Legacy FORM_BIPED (M)
+        /// </summary>
+        Biped = AlphaMacros.M,
+
+        /// <summary>
+        /// Legacy FORM_CENTAUR (N)
+        /// </summary>
+        Centaur = AlphaMacros.N,
+
+        /// <summary>
+        /// Legacy FORM_INSECT (O)
+        /// </summary>
+        Insect = AlphaMacros.O,
+
+        /// <summary>
+        /// Legacy FORM_SPIDER (P)
+        /// </summary>
+        Spider = AlphaMacros.P,
+
+        /// <summary>
+        /// Legacy FORM_CRUSTACEAN (Q)
+        /// </summary>
+        Crustacean = AlphaMacros.Q,
+
+        /// <summary>
+        /// Legacy FORM_WORM (R)
+        /// </summary>
+        Worm = AlphaMacros.R,
+
+        /// <summary>
+        /// Legacy FORM_BLOB (S)
+        /// </summary>
+        Blob = AlphaMacros.S,
+
+        /// <summary>
+        /// Legacy FORM_MAMMAL (V)
+        /// </summary>
+        Mammal = AlphaMacros.V,
+
+        /// <summary>
+        /// Legacy FORM_BIRD (W)
+        /// </summary>
+        Bird = AlphaMacros.W,
+
+        /// <summary>
+        /// Legacy FORM_REPTILE (X)
+        /// </summary>
+        Reptile = AlphaMacros.X,
+
+        /// <summary>
+        /// Legacy FORM_SNAKE (Y)
+        /// </summary>
+        Snake = AlphaMacros.Y,
+
+        /// <summary>
+        /// Legacy FORM_DRAGON (Z)
+        /// </summary>
+        Dragon = AlphaMacros.Z,
+
+        /// <summary>
+        /// Legacy FORM_AMPHIBIAN (aa)
+        /// </summary>
+        Amphibian = AlphaMacros.aa,
+
+        /// <summary>
+        /// Legacy FORM_FISH (bb)
+        /// </summary>
+        Fish = AlphaMacros.bb,
+
+        /// <summary>
+        /// Legacy FORM_COLD_BLOOD (cc)
+        /// </summary>
+        ColdBlood = AlphaMacros.cc
     }
 }
