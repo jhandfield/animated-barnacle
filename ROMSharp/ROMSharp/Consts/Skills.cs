@@ -6,6 +6,7 @@ namespace ROMSharp.Consts
     public class Skills
     {
         public static List<Models.SkillType> SkillTable = new List<Models.SkillType>() {
+            #region Spells
             // Acid Blast (spell)
             new Models.SkillType() {
                 Name = "acid blast",
@@ -2199,7 +2200,135 @@ namespace ROMSharp.Consts
                 MinimumManaCost = 5,
                 WaitTime = 12,
                 WearOffMessage = "!Word of Recall!"
+            },
+            #endregion
+
+            #region Dragon Breath
+            // Acid Breath (breath)
+            new Models.SkillType() {
+                Name = "acid breath",
+                RequiredLevels = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 31},
+                    {Classes.Cleric, 32},
+                    {Classes.Thief, 33},
+                    {Classes.Warrior, 34}
+                },
+                Difficulty = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 1},
+                    {Classes.Cleric, 1},
+                    {Classes.Thief, 2},
+                    {Classes.Warrior, 2}
+                },
+                SpellFunction = null,
+                TargetType = Enums.TargetTypes.Character_Offensive,
+                MinimumPosition = Enums.Position.Fighting,
+                Slot = 200,
+                MinimumManaCost = 100,
+                WaitTime = 24,
+                DamageMessage = "blast of acid",
+                WearOffMessage = "!Acid Breath!"
+            },
+
+            // Fire Breath (breath)
+            new Models.SkillType() {
+                Name = "fire breath",
+                RequiredLevels = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 40},
+                    {Classes.Cleric, 45},
+                    {Classes.Thief, 50},
+                    {Classes.Warrior, 51}
+                },
+                Difficulty = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 1},
+                    {Classes.Cleric, 1},
+                    {Classes.Thief, 2},
+                    {Classes.Warrior, 2}
+                },
+                SpellFunction = null,
+                TargetType = Enums.TargetTypes.Character_Offensive,
+                MinimumPosition = Enums.Position.Fighting,
+                Slot = 201,
+                MinimumManaCost = 200,
+                WaitTime = 24,
+                DamageMessage = "blast of flame",
+                WearOffMessage = "The smoke leaves your eyes."
+            },
+
+            // Frost Breath (breath)
+            new Models.SkillType() {
+                Name = "frost breath",
+                RequiredLevels = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 34},
+                    {Classes.Cleric, 36},
+                    {Classes.Thief, 38},
+                    {Classes.Warrior, 40}
+                },
+                Difficulty = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 1},
+                    {Classes.Cleric, 1},
+                    {Classes.Thief, 2},
+                    {Classes.Warrior, 2}
+                },
+                SpellFunction = null,
+                TargetType = Enums.TargetTypes.Character_Offensive,
+                MinimumPosition = Enums.Position.Fighting,
+                Slot = 202,
+                MinimumManaCost = 125,
+                WaitTime = 24,
+                DamageMessage = "blast of frost",
+                WearOffMessage = "!Frost Breath!"
+            },
+
+            // Gas Breath (breath)
+            new Models.SkillType() {
+                Name = "gas breath",
+                RequiredLevels = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 39},
+                    {Classes.Cleric, 43},
+                    {Classes.Thief, 47},
+                    {Classes.Warrior, 50}
+                },
+                Difficulty = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 1},
+                    {Classes.Cleric, 1},
+                    {Classes.Thief, 2},
+                    {Classes.Warrior, 2}
+                },
+                SpellFunction = null,
+                TargetType = Enums.TargetTypes.Ignore,
+                MinimumPosition = Enums.Position.Fighting,
+                Slot = 203,
+                MinimumManaCost = 175,
+                WaitTime = 24,
+                DamageMessage = "blast of gas",
+                WearOffMessage = "!Gas Breath!"
+            },
+
+            // Lightning Breath (breath)
+            new Models.SkillType() {
+                Name = "lightning breath",
+                RequiredLevels = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 37},
+                    {Classes.Cleric, 40},
+                    {Classes.Thief, 43},
+                    {Classes.Warrior, 46}
+                },
+                Difficulty = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 1},
+                    {Classes.Cleric, 1},
+                    {Classes.Thief, 2},
+                    {Classes.Warrior, 2}
+                },
+                SpellFunction = null,
+                TargetType = Enums.TargetTypes.Character_Offensive,
+                MinimumPosition = Enums.Position.Fighting,
+                Slot = 204,
+                MinimumManaCost = 150,
+                WaitTime = 24,
+                DamageMessage = "blast of lightning",
+                WearOffMessage = "!Lightning Breath!"
             }
+            #endregion
         };
 
         public Skills() { }
