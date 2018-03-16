@@ -2327,6 +2327,58 @@ namespace ROMSharp.Consts
                 WaitTime = 24,
                 DamageMessage = "blast of lightning",
                 WearOffMessage = "!Lightning Breath!"
+            },
+            #endregion
+
+            #region Spells for mega1.are
+            // General Purpose Ammo (skill)
+            new Models.SkillType() {
+                Name = "general purpose",
+                RequiredLevels = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 53},
+                    {Classes.Cleric, 53},
+                    {Classes.Thief, 53},
+                    {Classes.Warrior, 53}
+                },
+                Difficulty = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 0},
+                    {Classes.Cleric, 0},
+                    {Classes.Thief, 0},
+                    {Classes.Warrior, 0}
+                },
+                SpellFunction = null,
+                TargetType = Enums.TargetTypes.Character_Offensive,
+                MinimumPosition = Enums.Position.Fighting,
+                Slot = 401,
+                MinimumManaCost = 0,
+                WaitTime = 12,
+                DamageMessage = "general purpose ammo",
+                WearOffMessage = "!General Purpose Ammo!"
+            },
+
+            // High Explosive Ammo (skill)
+            new Models.SkillType() {
+                Name = "high explosive",
+                RequiredLevels = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 53},
+                    {Classes.Cleric, 53},
+                    {Classes.Thief, 53},
+                    {Classes.Warrior, 53}
+                },
+                Difficulty = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 0},
+                    {Classes.Cleric, 0},
+                    {Classes.Thief, 0},
+                    {Classes.Warrior, 0}
+                },
+                SpellFunction = null,
+                TargetType = Enums.TargetTypes.Character_Offensive,
+                MinimumPosition = Enums.Position.Fighting,
+                Slot = 402,
+                MinimumManaCost = 0,
+                WaitTime = 12,
+                DamageMessage = "high explosive ammo",
+                WearOffMessage = "!High Explosive Ammo!"
             }
             #endregion
         };
