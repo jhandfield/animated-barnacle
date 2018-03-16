@@ -2379,6 +2379,902 @@ namespace ROMSharp.Consts
                 WaitTime = 12,
                 DamageMessage = "high explosive ammo",
                 WearOffMessage = "!High Explosive Ammo!"
+            },
+            #endregion
+
+            #region Combat and weapons Skills
+            // Axe (weapon skill)
+            new Models.SkillType() {
+                Name = "axe",
+                RequiredLevels = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 1},
+                    {Classes.Cleric, 1},
+                    {Classes.Thief, 1},
+                    {Classes.Warrior, 1}
+                },
+                Difficulty = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 6},
+                    {Classes.Cleric, 6},
+                    {Classes.Thief, 5},
+                    {Classes.Warrior, 4}
+                },
+                SpellFunction = null,
+                TargetType = Enums.TargetTypes.Ignore,
+                MinimumPosition = Enums.Position.Fighting,
+                Slot = 0,
+                MinimumManaCost = 0,
+                WaitTime = 0,
+                WearOffMessage = "!Axe!"
+            },
+
+            // Dagger (weapon skill)
+            new Models.SkillType() {
+                Name = "dagger",
+                RequiredLevels = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 1},
+                    {Classes.Cleric, 1},
+                    {Classes.Thief, 1},
+                    {Classes.Warrior, 1}
+                },
+                Difficulty = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 2},
+                    {Classes.Cleric, 3},
+                    {Classes.Thief, 2},
+                    {Classes.Warrior, 2}
+                },
+                SpellFunction = null,
+                TargetType = Enums.TargetTypes.Ignore,
+                MinimumPosition = Enums.Position.Fighting,
+                Slot = 0,
+                MinimumManaCost = 0,
+                WaitTime = 0,
+                WearOffMessage = "!Dagger!"
+            },
+
+            // Flail (weapon skill)
+            new Models.SkillType() {
+                Name = "flail",
+                RequiredLevels = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 1},
+                    {Classes.Cleric, 1},
+                    {Classes.Thief, 1},
+                    {Classes.Warrior, 1}
+                },
+                Difficulty = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 6},
+                    {Classes.Cleric, 3},
+                    {Classes.Thief, 6},
+                    {Classes.Warrior, 4}
+                },
+                SpellFunction = null,
+                TargetType = Enums.TargetTypes.Ignore,
+                MinimumPosition = Enums.Position.Fighting,
+                Slot = 0,
+                MinimumManaCost = 0,
+                WaitTime = 0,
+                WearOffMessage = "!Flail!"
+            },
+
+            // Mace (weapon skill)
+            new Models.SkillType() {
+                Name = "mace",
+                RequiredLevels = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 1},
+                    {Classes.Cleric, 1},
+                    {Classes.Thief, 1},
+                    {Classes.Warrior, 1}
+                },
+                Difficulty = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 5},
+                    {Classes.Cleric, 2},
+                    {Classes.Thief, 3},
+                    {Classes.Warrior, 3}
+                },
+                SpellFunction = null,
+                TargetType = Enums.TargetTypes.Ignore,
+                MinimumPosition = Enums.Position.Fighting,
+                Slot = 0,
+                MinimumManaCost = 0,
+                WaitTime = 0,
+                WearOffMessage = "!Mace!"
+            },
+
+            // Polearm (weapon skill)
+            new Models.SkillType() {
+                Name = "polearm",
+                RequiredLevels = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 1},
+                    {Classes.Cleric, 1},
+                    {Classes.Thief, 1},
+                    {Classes.Warrior, 1}
+                },
+                Difficulty = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 6},
+                    {Classes.Cleric, 6},
+                    {Classes.Thief, 6},
+                    {Classes.Warrior, 4}
+                },
+                SpellFunction = null,
+                TargetType = Enums.TargetTypes.Ignore,
+                MinimumPosition = Enums.Position.Fighting,
+                Slot = 0,
+                MinimumManaCost = 0,
+                WaitTime = 0,
+                WearOffMessage = "!Polearm!"
+            },
+
+            // Shield Block (combat skill)
+            new Models.SkillType() {
+                Name = "shield block",
+                RequiredLevels = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 1},
+                    {Classes.Cleric, 1},
+                    {Classes.Thief, 1},
+                    {Classes.Warrior, 1}
+                },
+                Difficulty = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 6},
+                    {Classes.Cleric, 4},
+                    {Classes.Thief, 6},
+                    {Classes.Warrior, 2}
+                },
+                SpellFunction = null,
+                TargetType = Enums.TargetTypes.Ignore,
+                MinimumPosition = Enums.Position.Fighting,
+                Slot = 0,
+                MinimumManaCost = 0,
+                WaitTime = 0,
+                WearOffMessage = "!Shield!"
+            },
+
+            // Spear (weapon skill)
+            new Models.SkillType() {
+                Name = "spear",
+                RequiredLevels = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 1},
+                    {Classes.Cleric, 1},
+                    {Classes.Thief, 1},
+                    {Classes.Warrior, 1}
+                },
+                Difficulty = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 4},
+                    {Classes.Cleric, 4},
+                    {Classes.Thief, 4},
+                    {Classes.Warrior, 3}
+                },
+                SpellFunction = null,
+                TargetType = Enums.TargetTypes.Ignore,
+                MinimumPosition = Enums.Position.Fighting,
+                Slot = 0,
+                MinimumManaCost = 0,
+                WaitTime = 0,
+                WearOffMessage = "!Spear!"
+            },
+
+            // Sword (weapon skill)
+            new Models.SkillType() {
+                Name = "sword",
+                RequiredLevels = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 1},
+                    {Classes.Cleric, 1},
+                    {Classes.Thief, 1},
+                    {Classes.Warrior, 1}
+                },
+                Difficulty = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 5},
+                    {Classes.Cleric, 6},
+                    {Classes.Thief, 3},
+                    {Classes.Warrior, 2}
+                },
+                SpellFunction = null,
+                TargetType = Enums.TargetTypes.Ignore,
+                MinimumPosition = Enums.Position.Fighting,
+                Slot = 0,
+                MinimumManaCost = 0,
+                WaitTime = 0,
+                WearOffMessage = "!Sword!"
+            },
+
+            // Whip (weapon skill)
+            new Models.SkillType() {
+                Name = "whip",
+                RequiredLevels = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 1},
+                    {Classes.Cleric, 1},
+                    {Classes.Thief, 1},
+                    {Classes.Warrior, 1}
+                },
+                Difficulty = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 6},
+                    {Classes.Cleric, 5},
+                    {Classes.Thief, 5},
+                    {Classes.Warrior, 4}
+                },
+                SpellFunction = null,
+                TargetType = Enums.TargetTypes.Ignore,
+                MinimumPosition = Enums.Position.Fighting,
+                Slot = 0,
+                MinimumManaCost = 0,
+                WaitTime = 0,
+                WearOffMessage = "!Whip!"
+            },
+
+            // Backstab (combat skill)
+            new Models.SkillType() {
+                Name = "backstab",
+                RequiredLevels = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 53},
+                    {Classes.Cleric, 53},
+                    {Classes.Thief, 1},
+                    {Classes.Warrior, 53}
+                },
+                Difficulty = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 0},
+                    {Classes.Cleric, 0},
+                    {Classes.Thief, 5},
+                    {Classes.Warrior, 0}
+                },
+                SpellFunction = null,
+                TargetType = Enums.TargetTypes.Ignore,
+                MinimumPosition = Enums.Position.Fighting,
+                Slot = 0,
+                MinimumManaCost = 0,
+                WaitTime = 24,
+                DamageMessage = "backstab",
+                WearOffMessage = "!Backstab!"
+            },
+
+            // Bash (combat skill)
+            new Models.SkillType() {
+                Name = "bash",
+                RequiredLevels = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 53},
+                    {Classes.Cleric, 53},
+                    {Classes.Thief, 53},
+                    {Classes.Warrior, 1}
+                },
+                Difficulty = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 0},
+                    {Classes.Cleric, 0},
+                    {Classes.Thief, 0},
+                    {Classes.Warrior, 4}
+                },
+                SpellFunction = null,
+                TargetType = Enums.TargetTypes.Ignore,
+                MinimumPosition = Enums.Position.Fighting,
+                Slot = 0,
+                MinimumManaCost = 0,
+                WaitTime = 0,
+                DamageMessage = "bash",
+                WearOffMessage = "!Bash!"
+            },
+
+            // Berserk (combat skill)
+            new Models.SkillType() {
+                Name = "berserk",
+                RequiredLevels = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 53},
+                    {Classes.Cleric, 53},
+                    {Classes.Thief, 53},
+                    {Classes.Warrior, 18}
+                },
+                Difficulty = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 0},
+                    {Classes.Cleric, 0},
+                    {Classes.Thief, 0},
+                    {Classes.Warrior, 5}
+                },
+                SpellFunction = null,
+                TargetType = Enums.TargetTypes.Ignore,
+                MinimumPosition = Enums.Position.Fighting,
+                Slot = 0,
+                MinimumManaCost = 0,
+                WaitTime = 24,
+                WearOffMessage = "You feel your pulse slow down."
+            },
+
+            // Dirt Kicking (combat skill)
+            new Models.SkillType() {
+                Name = "dirt kicking",
+                RequiredLevels = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 53},
+                    {Classes.Cleric, 53},
+                    {Classes.Thief, 3},
+                    {Classes.Warrior, 3}
+                },
+                Difficulty = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 0},
+                    {Classes.Cleric, 0},
+                    {Classes.Thief, 4},
+                    {Classes.Warrior, 4}
+                },
+                SpellFunction = null,
+                TargetType = Enums.TargetTypes.Ignore,
+                MinimumPosition = Enums.Position.Fighting,
+                Slot = 0,
+                MinimumManaCost = 0,
+                WaitTime = 24,
+                DamageMessage = "kicked dirt",
+                WearOffMessage = "You rub the dirt out of your eyes."
+            },
+
+            // Disarm (combat skill)
+            new Models.SkillType() {
+                Name = "disarm",
+                RequiredLevels = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 53},
+                    {Classes.Cleric, 53},
+                    {Classes.Thief, 12},
+                    {Classes.Warrior, 11}
+                },
+                Difficulty = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 0},
+                    {Classes.Cleric, 0},
+                    {Classes.Thief, 6},
+                    {Classes.Warrior, 4}
+                },
+                SpellFunction = null,
+                TargetType = Enums.TargetTypes.Ignore,
+                MinimumPosition = Enums.Position.Fighting,
+                Slot = 0,
+                MinimumManaCost = 0,
+                WaitTime = 24,
+                WearOffMessage = "!Disarm!"
+            },
+
+            // Dodge (combat skill)
+            new Models.SkillType() {
+                Name = "dodge",
+                RequiredLevels = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 20},
+                    {Classes.Cleric, 22},
+                    {Classes.Thief, 1},
+                    {Classes.Warrior, 13}
+                },
+                Difficulty = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 8},
+                    {Classes.Cleric, 8},
+                    {Classes.Thief, 4},
+                    {Classes.Warrior, 6}
+                },
+                SpellFunction = null,
+                TargetType = Enums.TargetTypes.Ignore,
+                MinimumPosition = Enums.Position.Fighting,
+                Slot = 0,
+                MinimumManaCost = 0,
+                WaitTime = 0,
+                WearOffMessage = "!Dodge!"
+            },
+
+            // Enhanced Damage (combat skill)
+            new Models.SkillType() {
+                Name = "enhanced damage",
+                RequiredLevels = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 45},
+                    {Classes.Cleric, 30},
+                    {Classes.Thief, 25},
+                    {Classes.Warrior, 1}
+                },
+                Difficulty = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 10},
+                    {Classes.Cleric, 9},
+                    {Classes.Thief, 5},
+                    {Classes.Warrior, 3}
+                },
+                SpellFunction = null,
+                TargetType = Enums.TargetTypes.Ignore,
+                MinimumPosition = Enums.Position.Fighting,
+                Slot = 0,
+                MinimumManaCost = 0,
+                WaitTime = 0,
+                WearOffMessage = "!Enhanced Damage!"
+            },
+
+            // Envenom (combat skill)
+            new Models.SkillType() {
+                Name = "envenom",
+                RequiredLevels = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 53},
+                    {Classes.Cleric, 53},
+                    {Classes.Thief, 10},
+                    {Classes.Warrior, 53}
+                },
+                Difficulty = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 0},
+                    {Classes.Cleric, 0},
+                    {Classes.Thief, 4},
+                    {Classes.Warrior, 0}
+                },
+                SpellFunction = null,
+                TargetType = Enums.TargetTypes.Ignore,
+                MinimumPosition = Enums.Position.Resting,
+                Slot = 0,
+                MinimumManaCost = 0,
+                WaitTime = 36,
+                WearOffMessage = "!Envenom!"
+            },
+
+            // Hand to Hand (combat skill)
+            new Models.SkillType() {
+                Name = "hand to hand",
+                RequiredLevels = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 25},
+                    {Classes.Cleric, 10},
+                    {Classes.Thief, 15},
+                    {Classes.Warrior, 6}
+                },
+                Difficulty = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 8},
+                    {Classes.Cleric, 5},
+                    {Classes.Thief, 6},
+                    {Classes.Warrior, 4}
+                },
+                SpellFunction = null,
+                TargetType = Enums.TargetTypes.Ignore,
+                MinimumPosition = Enums.Position.Fighting,
+                Slot = 0,
+                MinimumManaCost = 0,
+                WaitTime = 0,
+                WearOffMessage = "!Hand to Hand!"
+            },
+
+            // Kick (combat skill)
+            new Models.SkillType() {
+                Name = "kick",
+                RequiredLevels = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 53},
+                    {Classes.Cleric, 12},
+                    {Classes.Thief, 14},
+                    {Classes.Warrior, 8}
+                },
+                Difficulty = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 0},
+                    {Classes.Cleric, 4},
+                    {Classes.Thief, 6},
+                    {Classes.Warrior, 3}
+                },
+                SpellFunction = null,
+                TargetType = Enums.TargetTypes.Character_Offensive,
+                MinimumPosition = Enums.Position.Fighting,
+                Slot = 0,
+                MinimumManaCost = 0,
+                WaitTime = 12,
+                DamageMessage = "kick",
+                WearOffMessage = "!Kick!"
+            },
+
+            // Parry (combat skill)
+            new Models.SkillType() {
+                Name = "parry",
+                RequiredLevels = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 22},
+                    {Classes.Cleric, 20},
+                    {Classes.Thief, 13},
+                    {Classes.Warrior, 1}
+                },
+                Difficulty = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 8},
+                    {Classes.Cleric, 8},
+                    {Classes.Thief, 6},
+                    {Classes.Warrior, 4}
+                },
+                SpellFunction = null,
+                TargetType = Enums.TargetTypes.Ignore,
+                MinimumPosition = Enums.Position.Fighting,
+                Slot = 0,
+                MinimumManaCost = 0,
+                WaitTime = 0,
+                WearOffMessage = "!Parry!"
+            },
+
+            // Rescue (combat skill)
+            new Models.SkillType() {
+                Name = "rescue",
+                RequiredLevels = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 53},
+                    {Classes.Cleric, 53},
+                    {Classes.Thief, 53},
+                    {Classes.Warrior, 1}
+                },
+                Difficulty = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 0},
+                    {Classes.Cleric, 0},
+                    {Classes.Thief, 0},
+                    {Classes.Warrior, 4}
+                },
+                SpellFunction = null,
+                TargetType = Enums.TargetTypes.Ignore,
+                MinimumPosition = Enums.Position.Fighting,
+                Slot = 0,
+                MinimumManaCost = 0,
+                WaitTime = 12,
+                WearOffMessage = "!Rescue!"
+            },
+
+            // Trip (combat skill)
+            new Models.SkillType() {
+                Name = "trip",
+                RequiredLevels = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 53},
+                    {Classes.Cleric, 53},
+                    {Classes.Thief, 1},
+                    {Classes.Warrior, 15}
+                },
+                Difficulty = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 0},
+                    {Classes.Cleric, 0},
+                    {Classes.Thief, 4},
+                    {Classes.Warrior, 8}
+                },
+                SpellFunction = null,
+                TargetType = Enums.TargetTypes.Ignore,
+                MinimumPosition = Enums.Position.Fighting,
+                Slot = 0,
+                MinimumManaCost = 0,
+                WaitTime = 24,
+                WearOffMessage = "!Trip!"
+            },
+
+            // Second Attack (combat skill)
+            new Models.SkillType() {
+                Name = "second attack",
+                RequiredLevels = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 30},
+                    {Classes.Cleric, 24},
+                    {Classes.Thief, 12},
+                    {Classes.Warrior, 5}
+                },
+                Difficulty = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 10},
+                    {Classes.Cleric, 8},
+                    {Classes.Thief, 5},
+                    {Classes.Warrior, 3}
+                },
+                SpellFunction = null,
+                TargetType = Enums.TargetTypes.Ignore,
+                MinimumPosition = Enums.Position.Fighting,
+                Slot = 0,
+                MinimumManaCost = 0,
+                WaitTime = 0,
+                WearOffMessage = "!Second Attack!"
+            },
+
+            // Third Attack (combat skill)
+            new Models.SkillType() {
+                Name = "third attack",
+                RequiredLevels = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 53},
+                    {Classes.Cleric, 53},
+                    {Classes.Thief, 24},
+                    {Classes.Warrior, 12}
+                },
+                Difficulty = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 0},
+                    {Classes.Cleric, 0},
+                    {Classes.Thief, 10},
+                    {Classes.Warrior, 4}
+                },
+                SpellFunction = null,
+                TargetType = Enums.TargetTypes.Ignore,
+                MinimumPosition = Enums.Position.Fighting,
+                Slot = 0,
+                MinimumManaCost = 0,
+                WaitTime = 0,
+                WearOffMessage = "!Third Attack!"
+            },
+            #endregion
+
+            #region Non-Combat Skills
+            // Fast Healing (non-combat skill)
+            new Models.SkillType() {
+                Name = "fast healing",
+                RequiredLevels = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 15},
+                    {Classes.Cleric, 9},
+                    {Classes.Thief, 16},
+                    {Classes.Warrior, 6}
+                },
+                Difficulty = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 8},
+                    {Classes.Cleric, 5},
+                    {Classes.Thief, 6},
+                    {Classes.Warrior, 4}
+                },
+                SpellFunction = null,
+                TargetType = Enums.TargetTypes.Ignore,
+                MinimumPosition = Enums.Position.Sleeping,
+                Slot = 0,
+                MinimumManaCost = 0,
+                WaitTime = 0,
+                WearOffMessage = "!Fast Healing!"
+            },
+
+            // Haggle (non-combat skill)
+            new Models.SkillType() {
+                Name = "haggle",
+                RequiredLevels = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 7},
+                    {Classes.Cleric, 18},
+                    {Classes.Thief, 1},
+                    {Classes.Warrior, 14}
+                },
+                Difficulty = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 5},
+                    {Classes.Cleric, 8},
+                    {Classes.Thief, 3},
+                    {Classes.Warrior, 6}
+                },
+                SpellFunction = null,
+                TargetType = Enums.TargetTypes.Ignore,
+                MinimumPosition = Enums.Position.Resting,
+                Slot = 0,
+                MinimumManaCost = 0,
+                WaitTime = 0,
+                WearOffMessage = "!Haggle!"
+            },
+
+            // Hide (non-combat skill)
+            new Models.SkillType() {
+                Name = "hide",
+                RequiredLevels = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 53},
+                    {Classes.Cleric, 53},
+                    {Classes.Thief, 1},
+                    {Classes.Warrior, 12}
+                },
+                Difficulty = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 0},
+                    {Classes.Cleric, 0},
+                    {Classes.Thief, 4},
+                    {Classes.Warrior, 6}
+                },
+                SpellFunction = null,
+                TargetType = Enums.TargetTypes.Ignore,
+                MinimumPosition = Enums.Position.Resting,
+                Slot = 0,
+                MinimumManaCost = 0,
+                WaitTime = 12,
+                WearOffMessage = "!Hide!"
+            },
+
+            // Lore (non-combat skill)
+            new Models.SkillType() {
+                Name = "lore",
+                RequiredLevels = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 10},
+                    {Classes.Cleric, 10},
+                    {Classes.Thief, 6},
+                    {Classes.Warrior, 20}
+                },
+                Difficulty = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 6},
+                    {Classes.Cleric, 6},
+                    {Classes.Thief, 4},
+                    {Classes.Warrior, 8}
+                },
+                SpellFunction = null,
+                TargetType = Enums.TargetTypes.Ignore,
+                MinimumPosition = Enums.Position.Resting,
+                Slot = 0,
+                MinimumManaCost = 0,
+                WaitTime = 36,
+                WearOffMessage = "!Lore!"
+            },
+
+            // Meditation (non-combat skill)
+            new Models.SkillType() {
+                Name = "meditation",
+                RequiredLevels = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 6},
+                    {Classes.Cleric, 6},
+                    {Classes.Thief, 15},
+                    {Classes.Warrior, 15}
+                },
+                Difficulty = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 5},
+                    {Classes.Cleric, 5},
+                    {Classes.Thief, 8},
+                    {Classes.Warrior, 8}
+                },
+                SpellFunction = null,
+                TargetType = Enums.TargetTypes.Ignore,
+                MinimumPosition = Enums.Position.Sleeping,
+                Slot = 0,
+                MinimumManaCost = 0,
+                WaitTime = 0,
+                WearOffMessage = "Meditation"
+            },
+
+            // Peek (non-combat skill)
+            new Models.SkillType() {
+                Name = "peek",
+                RequiredLevels = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 8},
+                    {Classes.Cleric, 21},
+                    {Classes.Thief, 1},
+                    {Classes.Warrior, 14}
+                },
+                Difficulty = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 5},
+                    {Classes.Cleric, 7},
+                    {Classes.Thief, 3},
+                    {Classes.Warrior, 6}
+                },
+                SpellFunction = null,
+                TargetType = Enums.TargetTypes.Ignore,
+                MinimumPosition = Enums.Position.Standing,
+                Slot = 0,
+                MinimumManaCost = 0,
+                WaitTime = 0,
+                WearOffMessage = "!Peek!"
+            },
+
+            // Pick Lock (non-combat skill)
+            new Models.SkillType() {
+                Name = "pick lock",
+                RequiredLevels = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 25},
+                    {Classes.Cleric, 25},
+                    {Classes.Thief, 7},
+                    {Classes.Warrior, 25}
+                },
+                Difficulty = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 8},
+                    {Classes.Cleric, 8},
+                    {Classes.Thief, 4},
+                    {Classes.Warrior, 8}
+                },
+                SpellFunction = null,
+                TargetType = Enums.TargetTypes.Ignore,
+                MinimumPosition = Enums.Position.Standing,
+                Slot = 0,
+                MinimumManaCost = 0,
+                WaitTime = 12,
+                WearOffMessage = "!Pick!"
+            },
+
+            // Sneak (non-combat skill)
+            new Models.SkillType() {
+                Name = "sneak",
+                RequiredLevels = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 53},
+                    {Classes.Cleric, 53},
+                    {Classes.Thief, 4},
+                    {Classes.Warrior, 10}
+                },
+                Difficulty = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 0},
+                    {Classes.Cleric, 0},
+                    {Classes.Thief, 4},
+                    {Classes.Warrior, 6}
+                },
+                SpellFunction = null,
+                TargetType = Enums.TargetTypes.Ignore,
+                MinimumPosition = Enums.Position.Standing,
+                Slot = 0,
+                MinimumManaCost = 0,
+                WaitTime = 12,
+                WearOffMessage = "You no longer feel stealthy."
+            },
+
+            // Steal (non-combat skill)
+            new Models.SkillType() {
+                Name = "steal",
+                RequiredLevels = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 53},
+                    {Classes.Cleric, 53},
+                    {Classes.Thief, 5},
+                    {Classes.Warrior, 53}
+                },
+                Difficulty = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 0},
+                    {Classes.Cleric, 0},
+                    {Classes.Thief, 4},
+                    {Classes.Warrior, 0}
+                },
+                SpellFunction = null,
+                TargetType = Enums.TargetTypes.Ignore,
+                MinimumPosition = Enums.Position.Standing,
+                Slot = 0,
+                MinimumManaCost = 0,
+                WaitTime = 24,
+                WearOffMessage = "!Steal!"
+            },
+
+            // Scrolls (non-combat skill)
+            new Models.SkillType() {
+                Name = "scrolls",
+                RequiredLevels = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 1},
+                    {Classes.Cleric, 1},
+                    {Classes.Thief, 1},
+                    {Classes.Warrior, 1}
+                },
+                Difficulty = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 2},
+                    {Classes.Cleric, 3},
+                    {Classes.Thief, 5},
+                    {Classes.Warrior, 8}
+                },
+                SpellFunction = null,
+                TargetType = Enums.TargetTypes.Ignore,
+                MinimumPosition = Enums.Position.Standing,
+                Slot = 0,
+                MinimumManaCost = 0,
+                WaitTime = 24,
+                WearOffMessage = "!Scrolls!"
+            },
+
+            // Staves (non-combat skill)
+            new Models.SkillType() {
+                Name = "staves",
+                RequiredLevels = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 1},
+                    {Classes.Cleric, 1},
+                    {Classes.Thief, 1},
+                    {Classes.Warrior, 1}
+                },
+                Difficulty = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 2},
+                    {Classes.Cleric, 3},
+                    {Classes.Thief, 5},
+                    {Classes.Warrior, 8}
+                },
+                SpellFunction = null,
+                TargetType = Enums.TargetTypes.Ignore,
+                MinimumPosition = Enums.Position.Standing,
+                Slot = 0,
+                MinimumManaCost = 0,
+                WaitTime = 12,
+                WearOffMessage = "!Staves!"
+            },
+
+            // Wands (non-combat skill)
+            new Models.SkillType() {
+                Name = "wands",
+                RequiredLevels = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 1},
+                    {Classes.Cleric, 1},
+                    {Classes.Thief, 1},
+                    {Classes.Warrior, 1}
+                },
+                Difficulty = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 2},
+                    {Classes.Cleric, 3},
+                    {Classes.Thief, 5},
+                    {Classes.Warrior, 8}
+                },
+                SpellFunction = null,
+                TargetType = Enums.TargetTypes.Ignore,
+                MinimumPosition = Enums.Position.Standing,
+                Slot = 0,
+                MinimumManaCost = 0,
+                WaitTime = 12,
+                WearOffMessage = "!Wands!"
+            },
+
+            // Recall (non-combat skill)
+            new Models.SkillType() {
+                Name = "recall",
+                RequiredLevels = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 1},
+                    {Classes.Cleric, 1},
+                    {Classes.Thief, 1},
+                    {Classes.Warrior, 1}
+                },
+                Difficulty = new Dictionary<Models.Class, int>() {
+                    {Classes.Mage, 2},
+                    {Classes.Cleric, 2},
+                    {Classes.Thief, 2},
+                    {Classes.Warrior, 2}
+                },
+                SpellFunction = null,
+                TargetType = Enums.TargetTypes.Ignore,
+                MinimumPosition = Enums.Position.Standing,
+                Slot = 0,
+                MinimumManaCost = 0,
+                WaitTime = 12,
+                WearOffMessage = "!Recall!"
             }
             #endregion
         };
