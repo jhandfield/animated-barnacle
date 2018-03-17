@@ -200,18 +200,18 @@ namespace ROMSharp.Models
                                         readingObjects = false;
                                     else if (!lineData.Trim().Equals("#0") && !lineData.Trim().Equals("#$") && !lineData.Trim().Equals(""))
                                     {
-                                        ObjectIndexData newObj = ObjectIndexData.ParseObjectData(ref strRdr, areaFile, ref lineNum, lineData);
+                                        //ObjectIndexData newObj = ObjectIndexData.ParseObjectData(ref strRdr, areaFile, ref lineNum, lineData);
 
-                                        // If we have a loaded room, add it to the world
-                                        if (newObj != null)
-                                            Program.World.Objects.Add(newObj);
-                                        else
-                                        {
-                                            // Record a failed mob load, and set the indicator that we're back because of an error and should keep reading
-                                            // but do nothing until we find a new mob
-                                            errors++;
-                                            backFromError = true;
-                                        }
+                                        //// If we have a loaded room, add it to the world
+                                        //if (newObj != null)
+                                        //    Program.World.Objects.Add(newObj);
+                                        //else
+                                        //{
+                                        //    // Record a failed mob load, and set the indicator that we're back because of an error and should keep reading
+                                        //    // but do nothing until we find a new mob
+                                        //    errors++;
+                                        //    backFromError = true;
+                                        //}
                                     }
                                 }
 
