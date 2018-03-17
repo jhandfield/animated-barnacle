@@ -261,7 +261,22 @@ namespace ROMSharp.Models
                         return null;
 
                     break;
+                case ItemClass.Potion:
+                case ItemClass.Pill:
+                case ItemClass.Scroll:
+                    // Parse and set values
+                    if (!SetPotionPillScrollValues(splitLine, outObj, areaFile, lineNum))
+                        // An error was encountered, return a null object
+                        return null;
 
+                    break;
+                default:
+                    // Parse and set values
+                    if (!SetOtherItemTypeValues(splitLine, outObj, areaFile, lineNum))
+                        // An error was encountered, return a null object
+                        return null;
+                    
+                    break;
             }
             return outObj;
         }
@@ -278,6 +293,71 @@ namespace ROMSharp.Models
             else
                 // Store the damage dice number
                 objValue = parsedValue;
+
+            return true;
+        }
+
+        private static bool SetValue_Skill(string value, ref object objValue, string description, string areaFile, int lineNum, int vnum)
+        {
+            SkillType skill = Consts.Skills.SkillTable.SingleOrDefault(s => s.Name.ToLower().Equals(value.ToLower()));
+
+            if (skill == null)
+            {
+                // Unknown skill
+                Logging.Log.Error(String.Format("Error parsing wield skill \"{0}\" for {1} object {2} in area {3} on line {4}", value, description, vnum, areaFile, lineNum));
+                return false;
+            }
+            else
+                // Store the skill
+                objValue = skill;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Sets the Values array of <paramref name="outObj"/> based on input values from <paramref name="splitLine"/> appropriate where object type is Wand or Staff
+        /// </summary>
+        /// <returns><c>true</c> if values were set without errors, <c>false</c> otherwise. Errors are logged within this method.</returns>
+        /// <param name="splitLine">Array of values to parse</param>
+        /// <param name="outObj">Object whose Values property should be set</param>
+        /// <param name="areaFile">Filename of the area file being parsed, used for error messages</param>
+        /// <param name="lineNum">Line number the values came from, used for error messages</param>
+        private static bool SetOtherItemTypeValues(string[] splitLine, ObjectIndexData outObj, string areaFile, int lineNum)
+        {
+            // All segments should be parsed as ints
+            outObj.Values[0] = SetValue_Int(splitLine[0], ref outObj.Values[0], "other type", areaFile, lineNum, outObj.VNUM);
+            outObj.Values[1] = SetValue_Int(splitLine[1], ref outObj.Values[1], "other type", areaFile, lineNum, outObj.VNUM);
+            outObj.Values[2] = SetValue_Int(splitLine[2], ref outObj.Values[2], "other type", areaFile, lineNum, outObj.VNUM);
+            outObj.Values[3] = SetValue_Int(splitLine[3], ref outObj.Values[3], "other type", areaFile, lineNum, outObj.VNUM);
+            outObj.Values[4] = SetValue_Int(splitLine[4], ref outObj.Values[4], "other type", areaFile, lineNum, outObj.VNUM);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Sets the Values array of <paramref name="outObj"/> based on input values from <paramref name="splitLine"/> appropriate where object type is Wand or Staff
+        /// </summary>
+        /// <returns><c>true</c> if values were set without errors, <c>false</c> otherwise. Errors are logged within this method.</returns>
+        /// <param name="splitLine">Array of values to parse</param>
+        /// <param name="outObj">Object whose Values property should be set</param>
+        /// <param name="areaFile">Filename of the area file being parsed, used for error messages</param>
+        /// <param name="lineNum">Line number the values came from, used for error messages</param>
+        private static bool SetPotionPillScrollValues(string[] splitLine, ObjectIndexData outObj, string areaFile, int lineNum)
+        {
+            // Segment 1 - Level, should be an integer
+            outObj.Values[0] = SetValue_Int(splitLine[0], ref outObj.Values[0], "potion, pill, or scroll", areaFile, lineNum, outObj.VNUM);
+
+            // Segment 2 - Spell #1, should be a skill
+            outObj.Values[1] = SetValue_Skill(splitLine[1], ref outObj.Values[1], "potion, pill, or scroll", areaFile, lineNum, outObj.VNUM);
+
+            // Segment 3 - Spell #2, should be a skill
+            outObj.Values[2] = SetValue_Skill(splitLine[2], ref outObj.Values[2], "potion, pill, or scroll", areaFile, lineNum, outObj.VNUM);
+
+            // Segment 4 - Spell #3, should be a skill
+            outObj.Values[3] = SetValue_Skill(splitLine[3], ref outObj.Values[3], "potion, pill, or scroll", areaFile, lineNum, outObj.VNUM);
+
+            // Segment 5 - Spell #4, should be a skill
+            outObj.Values[4] = SetValue_Skill(splitLine[4], ref outObj.Values[4], "potion, pill, or scroll", areaFile, lineNum, outObj.VNUM);
 
             return true;
         }
@@ -302,7 +382,7 @@ namespace ROMSharp.Models
             outObj.Values[2] = SetValue_Int(splitLine[2], ref outObj.Values[2], "staff or wand", areaFile, lineNum, outObj.VNUM);
 
             // Segment 4 - Skill for wielding
-
+            outObj.Values[3] = SetValue_Skill(splitLine[3], ref outObj.Values[3], "staff or wand", areaFile, lineNum, outObj.VNUM);
 
             // Segment 5 - Appears to be unused, but should be an integer
             outObj.Values[3] = SetValue_Int(splitLine[3], ref outObj.Values[3], "staff or wand", areaFile, lineNum, outObj.VNUM);

@@ -129,6 +129,7 @@
     <Compile Include="Enums\TargetTypes.cs" />
     <Compile Include="Consts\Skills.cs" />
     <Compile Include="Models\SkillGroup.cs" />
+    <Compile Include="Models\Objects.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

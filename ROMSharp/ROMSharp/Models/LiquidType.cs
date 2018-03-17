@@ -19,8 +19,8 @@ namespace ROMSharp.Models
         /// </summary>
         public LiquidAffects Affects { get; set; }
 
-        public LiquidType() { }
-        public LiquidType(string name, string color, int[] affects)
+        public LiquidType() { Affects = new LiquidAffects(); }
+        public LiquidType(string name, string color, int[] affects) : this()
         {
             // Validate the affects array
             if (affects.Length != 5)

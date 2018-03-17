@@ -44,7 +44,7 @@ namespace ROMSharp
         /// <summary>
         /// Collection of objects that make up the flora of the world
         /// </summary>
-        public Models.ObjectIndexes Objects { get; set; }
+        public Models.Objects Objects { get; set; }
         #endregion
 
         #region Constructors
@@ -54,6 +54,7 @@ namespace ROMSharp
             this.State = Enums.GameState.Loading;
             this.Rooms = new Models.Rooms();
             this.Mobs = new Models.Mobs();
+            this.Objects = new Models.Objects();
         }
         #endregion
 
