@@ -7,6 +7,53 @@ namespace ROMSharp.Helpers
     public static class AlphaConversions
     {
         /// <summary>
+        /// Converts legacy ROM macro-based flags to an int
+        /// </summary>
+        /// <returns>The integer representation of <paramref name="inputFlag"/></returns>
+        /// <param name="inputFlag">Legacy ROM flags to convert; must contain no characters other than A-ee</param>
+        public static int ConvertROMAlphaToInt32(string inputFlag)
+        {
+            // Check if input flag is 0
+            if (inputFlag.Equals("0"))
+                return 0;
+
+            // Will hold the sum of the flags for conversion
+            int inFlagsSum = 0;
+
+            // Buffer to hold multi-character flags
+            string charFlagBuffer = String.Empty;
+
+            // Loop over each character
+            foreach (char c in inputFlag)
+            {
+                // Set or append the current character
+                if (String.IsNullOrEmpty((charFlagBuffer)))
+                    charFlagBuffer = c.ToString();
+                else
+                    charFlagBuffer += c.ToString();
+
+                // If the character is lower case, move to the next iteration
+                if (Char.IsLower(c))
+                    continue;
+
+                // Declare an AlphaMacros object to hold the (potentially) parsed value below
+                Enums.AlphaMacros parsed;
+
+                // Attempt to parse each character as an AlphaMacro and add to the running sum
+                if (Enum.TryParse<Enums.AlphaMacros>(charFlagBuffer, out parsed))
+                    inFlagsSum += (int)parsed;
+                else
+                    throw new ArgumentException(String.Format("Invalid character found in inFlags: {0}", c));
+
+                // Empty the buffer
+                charFlagBuffer = String.Empty;
+            }
+
+            // Return the raw inFlagSum value
+            return inFlagsSum;
+        }
+
+        /// <summary>
         /// Converts legacy ROM macro-based room flags to a RoomAttributes object
         /// </summary>
         /// <returns>A RoomAttributes object representation of the input flags</returns>

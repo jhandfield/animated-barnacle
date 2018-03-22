@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
+using System.Text;
 using ROMSharp.Enums;
 using ROMSharp.Helpers;
 
@@ -162,8 +163,18 @@ namespace ROMSharp.Models
             outObj.Description = sr.ReadLine().TrimEnd('~');
             lineNum++;
 
-            // Read the material
-            outObj.Material = sr.ReadLine().TrimEnd('~');
+            // Check the next line - it may be the object's material, or it may be the oldstyle flag
+            lineData = sr.ReadLine().TrimEnd('~');
+
+            if (lineData.Equals("oldstyle", StringComparison.CurrentCultureIgnoreCase))
+            {
+                Logging.Log.Error(String.Format("Object {0} is identified as an oldstyle object; these are not yet implemented. Skipping.", outObj.VNUM));
+                return null;
+            }
+            else
+                // This line is the material
+                outObj.Material = lineData;
+
             lineNum++;
 
             // Read the next line and split, expect 3 segments
@@ -278,6 +289,267 @@ namespace ROMSharp.Models
                     
                     break;
             }
+
+            // Read the next line and split, expect 4 segments
+            lineData = sr.ReadLine();
+            lineNum++;
+            splitLine = lineData.Split(' ');
+
+            if (splitLine.Length != 4)
+            {
+                Logging.Log.Error(String.Format("Error parsing object {0} in area {1}: invalid values line, expected 4 segments but got {2} - value {3} on line {4}", outObj.VNUM, areaFile, splitLine.Length, lineData, lineNum));
+                return null;
+            }
+
+            // Segment 1 - Level
+            int lvl = 0;
+            if (!Int32.TryParse(splitLine[0], out lvl))
+            {
+                Logging.Log.Error(String.Format("Error parsing level for object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[0], lineNum));
+                return null;
+            }
+            else
+                outObj.Level = lvl;
+            
+            // Segment 2 - Weight
+            int weight = 0;
+            if (!Int32.TryParse(splitLine[1], out lvl))
+            {
+                Logging.Log.Error(String.Format("Error parsing weight for object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[1], lineNum));
+                return null;
+            }
+            else
+                outObj.Weight = weight;
+            
+            // Segment 3 - Cost
+            int cost = 0;
+            if (!Int32.TryParse(splitLine[2], out lvl))
+            {
+                Logging.Log.Error(String.Format("Error parsing cost for object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[2], lineNum));
+                return null;
+            }
+            else
+                outObj.Cost = cost;
+
+            // Segment 4 - Condition
+            switch (splitLine[3].ToLower())
+            {
+                case "P":
+                    outObj.Condition = 100;
+                    break;
+                case "G":
+                    outObj.Condition = 90;
+                    break;
+                case "A":
+                    outObj.Condition = 75;
+                    break;
+                case "W":
+                    outObj.Condition = 50;
+                    break;
+                case "D":
+                    outObj.Condition = 25;
+                    break;
+                case "B":
+                    outObj.Condition = 10;
+                    break;
+                case "R":
+                    outObj.Condition = 0;
+                    break;
+                default:
+                    outObj.Condition = 100;
+                    break;
+            }
+
+            bool readingAffects = true;
+
+            while (readingAffects)
+            {
+                // Peek at the start of the next line
+                char nextLineStart = (char)sr.Peek();
+
+                // If the next line does not start with a #, we have more to do
+                if (!nextLineStart.Equals('#'))
+                {
+                    AffectData aff = new AffectData();
+
+                    // Read the full line (more just to advance the cursor than anything; we've already read all the data)
+                    lineData = sr.ReadLine();
+                    lineNum++;
+
+                    // Different behavior for different characters
+                    switch (lineData.Trim().ToLower())
+                    {
+                        // Permanent affect
+                        case "a":
+                            // Read and split the next line for location and modifier
+                            lineData = sr.ReadLine();
+                            lineNum++;
+                            splitLine = lineData.Split(' ');
+
+                            // Should be two elements
+                            if (splitLine.Length != 2)
+                            {
+                                Logging.Log.Error(String.Format("Error parsing object {0} in area {1}: invalid affect line, expected 2 segments but got {2} - value {3} on line {4}", outObj.VNUM, areaFile, splitLine.Length, lineData, lineNum));
+                                return null;
+                            }
+
+                            // Set up properties of the affect
+                            aff.Where = ToWhere.Object;
+                            aff.Type = -1;
+                            aff.Level = outObj.Level;
+                            aff.Duration = -1;
+                            aff.BitVector = 0;
+
+                            // Segment 1 - Location
+                            int location = 0;
+                            if (!Int32.TryParse(splitLine[0], out location))
+                            {
+                                Logging.Log.Error(String.Format("Error parsing location for object {0} affect in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[0], lineNum));
+                                return null;
+                            }
+                            else
+                                aff.Location = (ApplyType)location;
+
+                            // Segment 2 - Modifier
+                            int modifier = 0;
+                            if (!Int32.TryParse(splitLine[1], out modifier))
+                            {
+                                Logging.Log.Error(String.Format("Error parsing modifier for object {0} affect in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[1], lineNum));
+                                return null;
+                            }
+                            else
+                                aff.Modifier = modifier;
+
+                            Logging.Log.Info(String.Format("Object affect to {0} with modifier {1} added to object {2}", aff.Location.ToString(), aff.Modifier, outObj.VNUM));
+
+                            // Add the affect to the object
+                            outObj.Affected.Add(aff);
+
+                            break;
+
+                        case "f":
+                            // Read and split the next line for location and modifier
+                            lineData = sr.ReadLine();
+                            lineNum++;
+                            splitLine = lineData.Split(' ');
+
+                            // Should be two elements
+                            if (splitLine.Length != 4)
+                            {
+                                Logging.Log.Error(String.Format("Error parsing object {0} in area {1}: invalid affect line, expected 4 segments but got {2} - value {3} on line {4}", outObj.VNUM, areaFile, splitLine.Length, lineData, lineNum));
+                                return null;
+                            }
+
+                            // Set up properties of the affect
+                            aff.Type = -1;
+                            aff.Level = outObj.Level;
+                            aff.Duration = -1;
+
+                            // Segment 1 - Flag type (A, I, R, or V)
+                            switch (splitLine[0].ToLower())
+                            {
+                                case "a":
+                                    aff.Where = ToWhere.Affects;
+                                    break;
+                                case "i":
+                                    aff.Where = ToWhere.Immune;
+                                    break;
+                                case "r":
+                                    aff.Where = ToWhere.Resist;
+                                    break;
+                                case "v":
+                                    aff.Where = ToWhere.Vuln;
+                                    break;
+                                default:
+                                    Logging.Log.Error(String.Format("Error parsing affect flags for object {0} in area {1}: invalid flag location type \"{2}\" encountered, expected A, I, R, or V on line {3}", outObj.VNUM, areaFile, splitLine[1], lineNum));
+                                    return null;
+                                    break;
+                            }
+
+                            // Segment 2 - Location
+                            int flagLocation = 0;
+                            if (!Int32.TryParse(splitLine[1], out flagLocation))
+                            {
+                                Logging.Log.Error(String.Format("Error parsing affect flags location for object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[1], lineNum));
+                                return null;
+                            }
+                            else
+                                aff.Location = (ApplyType)flagLocation;
+
+                            // Segment 3 - Modifier
+                            int flagMod = 0;
+                            if (!Int32.TryParse(splitLine[2], out flagMod))
+                            {
+                                Logging.Log.Error(String.Format("Error parsing affect flags modifier for object {0} affect in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[2], lineNum));
+                                return null;
+                            }
+                            else
+                                aff.Modifier = flagMod;
+
+                            // Segment 4 - Bitvector (value of the flag to apply)
+                            try
+                            {
+                                int bitvector = AlphaConversions.ConvertROMAlphaToInt32(splitLine[3]);
+                                aff.BitVector = bitvector;
+                            }
+                            catch (ArgumentException e)
+                            {
+                                // Invalid extra flags
+                                Logging.Log.Error(String.Format("Error parsing affect flags bitvector for object {0} in area {1}: invalid flag value \"{2}\" found on line {3}", outObj.VNUM, areaFile, splitLine[3], lineNum));
+                                return null;
+                            }
+
+                            Logging.Log.Info(String.Format("Object affect flag loaded to {0} modifying {1} with modifier {2} and bitvector {3} on object {4} in area {5}", aff.Where.ToString(), aff.Location.ToString(), aff.Modifier, aff.BitVector, outObj.VNUM, areaFile));
+
+                            // Add the affect
+                            outObj.Affected.Add(aff);
+                            break;
+                        case "e":
+                            // Object extra descriptions
+                            // TODO: This is an almost straight copy of extra description loading in rooms, should be made its own method
+                            ExtraDescription desc = new ExtraDescription();
+
+                            // Read the next line
+                            lineData = sr.ReadLine();
+                            lineNum++;
+
+                            // Store the value as the description's keyowrds
+                            desc.Keywords = lineData.TrimEnd('~');
+
+                            bool readingDescription = true;
+                            StringBuilder sb = new StringBuilder();
+
+                            while (readingDescription)
+                            {
+                                // Read the line
+                                lineData = sr.ReadLine();
+                                lineNum++;
+
+                                if (lineData.Trim().Equals("~"))
+                                    readingDescription = false;
+                                else
+                                    sb.AppendLine(lineData);
+                            }
+
+                            // Store the description
+                            desc.Description = sb.ToString();
+
+                            Logging.Log.Info(String.Format("Extra description loaded for object {0} in area {1} with keywords {2}", outObj.VNUM, areaFile, desc.Keywords));
+
+                            // Append the ExtraDescription to the object
+                            outObj.ExtraDescriptions.Add(desc);
+                            break;
+                        default:
+                            Logging.Log.Warn(String.Format("Invalid object modifier \"{0}\" found in object {1} in area {2} on line {3}", lineData.Trim(), outObj.VNUM, areaFile, lineNum));
+                            break;
+                    }
+                }
+                else
+                    // We're done with this object
+                    readingAffects = false;
+            }
+
+
             return outObj;
         }
 
@@ -426,12 +698,31 @@ namespace ROMSharp.Models
 
 
             // Segment 3 - Liquid Type, should be a string matching the Name of a LiquidType in the LiquidTable
-            LiquidType liqiudType = Consts.Liquids.LiquidTable.SingleOrDefault(l => l.Name.ToLower().Equals(splitLine[2].ToLower()));
+            string liqType = String.Empty;
+
+            if (splitLine[2].StartsWith("'"))
+            {
+                int i = 2;
+                string nextElem;
+
+                do
+                {
+                    nextElem = splitLine[i++];
+                    liqType += " " + nextElem;
+                }
+                while (!nextElem.EndsWith("'"));
+
+                liqType = liqType.Trim().Trim('\'');
+            }
+            else
+                liqType = splitLine[2];
+            
+            LiquidType liqiudType = Consts.Liquids.LiquidTable.SingleOrDefault(l => l.Name.ToLower().Equals(liqType.ToLower()));
 
             if (liqiudType == null)
             {
                 // Invalid weapon class
-                Logging.Log.Error(String.Format("Error parsing liquid type for fountain/drink container object {0} in area {1}: unknown weapon class \"{2}\" found on line {3}", outObj.VNUM, areaFile, splitLine[2], lineNum));
+                Logging.Log.Error(String.Format("Error parsing liquid type for fountain/drink container object {0} in area {1}: unknown liquid type \"{2}\" found on line {3}", outObj.VNUM, areaFile, splitLine[2], lineNum));
                 return false;
             }
             else
@@ -439,29 +730,29 @@ namespace ROMSharp.Models
                 outObj.Values[2] = liqiudType;
 
             // Segment 4 - Appears to be unused, but should be an integer
-            int unknown4 = 0;
-            if (!Int32.TryParse(splitLine[3], out unknown4))
-            {
-                // Invalid damage dice number
-                Logging.Log.Error(String.Format("Error parsing unknown value 4 for fountain/drink container object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[3], lineNum));
-                return false;
-            }
-            else
-                // Store the damage dice number
-                outObj.Values[0] = unknown4;
+            //int unknown4 = 0;
+            //if (!Int32.TryParse(splitLine[3], out unknown4))
+            //{
+            //    // Invalid damage dice number
+            //    Logging.Log.Error(String.Format("Error parsing unknown value 4 for fountain/drink container object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[3], lineNum));
+            //    return false;
+            //}
+            //else
+            //    // Store the damage dice number
+            //    outObj.Values[0] = unknown4;
 
 
-            // Segment 5 - Appears to be unused, but should be an integer
-            int unknown5 = 0;
-            if (!Int32.TryParse(splitLine[4], out unknown5))
-            {
-                // Invalid damage dice number
-                Logging.Log.Error(String.Format("Error parsing unknown value 5 for fountain/drink container object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[4], lineNum));
-                return false;
-            }
-            else
-                // Store the damage dice number
-                outObj.Values[4] = unknown5;
+            //// Segment 5 - Appears to be unused, but should be an integer
+            //int unknown5 = 0;
+            //if (!Int32.TryParse(splitLine[4], out unknown5))
+            //{
+            //    // Invalid damage dice number
+            //    Logging.Log.Error(String.Format("Error parsing unknown value 5 for fountain/drink container object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[4], lineNum));
+            //    return false;
+            //}
+            //else
+                //// Store the damage dice number
+                //outObj.Values[4] = unknown5;
 
             return true;
         }

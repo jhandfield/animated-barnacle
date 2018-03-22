@@ -78,6 +78,7 @@ namespace ROMSharp
                 case Enums.GameState.Starting:
                     Logging.Log.Info("Server starting up");
                     Logging.Log.Info(String.Format("Server memory usage: {0:N0}KiB", GC.GetTotalMemory(true) / 1024));
+                    Logging.Log.Info(String.Format("{0} classes | {1} skill groups | {2} skills", Consts.Classes.ClassTable.Count, Consts.Skills.SkillGroupTable.Count, Consts.Skills.SkillTable.Count));
 
                     //try
                     //{
@@ -137,6 +138,8 @@ namespace ROMSharp
         /// </summary>
         /// <param name="areaPath">Path to the area folder</param>
         public void LoadFromDisk(string areaPath) {
+            Logging.Log.Info("Loading world...");
+
             // Validate that the path exists
             if (!Directory.Exists(areaPath))
             {
