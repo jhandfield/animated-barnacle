@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using ROMSharp.Enums;
 using ROMSharp.Helpers;
 
@@ -228,20 +229,32 @@ namespace ROMSharp.Models
             // Read the next line and split, expect 5 segments
             lineData = sr.ReadLine();
             lineNum++;
-            splitLine = lineData.Split(' ');
 
-            if (splitLine.Length != 5)
+            string[] splitValues = ParseValuesLine(lineData, outObj, areaFile, lineNum);
+
+            if (splitValues.Length != 5)
             {
                 Logging.Log.Error(String.Format("Error parsing object {0} in area {1}: invalid values line, expected 5 segments but got {2} - value {3} on line {4}", outObj.VNUM, areaFile, splitLine.Length, lineData, lineNum));
                 return null;
             }
+            /*
+            Regex valuesLineRegex = new Regex(@"('?.+'?)\s('?.+'?)\s('?.+'?)\s('?.+'?)\s?('?.+'?)?");
+            Match matches = valuesLineRegex.Match(lineData);
+
+            if (matches.Captures.Count != 5)
+            {
+                Logging.Log.Error(String.Format("Error parsing object {0} in area {1}: invalid values line, expected 5 segments but got {2} - value {3} on line {4}", outObj.VNUM, areaFile, splitLine.Length, lineData, lineNum));
+                return null;
+            }
+            */
 
             // The meaning and data type of each of the 5 values changes depending on the item type
+            // TODO: Finish implementing with Regex
             switch (outObj.ObjectType)
             {
                 case ItemClass.Weapon:
                     // Parse and set values
-                    if (!SetWeaponValues(splitLine, outObj, areaFile, lineNum))
+                    if (!SetWeaponValues(splitValues, outObj, areaFile, lineNum))
                         // An error was encountered, return a null object
                         return null;
                     
@@ -249,7 +262,7 @@ namespace ROMSharp.Models
 
                 case ItemClass.Container:
                     // Parse and set values
-                    if (!SetContainerValues(splitLine, outObj, areaFile, lineNum))
+                    if (!SetContainerValues(splitValues, outObj, areaFile, lineNum))
                         // An error was encountered, return a null object
                         return null;
 
@@ -258,7 +271,7 @@ namespace ROMSharp.Models
                 case ItemClass.DrinkContainer:
                 case ItemClass.Fountain:
                     // Parse and set values
-                    if (!SetFountainAndDrinkContainerValues(splitLine, outObj, areaFile, lineNum))
+                    if (!SetFountainAndDrinkContainerValues(splitValues, outObj, areaFile, lineNum))
                         // An error was encountered, return a null object
                         return null;
 
@@ -267,7 +280,7 @@ namespace ROMSharp.Models
                 case ItemClass.Wand:
                 case ItemClass.Staff:
                     // Parse and set values
-                    if (!SetWandAndStaffValues(splitLine, outObj, areaFile, lineNum))
+                    if (!SetWandAndStaffValues(splitValues, outObj, areaFile, lineNum))
                         // An error was encountered, return a null object
                         return null;
 
@@ -276,14 +289,14 @@ namespace ROMSharp.Models
                 case ItemClass.Pill:
                 case ItemClass.Scroll:
                     // Parse and set values
-                    if (!SetPotionPillScrollValues(splitLine, outObj, areaFile, lineNum))
+                    if (!SetPotionPillScrollValues(splitValues, outObj, areaFile, lineNum))
                         // An error was encountered, return a null object
                         return null;
 
                     break;
                 default:
                     // Parse and set values
-                    if (!SetOtherItemTypeValues(splitLine, outObj, areaFile, lineNum))
+                    if (!SetOtherItemTypeValues(splitValues, outObj, areaFile, lineNum))
                         // An error was encountered, return a null object
                         return null;
                     
@@ -297,7 +310,7 @@ namespace ROMSharp.Models
 
             if (splitLine.Length != 4)
             {
-                Logging.Log.Error(String.Format("Error parsing object {0} in area {1}: invalid values line, expected 4 segments but got {2} - value {3} on line {4}", outObj.VNUM, areaFile, splitLine.Length, lineData, lineNum));
+                Logging.Log.Error(String.Format("Error parsing object {0} in area {1}: invalid level/weight/cost/condition line, expected 4 segments but got {2} - value {3} on line {4}", outObj.VNUM, areaFile, splitLine.Length, lineData, lineNum));
                 return null;
             }
 
@@ -553,13 +566,49 @@ namespace ROMSharp.Models
             return outObj;
         }
 
+        private static string[] ParseValuesLine(string lineData, ObjectIndexData outObj, string areaFile, int lineNum)
+        {
+            string[] splitInput = lineData.Split(' ');
+            string[] output = new string[5];
+            bool inQuoted = false;
+            int count = 0;
+            string buf = String.Empty;
+
+            foreach (string val in splitInput)
+            {
+                if (!inQuoted && (!val.StartsWith("'") || (val.StartsWith("'") && val.EndsWith("'"))))
+                {
+                    output[count] = val.Trim('\'');
+                    count++;
+                }
+                else if (inQuoted && val.EndsWith("'"))
+                {
+                    output[count] = buf + " " + val.Trim('\'');
+                    Logging.Log.Info(String.Format("VALUES LINE: Added value {0} to output", output[count]));
+                    count++;
+                    inQuoted = false;
+                }
+                else if (inQuoted && !val.EndsWith("'"))
+                {
+                    buf += " " + val.Trim('\'');
+                }
+                else if (val.StartsWith("'") && !val.EndsWith("'"))
+                {
+                    buf = val.Trim('\'');
+                    inQuoted = true;
+                }
+            }
+
+            return output;
+        }
+
         private static bool SetValue_Int(string value, ref object objValue, string description, string areaFile, int lineNum, int vnum)
         {
             int parsedValue = 0;
             if (!Int32.TryParse(value, out parsedValue))
             {
                 // Invalid damage dice number
-                Logging.Log.Error(String.Format("Error parsing capacity for {0} object {1} in area {2}: expected an integer but found \"{3}\" on line {4}", description, vnum, areaFile, value, lineNum));
+                Logging.Log.Error(String.Format("Error parsing integer value for {0} object {1} in area {2}: expected an integer but found \"{3}\" on line {4}", description, vnum, areaFile, value, lineNum));
                 return false;
             }
             else
@@ -571,17 +620,21 @@ namespace ROMSharp.Models
 
         private static bool SetValue_Skill(string value, ref object objValue, string description, string areaFile, int lineNum, int vnum)
         {
-            SkillType skill = Consts.Skills.SkillTable.SingleOrDefault(s => s.Name.ToLower().Equals(value.ToLower()));
-
-            if (skill == null)
+            // Check that there's actually something to look for
+            if (!String.IsNullOrEmpty(value))
             {
-                // Unknown skill
-                Logging.Log.Error(String.Format("Error parsing wield skill \"{0}\" for {1} object {2} in area {3} on line {4}", value, description, vnum, areaFile, lineNum));
-                return false;
+                SkillType skill = Consts.Skills.SkillTable.SingleOrDefault(s => s.Name.ToLower().Equals(value.ToLower()));
+
+                if (skill == null)
+                {
+                    // Unknown skill
+                    Logging.Log.Error(String.Format("Error parsing skill \"{0}\" for {1} object {2} in area {3} on line {4}", value, description, vnum, areaFile, lineNum));
+                    return false;
+                }
+                else
+                    // Store the skill
+                    objValue = skill;
             }
-            else
-                // Store the skill
-                objValue = skill;
 
             return true;
         }
@@ -657,7 +710,7 @@ namespace ROMSharp.Models
             outObj.Values[3] = SetValue_Skill(splitLine[3], ref outObj.Values[3], "staff or wand", areaFile, lineNum, outObj.VNUM);
 
             // Segment 5 - Appears to be unused, but should be an integer
-            outObj.Values[3] = SetValue_Int(splitLine[3], ref outObj.Values[3], "staff or wand", areaFile, lineNum, outObj.VNUM);
+            outObj.Values[3] = SetValue_Int(splitLine[4], ref outObj.Values[3], "staff or wand", areaFile, lineNum, outObj.VNUM);
 
             return true;
         }

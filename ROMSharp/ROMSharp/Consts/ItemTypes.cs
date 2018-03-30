@@ -15,7 +15,7 @@ namespace ROMSharp.Consts
             new ItemType("weapon", ItemClass.Weapon),
             new ItemType("treasure", ItemClass.Treasure),
             new ItemType("armor", ItemClass.Armor),
-            new ItemType("potion", ItemClass.Portal),
+            new ItemType("potion", ItemClass.Potion),
             new ItemType("clothing", ItemClass.Clothing),
             new ItemType("furniture", ItemClass.Furniture),
             new ItemType("trash", ItemClass.Trash),
