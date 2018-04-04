@@ -164,18 +164,8 @@ namespace ROMSharp.Models
             outObj.Description = sr.ReadLine().TrimEnd('~');
             lineNum++;
 
-            // Check the next line - it may be the object's material, or it may be the oldstyle flag
-            lineData = sr.ReadLine().TrimEnd('~');
-
-            if (lineData.Equals("oldstyle", StringComparison.CurrentCultureIgnoreCase))
-            {
-                Logging.Log.Error(String.Format("Object {0} is identified as an oldstyle object; these are not yet implemented. Skipping.", outObj.VNUM));
-                return null;
-            }
-            else
-                // This line is the material
-                outObj.Material = lineData;
-
+            // Read the material - it may be oldstyle, but the original ROM code doesn't do anything with that either
+            outObj.Material = sr.ReadLine().TrimEnd('~');
             lineNum++;
 
             // Read the next line and split, expect 3 segments
