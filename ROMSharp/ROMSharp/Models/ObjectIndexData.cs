@@ -419,7 +419,7 @@ namespace ROMSharp.Models
                             else
                                 aff.Modifier = modifier;
 
-                            Logging.Log.Info(String.Format("Object affect to {0} with modifier {1} added to object {2}", aff.Location.ToString(), aff.Modifier, outObj.VNUM));
+                            Logging.Log.Debug(String.Format("Object affect to {0} with modifier {1} added to object {2}", aff.Location.ToString(), aff.Modifier, outObj.VNUM));
 
                             // Add the affect to the object
                             outObj.Affected.Add(aff);
@@ -548,24 +548,32 @@ namespace ROMSharp.Models
 
             foreach (string val in splitInput)
             {
+                // If we're not in a quoted string and either the value doesn't start with a quote or is fully quoted...
                 if (!inQuoted && (!val.StartsWith("'") || (val.StartsWith("'") && val.EndsWith("'"))))
                 {
+                    // Add the value to the output, removing all quotes
                     output[count] = val.Trim('\'');
                     count++;
                 }
+                // If we're in a quoted string and the value contains the ending quote...
                 else if (inQuoted && val.EndsWith("'"))
                 {
+                    // Add the buffer and this value to the output, stripping the end quote
                     output[count] = buf + " " + val.Trim('\'');
-                    Logging.Log.Info(String.Format("VALUES LINE: Added value {0} to output", output[count]));
+
                     count++;
                     inQuoted = false;
                 }
+                // If we're in a quoted string and the value does not contain the end quote...
                 else if (inQuoted && !val.EndsWith("'"))
                 {
-                    buf += " " + val.Trim('\'');
+                    // Add it to the buffer
+                    buf += " " + val;
                 }
+                // If (implied) we're not in a quoted string and the value starts with a quote but doesn't end with a quote...
                 else if (val.StartsWith("'") && !val.EndsWith("'"))
                 {
+                    // Add the value to the buffer, stripping the quote, and note that we're in a quoted string
                     buf = val.Trim('\'');
                     inQuoted = true;
                 }

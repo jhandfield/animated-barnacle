@@ -88,7 +88,7 @@ namespace ROMSharp
                         // Instantiate and load the World
                         Program.World.LoadFromDisk(Program.config.AreaDirectory);
 
-                    Logging.Log.Info(String.Format("World loaded - {0} areas consisting of {1} rooms, with {2} mobs", Program.World.Areas.Count, Program.World.Rooms.Count, Program.World.Mobs.Count));
+                    Logging.Log.Info(String.Format("World loaded - {0} areas consisting of {1} rooms, {2} mobs, and {3} objects", Program.World.Areas.Count, Program.World.Rooms.Count, Program.World.Mobs.Count, Program.World.Objects.Count));
 
                     //}
                     //catch (Exception e)
