@@ -18,9 +18,9 @@ namespace ROMSharp.Consts
 
         public class Safety {
             /// <summary>
-            /// Maximum number of lines to read before assuming the #ROOM record is malformed around the Description
+            /// Maximum number of lines to read before assuming a long text record is malformed and we've missed the terminator somehow
             /// </summary>
-            public static int MaxRoomDescLines = 50;
+            public static int MaxLongTextLines = 100;
         }
 	}
 }

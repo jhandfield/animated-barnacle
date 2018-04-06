@@ -108,6 +108,7 @@ namespace ROMSharp.Models
                 AreaReadingState state = AreaReadingState.WaitingForSection;
                 AreaData areaOut = new AreaData();
             int errors = 0;
+            int loaded = 0;
             bool backFromError = false;
 
                 if (!File.Exists(areaPath))
@@ -171,6 +172,8 @@ namespace ROMSharp.Models
                                 // Continue reading until we hit a #0
                                 bool readingObjects = true;
                                 backFromError = false;
+                                errors = 0;
+                                loaded = 0;
 
                                 while (readingObjects)
                                 {
@@ -200,9 +203,25 @@ namespace ROMSharp.Models
                                         readingObjects = false;
                                     else if (!lineData.Trim().Equals("#0") && !lineData.Trim().Equals("#$") && !lineData.Trim().Equals(""))
                                     {
-                                        // TODO: Implement #OBJECTS parsing
+                                        ObjectIndexData newObj = ObjectIndexData.ParseObjectData(ref strRdr, areaFile, ref lineNum, lineData);
+
+                                        // If we have a loaded room, add it to the world
+                                        if (newObj != null)
+                                        {
+                                            Program.World.Objects.Add(newObj);
+                                            loaded++;
+                                        }
+                                        else
+                                        {
+                                            // Record a failed mob load, and set the indicator that we're back because of an error and should keep reading
+                                            // but do nothing until we find a new mob
+                                            errors++;
+                                            backFromError = true;
+                                        }
                                     }
                                 }
+
+                                Logging.Log.Debug(String.Format("Finished reading #OBJECTS section of file {0} on line {1} - loaded {2} objects, failed loading {3} mobs", areaFile, lineNum, loaded, errors));
 
                                 break;
                             #endregion
@@ -214,6 +233,8 @@ namespace ROMSharp.Models
                                 // Continue reading until we hit a #0
                                 bool readingResets = true;
                                 backFromError = false;
+                                errors = 0;
+                                loaded = 0;
 
                                 while (readingResets)
                                 {
@@ -257,6 +278,8 @@ namespace ROMSharp.Models
                                 // Continue reading until we hit a #0
                                 bool readingShops = true;
                                 backFromError = false;
+                                errors = 0;
+                                loaded = 0;
 
                                 while (readingShops)
                                 {
@@ -300,6 +323,8 @@ namespace ROMSharp.Models
                                 // Continue reading until we hit a #0
                                 bool readingSpecials = true;
                                 backFromError = false;
+                                errors = 0;
+                                loaded = 0;
 
                                 while (readingSpecials)
                                 {
@@ -338,10 +363,11 @@ namespace ROMSharp.Models
 
                             #region #MOBILES
                             case "#MOBILES":
-                                errors = 0;
-                                backFromError = false;
-
                                 Logging.Log.Debug(String.Format("Found #MOBILES heading in file {0} on line {1}", areaFile, lineNum));
+
+                                errors = 0;
+                                loaded = 0;
+                                backFromError = false;
 
                                 // Continue reading until we hit a #0
                                 bool readingMobs = true;
@@ -377,7 +403,10 @@ namespace ROMSharp.Models
 
                                         // If we have a loaded room, add it to the world
                                         if (newMob != null)
+                                        {
                                             Program.World.Mobs.Add(newMob);
+                                            loaded++;
+                                        }
                                         else
                                         {
                                             // Record a failed mob load, and set the indicator that we're back because of an error and should keep reading
@@ -388,24 +417,26 @@ namespace ROMSharp.Models
                                     }
                                 }
                                 
-                                Logging.Log.Debug(String.Format("Finished reading #MOBILES section of file {0} on line {1} - failed loading {2} mobs", areaFile, lineNum, errors));
+                                Logging.Log.Debug(String.Format("Finished reading #MOBILES section of file {0} on line {1} - loaded {2} mobs, failed loading {3} mobs", areaFile, lineNum, loaded, errors));
 
                                 break;
                             #endregion
 
-                                #region #ROOMS
-                                case "#ROOMS":
-                                    Logging.Log.Debug(String.Format("Found #ROOMS heading in file {0} on line {1}", areaFile, lineNum));
+                            #region #ROOMS
+                            case "#ROOMS":
+                                Logging.Log.Debug(String.Format("Found #ROOMS heading in file {0} on line {1}", areaFile, lineNum));
 
-                                    // Continue reading until we hit a #0
-                                    bool readingRooms = true;
+                                // Continue reading until we hit a #0
+                                bool readingRooms = true;
                                 backFromError = false;
+                                errors = 0;
+                                loaded = 0;
 
-                                    while (readingRooms)
-                                    {
-                                        // Read a line
-                                        lineData = strRdr.ReadLine();
-                                        lineNum++;
+                                while (readingRooms)
+                                {
+                                    // Read a line
+                                    lineData = strRdr.ReadLine();
+                                    lineNum++;
 
                                     // If we've recently come back from failing to load a mob, we need to ignore some lines
                                     // until we get to the start of the next mob definition
@@ -422,20 +453,31 @@ namespace ROMSharp.Models
                                         // Otherwise, just move on to the next iteration of the loop
                                         else
                                             continue;
-                                    
-                                        if (lineData == null)
-                                            readingRooms = false;
-                                        else if (lineData.Trim().Equals("#0"))
-                                            readingRooms = false;
-                                        else if (!lineData.Trim().Equals("#0") && !lineData.Trim().Equals("#$") && !lineData.Trim().Equals(""))
-                                        {
-                                            RoomIndexData newRoom = RoomIndexData.ParseRoomData(ref strRdr, areaFile, ref lineNum, lineData);
 
-                                            // If we have a loaded room, add it to the world
-                                            if (newRoom != null)
-                                                Program.World.Rooms.Add(newRoom);
+                                    if (lineData == null)
+                                        readingRooms = false;
+                                    else if (lineData.Trim().Equals("#0"))
+                                        readingRooms = false;
+                                    else if (!lineData.Trim().Equals("#0") && !lineData.Trim().Equals("#$") && !lineData.Trim().Equals(""))
+                                    {
+                                        RoomIndexData newRoom = RoomIndexData.ParseRoomData(ref strRdr, areaFile, ref lineNum, lineData);
+
+                                        // If we have a loaded room, add it to the world
+                                        if (newRoom != null)
+                                        {
+                                            loaded++;
+                                            Program.World.Rooms.Add(newRoom);
+                                        }
+                                        else
+                                        {
+                                            errors++;
+                                            backFromError = true;
                                         }
                                     }
+                                }
+
+                                Logging.Log.Debug(String.Format("Finished reading #ROOMS section of file {0} on line {1} - loaded {2} rooms, failed loading {3} rooms", areaFile, lineNum, loaded, errors));
+
                                     break;
 
                                 default:
