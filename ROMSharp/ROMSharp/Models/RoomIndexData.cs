@@ -516,19 +516,75 @@ namespace ROMSharp.Models
     public enum RoomAttributes
     {
         None = 0,
+
+        /// <summary>
+        /// Legacy ROOM_DARK (A)
+        /// </summary>
         Dark = AlphaMacros.A,
+
+        /// <summary>
+        /// Legacy ROOM_NO_NOB (C)
+        /// </summary>
         NoMobs = AlphaMacros.C,
+
+        /// <summary>
+        /// Legacy ROOM_INDOORS (D)
+        /// </summary>
         Indoors = AlphaMacros.D,
+
+        /// <summary>
+        /// Legacy ROOM_PRIVATE (J)
+        /// </summary>
         Private = AlphaMacros.J,
+
+        /// <summary>
+        /// Legacy ROOM_SAFE (K)
+        /// </summary>
         Safe = AlphaMacros.K,
+
+        /// <summary>
+        /// Legacy ROOM_SOLITARY (L)
+        /// </summary>
         Solitary = AlphaMacros.L,
+
+        /// <summary>
+        /// Legacy ROOM_PET_SHOP (M)
+        /// </summary>
         PetShop = AlphaMacros.M,
+
+        /// <summary>
+        /// Legacy ROOM_NO_RECALL (N)
+        /// </summary>
         NoRecall = AlphaMacros.N,
+
+        /// <summary>
+        /// Legacy ROOM_IMP_ONLY (O)
+        /// </summary>
         ImpOnly = AlphaMacros.O,
+
+        /// <summary>
+        /// Legacy ROOM_GODS_ONLY (P)
+        /// </summary>
         GodsOnly = AlphaMacros.P,
+
+        /// <summary>
+        /// Legacy ROOM_HEROES_ONLY (Q)
+        /// </summary>
         HeroesOnly = AlphaMacros.Q,
+
+        /// <summary>
+        /// Legacy ROOM_NEWBIES_ONLY (R)
+        /// </summary>
         NewbiesOnly = AlphaMacros.R,
+
+        /// <summary>
+        /// Legacy ROOM_LAW (S)
+        /// </summary>
         Law = AlphaMacros.S,
+
+        /// <summary>
+        /// Legacy ROOM_NOWHERE (T)
+        /// </summary>
         Nowhere = AlphaMacros.T
     }
 

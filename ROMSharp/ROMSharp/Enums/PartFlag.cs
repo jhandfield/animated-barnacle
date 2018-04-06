@@ -9,29 +9,116 @@ namespace ROMSharp.Enums
     {
         // Body parts
         None = 0,
-        Head = 1 << 0,          // PART_HEAD
-        Arms = 1 << 1,          // PART_ARMS
-        Legs = 1 << 2,          // PART_LEGS
-        Heart = 1 << 3,         // PART_HEART
-        Brains = 1 << 4,        // PART_BRAINS
-        Guts = 1 << 5,          // PART_GUTS
-        Hands = 1 << 6,         // PART_HANDS
-        Feet = 1 << 7,          // PART_FEET
-        Fingers = 1 << 8,       // PART_FINGERS
-        Ear = 1 << 9,           // PART_EAR
-        Eye = 1 << 10,          // PART_EYE
-        LongTongue = 1 << 11,   // PART_LONG_TONGUE
-        Eyestalks = 1 << 12,    // PART_EYESTALKS
-        Tentacles = 1 << 13,    // PART_TENTACLES
-        Fins = 1 << 14,         // PART_FINS
-        Wings = 1 << 15,        // PART_WINGS
-        Tail = 1 << 16,         // PART_TAIL
+
+        /// <summary>
+        /// Legacy PART_HEAD (A)
+        /// </summary>
+        Head = AlphaMacros.A,
+
+        /// <summary>
+        /// Legacy PART_ARMS (B)
+        /// </summary>
+        Arms = AlphaMacros.B,
+
+        /// <summary>
+        /// Legacy PART_LEGS (C)
+        /// </summary>
+        Legs = AlphaMacros.C,
+
+        /// <summary>
+        /// Legacy PART_HEAR (D)
+        /// </summary>
+        Heart = AlphaMacros.D,
+
+        /// <summary>
+        /// Legacy PART_BRAINS (E)
+        /// </summary>
+        Brains = AlphaMacros.E,
+
+        /// <summary>
+        /// Legacy PART_GUTS (F)
+        /// </summary>
+        Guts = AlphaMacros.F,
+
+        /// <summary>
+        /// Legacy PART_HANDS (G)
+        /// </summary>
+        Hands = AlphaMacros.G,
+
+        /// <summary>
+        /// Legacy PART_FEET (H)
+        /// </summary>
+        Feet = AlphaMacros.H,
+
+        /// <summary>
+        /// Legacy PART_FINGERS (I)
+        /// </summary>
+        Fingers = AlphaMacros.I,
+
+        /// <summary>
+        /// Legacy PART_EAR (J)
+        /// </summary>
+        Ear = AlphaMacros.J,
+
+        /// <summary>
+        /// Legacy PART_EYE (K)
+        /// </summary>
+        Eye = AlphaMacros.K,
+
+        /// <summary>
+        /// Legacy PART_LONG_TONGUE (L)
+        /// </summary>
+        LongTongue = AlphaMacros.L,
+
+        /// <summary>
+        /// Legacy PART_EYESTALKS (M)
+        /// </summary>
+        Eyestalks = AlphaMacros.M,
+
+        /// <summary>
+        /// Legacy PART_TENTACLES (N)
+        /// </summary>
+        Tentacles = AlphaMacros.N,
+
+        /// <summary>
+        /// Legacy PART_FINS (O)
+        /// </summary>
+        Fins = AlphaMacros.O,
+
+        /// <summary>
+        /// Legacy PART_WINGS (P)
+        /// </summary>
+        Wings = AlphaMacros.P,
+
+        /// <summary>
+        /// Legacy PART_TAIL (Q)
+        /// </summary>
+        Tail = AlphaMacros.Q,
 
         // For combat
-        Claws = 1 << 20,        // PART_CLAWS
-        Fangs = 1 << 21,        // PART_FANGS
-        Horns = 1 << 22,        // PART_HORNS
-        Scales = 1 << 23,       // PART_SCALES
-        Tusks = 1 << 24         // PART_TUSKS
+        /// <summary>
+        /// Legacy PART_CLAWS (U)
+        /// </summary>
+        Claws = AlphaMacros.U,
+
+        /// <summary>
+        /// Legacy PART_FANGS (V)
+        /// </summary>
+        Fangs = AlphaMacros.V,
+
+        /// <summary>
+        /// Legacy PART_HORNS (W)
+        /// </summary>
+        Horns = AlphaMacros.W,
+
+        /// <summary>
+        /// Legacy PART_SCALES (X)
+        /// </summary>
+        Scales = AlphaMacros.X,
+
+        /// <summary>
+        /// Legacy PART_TUSKS (Y)
+        /// </summary>
+        Tusks = AlphaMacros.Y
     }
 }

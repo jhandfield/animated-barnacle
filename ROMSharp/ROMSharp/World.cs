@@ -40,6 +40,11 @@ namespace ROMSharp
         /// Collection of mobiles that make up the fauna of the world
         /// </summary>
         public Models.Mobs Mobs { get; set; }
+
+        /// <summary>
+        /// Collection of objects that make up the flora of the world
+        /// </summary>
+        public Models.Objects Objects { get; set; }
         #endregion
 
         #region Constructors
@@ -49,6 +54,7 @@ namespace ROMSharp
             this.State = Enums.GameState.Loading;
             this.Rooms = new Models.Rooms();
             this.Mobs = new Models.Mobs();
+            this.Objects = new Models.Objects();
         }
         #endregion
 
@@ -72,6 +78,7 @@ namespace ROMSharp
                 case Enums.GameState.Starting:
                     Logging.Log.Info("Server starting up");
                     Logging.Log.Info(String.Format("Server memory usage: {0:N0}KiB", GC.GetTotalMemory(true) / 1024));
+                    Logging.Log.Info(String.Format("{0} classes | {1} skill groups | {2} skills", Consts.Classes.ClassTable.Count, Consts.Skills.SkillGroupTable.Count, Consts.Skills.SkillTable.Count));
 
                     //try
                     //{
@@ -81,7 +88,7 @@ namespace ROMSharp
                         // Instantiate and load the World
                         Program.World.LoadFromDisk(Program.config.AreaDirectory);
 
-                    Logging.Log.Info(String.Format("World loaded - {0} areas consisting of {1} rooms, with {2} mobs", Program.World.Areas.Count, Program.World.Rooms.Count, Program.World.Mobs.Count));
+                    Logging.Log.Info(String.Format("World loaded - {0} areas consisting of {1} rooms, {2} mobs, and {3} objects", Program.World.Areas.Count, Program.World.Rooms.Count, Program.World.Mobs.Count, Program.World.Objects.Count));
 
                     //}
                     //catch (Exception e)
@@ -131,6 +138,8 @@ namespace ROMSharp
         /// </summary>
         /// <param name="areaPath">Path to the area folder</param>
         public void LoadFromDisk(string areaPath) {
+            Logging.Log.Info("Loading world...");
+
             // Validate that the path exists
             if (!Directory.Exists(areaPath))
             {
