@@ -51,7 +51,7 @@ namespace ROMSharp.Helpers
             int safetyValve = 0;
 
             // Loop up to a defined maximum number of times
-            while (safetyValve < Consts.Misc.Safety.MaxRoomDescLines)
+            while (safetyValve < Consts.Misc.Safety.MaxLongTextLines)
             {
                 // Increment safetyValve
                 safetyValve++;
@@ -60,22 +60,22 @@ namespace ROMSharp.Helpers
                 lineData = sr.ReadLine();
                 lineNum++;
 
-                // If the line is a sole tilde, we're done reading
-                if (lineData.Trim().Equals("~"))
-                {
-                    foundEnd = true;
-                    break;
-                }
-
                 // Append to the output string
                 sb.AppendLine(lineData);
+
+                // If the line ends with a tilde, we're done reading
+                if (lineData.Trim().EndsWith("~"))
+                {
+                    foundEnd = true;    // Note that we positively found the end of the string
+                    break;
+                }
             }
 
             // Check if we exited the loop due to the safety valve
             if (!foundEnd)
-                Logging.Log.Warn(String.Format("When reading long text of object with vnum {0} in area {1}, did not find the description's end in the expected {2} lines", vNUM, areaFile, Consts.Misc.Safety.MaxRoomDescLines));
+                Logging.Log.Warn(String.Format("When reading long text of object with vnum {0} in area {1}, did not find the description's end in the expected {2} lines", vNUM, areaFile, Consts.Misc.Safety.MaxLongTextLines));
 
-            return sb.ToString();
+            return sb.ToString().Trim().TrimEnd('~');
         }
     }
 }

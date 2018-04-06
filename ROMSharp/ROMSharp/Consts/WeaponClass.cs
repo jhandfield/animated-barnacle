@@ -12,7 +12,8 @@ namespace ROMSharp.Consts
             new Models.WeaponClass("staff", Enums.WeaponClass.Spear, 3718, null),
             new Models.WeaponClass("flail", Enums.WeaponClass.Flail, 3720, null),
             new Models.WeaponClass("whip", Enums.WeaponClass.Whip, 3721, null),
-            new Models.WeaponClass("polearm", Enums.WeaponClass.Polearm, 3722, null)
+            new Models.WeaponClass("polearm", Enums.WeaponClass.Polearm, 3722, null),
+            new Models.WeaponClass("exotic", Enums.WeaponClass.Exotic, 0, null)
         };
     }
 }

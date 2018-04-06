@@ -153,20 +153,16 @@ namespace ROMSharp.Models
             outObj.ResetNum = 0;
 
             // Read the name
-            outObj.Name = sr.ReadLine().TrimEnd('~');
-            lineNum++;
+            outObj.Name = Data.ReadLongText(sr, ref lineNum, areaFile, outObj.VNUM);
 
             // Read the short description
-            outObj.ShortDescription = sr.ReadLine().TrimEnd('~');
-            lineNum++;
+            outObj.ShortDescription = Data.ReadLongText(sr, ref lineNum, areaFile, outObj.VNUM);
 
             // Read the long description
-            outObj.Description = sr.ReadLine().TrimEnd('~');
-            lineNum++;
+            outObj.Description = Data.ReadLongText(sr, ref lineNum, areaFile, outObj.VNUM);
 
             // Read the material - it may be oldstyle, but the original ROM code doesn't do anything with that either
-            outObj.Material = sr.ReadLine().TrimEnd('~');
-            lineNum++;
+            outObj.Material = Data.ReadLongText(sr, ref lineNum, areaFile, outObj.VNUM);
 
             // Read the next line and split, expect 3 segments
             lineData = sr.ReadLine();
@@ -502,7 +498,7 @@ namespace ROMSharp.Models
                                 return null;
                             }
 
-                            Logging.Log.Info(String.Format("Object affect flag loaded to {0} modifying {1} with modifier {2} and bitvector {3} on object {4} in area {5}", aff.Where.ToString(), aff.Location.ToString(), aff.Modifier, aff.BitVector, outObj.VNUM, areaFile));
+                            Logging.Log.Debug(String.Format("Object affect flag loaded to {0} modifying {1} with modifier {2} and bitvector {3} on object {4} in area {5}", aff.Where.ToString(), aff.Location.ToString(), aff.Modifier, aff.BitVector, outObj.VNUM, areaFile));
 
                             // Add the affect
                             outObj.Affected.Add(aff);
@@ -519,25 +515,11 @@ namespace ROMSharp.Models
                             // Store the value as the description's keyowrds
                             desc.Keywords = lineData.TrimEnd('~');
 
-                            bool readingDescription = true;
-                            StringBuilder sb = new StringBuilder();
+                            // Pull the extra description's data
+                            desc.Description = Data.ReadLongText(sr, ref lineNum, areaFile, outObj.VNUM);
+                            //desc.Description = Data.ReadLongText(sr, ref lineNum, areaFile, outObj.VNUM);
 
-                            while (readingDescription)
-                            {
-                                // Read the line
-                                lineData = sr.ReadLine();
-                                lineNum++;
-
-                                if (lineData.Trim().Equals("~"))
-                                    readingDescription = false;
-                                else
-                                    sb.AppendLine(lineData);
-                            }
-
-                            // Store the description
-                            desc.Description = sb.ToString();
-
-                            Logging.Log.Info(String.Format("Extra description loaded for object {0} in area {1} with keywords {2}", outObj.VNUM, areaFile, desc.Keywords));
+                            Logging.Log.Debug(String.Format("Extra description loaded for object {0} in area {1} with keywords {2}", outObj.VNUM, areaFile, desc.Keywords));
 
                             // Append the ExtraDescription to the object
                             outObj.ExtraDescriptions.Add(desc);
