@@ -137,6 +137,7 @@
     <Compile Include="Models\Objects.cs" />
     <Compile Include="Enums\ApplyType.cs" />
     <Compile Include="Enums\ToWhere.cs" />
+    <Compile Include="UnitTests\ObjectTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

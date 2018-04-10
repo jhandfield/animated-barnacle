@@ -128,9 +128,10 @@ namespace ROMSharp.Models
             Values = new object[5];
         }
 
-        internal static ObjectIndexData ParseObjectData(ref StringReader sr, string areaFile, ref int lineNum, string firstLine)
+        internal static ObjectIndexData ParseObjectData(ref StringReader sr, string areaFile, ref int lineNum, string firstLine, bool log = true)
         {
-            Logging.Log.Debug(String.Format("ParseObjectData() called for area {0} starting on line {1}", areaFile, lineNum));
+            if (log)
+                Logging.Log.Debug(String.Format("ParseObjectData() called for area {0} starting on line {1}", areaFile, lineNum));
 
             // Instantiate variables for the method
             ObjectIndexData outObj = new ObjectIndexData();
@@ -144,7 +145,8 @@ namespace ROMSharp.Models
             else
                 return null;
 
-            Logging.Log.Debug(String.Format("Found object definition for vnum {0} beginning on line {1}", outObj.VNUM, lineNum));
+            if (log)
+                Logging.Log.Debug(String.Format("Found object definition for vnum {0} beginning on line {1}", outObj.VNUM, lineNum));
 
             // Set NewFormat to true - old format objects will be parsed from another method
             outObj.NewFormat = true;
@@ -170,33 +172,27 @@ namespace ROMSharp.Models
             string[] splitLine = lineData.Split(' ');
 
             if (splitLine.Length != 3)
-            {
-                Logging.Log.Error(String.Format("Error parsing object {0} in area {1}: invalid type/extra flag/wear flag line, expected 3 segments but got {2} - value {3} on line {4}", outObj.VNUM, areaFile, splitLine.Length, lineData, lineNum));
-                return null;
-            }
+                throw new ObjectParsingException(String.Format("Error parsing object {0} in area {1}: invalid type/extra flag/wear flag line, expected 3 segments but got {2} - value {3} on line {4}", outObj.VNUM, areaFile, splitLine.Length, lineData, lineNum));
 
             // Segment 1, item type - attempt to pull a match from the ItemTypeTable
             ItemType objType = Consts.ItemTypes.ItemTypeTable.SingleOrDefault(it => it.Name.ToLower().Equals(splitLine[0].ToLower()));
 
             if (objType == null)
-            {
                 // Invalid item type
-                Logging.Log.Error(String.Format("Error parsing item type for object {0} in area {1}: unknown item type \"{2}\" found on line {3}", outObj.VNUM, areaFile, splitLine[0], lineNum));
-                return null;
-            }
+                throw new ObjectParsingException(String.Format("Error parsing item type for object {0} in area {1}: unknown item type \"{2}\" found on line {3}", outObj.VNUM, areaFile, splitLine[0], lineNum));
             else
                 outObj.ObjectType = objType.Type;
 
             // Segment 2, extra flag
-            try {
+            try
+            {
                 ItemExtraFlag extraFlags = AlphaConversions.ConvertROMAlphaToItemExtraFlag(splitLine[1]);
                 outObj.ExtraFlags = extraFlags;
             }
             catch (ArgumentException e)
             {
                 // Invalid extra flags
-                Logging.Log.Error(String.Format("Error parsing extra flags for object {0} in area {1}: invalid extra flag value \"{2}\" found on line {3}", outObj.VNUM, areaFile, splitLine[1], lineNum));
-                return null;
+                throw new ObjectParsingException(String.Format("Error parsing extra flags for object {0} in area {1}: invalid extra flag value \"{2}\" found on line {3}", outObj.VNUM, areaFile, splitLine[1], lineNum), e);
             }
 
             // Segment 3, wear flag
@@ -208,8 +204,7 @@ namespace ROMSharp.Models
             catch (ArgumentException e)
             {
                 // Invalid extra flags
-                Logging.Log.Error(String.Format("Error parsing wear flags for object {0} in area {1}: invalid extra flag value \"{2}\" found on line {3}", outObj.VNUM, areaFile, splitLine[2], lineNum));
-                return null;
+                throw new ObjectParsingException(String.Format("Error parsing wear flags for object {0} in area {1}: invalid extra flag value \"{2}\" found on line {3}", outObj.VNUM, areaFile, splitLine[2], lineNum), e);
             }
 
             // Read the next line and split, expect 5 segments
@@ -219,20 +214,7 @@ namespace ROMSharp.Models
             string[] splitValues = ParseValuesLine(lineData, outObj, areaFile, lineNum);
 
             if (splitValues.Length != 5)
-            {
-                Logging.Log.Error(String.Format("Error parsing object {0} in area {1}: invalid values line, expected 5 segments but got {2} - value {3} on line {4}", outObj.VNUM, areaFile, splitLine.Length, lineData, lineNum));
-                return null;
-            }
-            /*
-            Regex valuesLineRegex = new Regex(@"('?.+'?)\s('?.+'?)\s('?.+'?)\s('?.+'?)\s?('?.+'?)?");
-            Match matches = valuesLineRegex.Match(lineData);
-
-            if (matches.Captures.Count != 5)
-            {
-                Logging.Log.Error(String.Format("Error parsing object {0} in area {1}: invalid values line, expected 5 segments but got {2} - value {3} on line {4}", outObj.VNUM, areaFile, splitLine.Length, lineData, lineNum));
-                return null;
-            }
-            */
+                throw new ObjectParsingException(String.Format("Error parsing object {0} in area {1}: invalid values line, expected 5 segments but got {2} - value {3} on line {4}", outObj.VNUM, areaFile, splitLine.Length, lineData, lineNum));
 
             // The meaning and data type of each of the 5 values changes depending on the item type
             // TODO: Finish implementing with Regex
@@ -295,38 +277,26 @@ namespace ROMSharp.Models
             splitLine = lineData.Split(' ');
 
             if (splitLine.Length != 4)
-            {
-                Logging.Log.Error(String.Format("Error parsing object {0} in area {1}: invalid level/weight/cost/condition line, expected 4 segments but got {2} - value {3} on line {4}", outObj.VNUM, areaFile, splitLine.Length, lineData, lineNum));
-                return null;
-            }
+                throw new ObjectParsingException(String.Format("Error parsing object {0} in area {1}: invalid level/weight/cost/condition line, expected 4 segments but got {2} - value {3} on line {4}", outObj.VNUM, areaFile, splitLine.Length, lineData, lineNum));           
 
             // Segment 1 - Level
             int lvl = 0;
             if (!Int32.TryParse(splitLine[0], out lvl))
-            {
-                Logging.Log.Error(String.Format("Error parsing level for object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[0], lineNum));
-                return null;
-            }
+                throw new ObjectParsingException(String.Format("Error parsing level for object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[0], lineNum));
             else
                 outObj.Level = lvl;
             
             // Segment 2 - Weight
             int weight = 0;
-            if (!Int32.TryParse(splitLine[1], out lvl))
-            {
-                Logging.Log.Error(String.Format("Error parsing weight for object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[1], lineNum));
-                return null;
-            }
+            if (!Int32.TryParse(splitLine[1], out weight))
+                throw new ObjectParsingException(String.Format("Error parsing weight for object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[1], lineNum));
             else
                 outObj.Weight = weight;
             
             // Segment 3 - Cost
             int cost = 0;
-            if (!Int32.TryParse(splitLine[2], out lvl))
-            {
-                Logging.Log.Error(String.Format("Error parsing cost for object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[2], lineNum));
-                return null;
-            }
+            if (!Int32.TryParse(splitLine[2], out cost))
+                throw new ObjectParsingException(String.Format("Error parsing cost for object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[2], lineNum));
             else
                 outObj.Cost = cost;
 
@@ -387,10 +357,7 @@ namespace ROMSharp.Models
 
                             // Should be two elements
                             if (splitLine.Length != 2)
-                            {
-                                Logging.Log.Error(String.Format("Error parsing object {0} in area {1}: invalid affect line, expected 2 segments but got {2} - value {3} on line {4}", outObj.VNUM, areaFile, splitLine.Length, lineData, lineNum));
-                                return null;
-                            }
+                                throw new ObjectParsingException(String.Format("Error parsing object {0} in area {1}: invalid affect line, expected 2 segments but got {2} - value {3} on line {4}", outObj.VNUM, areaFile, splitLine.Length, lineData, lineNum));
 
                             // Set up properties of the affect
                             aff.Where = ToWhere.Object;
@@ -402,24 +369,19 @@ namespace ROMSharp.Models
                             // Segment 1 - Location
                             int location = 0;
                             if (!Int32.TryParse(splitLine[0], out location))
-                            {
-                                Logging.Log.Error(String.Format("Error parsing location for object {0} affect in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[0], lineNum));
-                                return null;
-                            }
+                                throw new ObjectParsingException(String.Format("Error parsing location for object {0} affect in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[0], lineNum));
                             else
                                 aff.Location = (ApplyType)location;
 
                             // Segment 2 - Modifier
                             int modifier = 0;
                             if (!Int32.TryParse(splitLine[1], out modifier))
-                            {
-                                Logging.Log.Error(String.Format("Error parsing modifier for object {0} affect in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[1], lineNum));
-                                return null;
-                            }
+                                throw new ObjectParsingException(String.Format("Error parsing modifier for object {0} affect in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[1], lineNum));
                             else
                                 aff.Modifier = modifier;
 
-                            Logging.Log.Debug(String.Format("Object affect to {0} with modifier {1} added to object {2}", aff.Location.ToString(), aff.Modifier, outObj.VNUM));
+                            if (log)
+                                Logging.Log.Debug(String.Format("Object affect to {0} with modifier {1} added to object {2}", aff.Location.ToString(), aff.Modifier, outObj.VNUM));
 
                             // Add the affect to the object
                             outObj.Affected.Add(aff);
@@ -434,10 +396,7 @@ namespace ROMSharp.Models
 
                             // Should be two elements
                             if (splitLine.Length != 4)
-                            {
-                                Logging.Log.Error(String.Format("Error parsing object {0} in area {1}: invalid affect line, expected 4 segments but got {2} - value {3} on line {4}", outObj.VNUM, areaFile, splitLine.Length, lineData, lineNum));
-                                return null;
-                            }
+                                throw new ObjectParsingException(String.Format("Error parsing object {0} in area {1}: invalid affect line, expected 4 segments but got {2} - value {3} on line {4}", outObj.VNUM, areaFile, splitLine.Length, lineData, lineNum));
 
                             // Set up properties of the affect
                             aff.Type = -1;
@@ -460,28 +419,20 @@ namespace ROMSharp.Models
                                     aff.Where = ToWhere.Vuln;
                                     break;
                                 default:
-                                    Logging.Log.Error(String.Format("Error parsing affect flags for object {0} in area {1}: invalid flag location type \"{2}\" encountered, expected A, I, R, or V on line {3}", outObj.VNUM, areaFile, splitLine[1], lineNum));
-                                    return null;
-                                    break;
+                                    throw new ObjectParsingException(String.Format("Error parsing affect flags for object {0} in area {1}: invalid flag location type \"{2}\" encountered, expected A, I, R, or V on line {3}", outObj.VNUM, areaFile, splitLine[1], lineNum));
                             }
 
                             // Segment 2 - Location
                             int flagLocation = 0;
                             if (!Int32.TryParse(splitLine[1], out flagLocation))
-                            {
-                                Logging.Log.Error(String.Format("Error parsing affect flags location for object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[1], lineNum));
-                                return null;
-                            }
+                                throw new ObjectParsingException(String.Format("Error parsing affect flags location for object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[1], lineNum));
                             else
                                 aff.Location = (ApplyType)flagLocation;
 
                             // Segment 3 - Modifier
                             int flagMod = 0;
                             if (!Int32.TryParse(splitLine[2], out flagMod))
-                            {
-                                Logging.Log.Error(String.Format("Error parsing affect flags modifier for object {0} affect in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[2], lineNum));
-                                return null;
-                            }
+                                throw new ObjectParsingException(String.Format("Error parsing affect flags modifier for object {0} affect in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[2], lineNum));
                             else
                                 aff.Modifier = flagMod;
 
@@ -494,11 +445,11 @@ namespace ROMSharp.Models
                             catch (ArgumentException e)
                             {
                                 // Invalid extra flags
-                                Logging.Log.Error(String.Format("Error parsing affect flags bitvector for object {0} in area {1}: invalid flag value \"{2}\" found on line {3}", outObj.VNUM, areaFile, splitLine[3], lineNum));
-                                return null;
+                                throw new ObjectParsingException(String.Format("Error parsing affect flags bitvector for object {0} in area {1}: invalid flag value \"{2}\" found on line {3}", outObj.VNUM, areaFile, splitLine[3], lineNum), e);
                             }
 
-                            Logging.Log.Debug(String.Format("Object affect flag loaded to {0} modifying {1} with modifier {2} and bitvector {3} on object {4} in area {5}", aff.Where.ToString(), aff.Location.ToString(), aff.Modifier, aff.BitVector, outObj.VNUM, areaFile));
+                            if (log)
+                                Logging.Log.Debug(String.Format("Object affect flag loaded to {0} modifying {1} with modifier {2} and bitvector {3} on object {4} in area {5}", aff.Where.ToString(), aff.Location.ToString(), aff.Modifier, aff.BitVector, outObj.VNUM, areaFile));
 
                             // Add the affect
                             outObj.Affected.Add(aff);
@@ -517,15 +468,16 @@ namespace ROMSharp.Models
 
                             // Pull the extra description's data
                             desc.Description = Data.ReadLongText(sr, ref lineNum, areaFile, outObj.VNUM);
-                            //desc.Description = Data.ReadLongText(sr, ref lineNum, areaFile, outObj.VNUM);
 
-                            Logging.Log.Debug(String.Format("Extra description loaded for object {0} in area {1} with keywords {2}", outObj.VNUM, areaFile, desc.Keywords));
+                            if (log)
+                                Logging.Log.Debug(String.Format("Extra description loaded for object {0} in area {1} with keywords {2}", outObj.VNUM, areaFile, desc.Keywords));
 
                             // Append the ExtraDescription to the object
                             outObj.ExtraDescriptions.Add(desc);
                             break;
                         default:
-                            Logging.Log.Warn(String.Format("Invalid object modifier \"{0}\" found in object {1} in area {2} on line {3}", lineData.Trim(), outObj.VNUM, areaFile, lineNum));
+                            if (log)
+                                Logging.Log.Warn(String.Format("Invalid object modifier \"{0}\" found in object {1} in area {2} on line {3}", lineData.Trim(), outObj.VNUM, areaFile, lineNum));
                             break;
                     }
                 }
@@ -586,11 +538,8 @@ namespace ROMSharp.Models
         {
             int parsedValue = 0;
             if (!Int32.TryParse(value, out parsedValue))
-            {
                 // Invalid damage dice number
-                Logging.Log.Error(String.Format("Error parsing integer value for {0} object {1} in area {2}: expected an integer but found \"{3}\" on line {4}", description, vnum, areaFile, value, lineNum));
-                return false;
-            }
+                throw new ObjectParsingException(String.Format("Error parsing integer value for {0} object {1} in area {2}: expected an integer but found \"{3}\" on line {4}", description, vnum, areaFile, value, lineNum));
             else
                 // Store the damage dice number
                 objValue = parsedValue;
@@ -606,11 +555,8 @@ namespace ROMSharp.Models
                 SkillType skill = Consts.Skills.SkillTable.SingleOrDefault(s => s.Name.ToLower().Equals(value.ToLower()));
 
                 if (skill == null)
-                {
                     // Unknown skill
-                    Logging.Log.Error(String.Format("Error parsing skill \"{0}\" for {1} object {2} in area {3} on line {4}", value, description, vnum, areaFile, lineNum));
-                    return false;
-                }
+                    throw new ObjectParsingException(String.Format("Error parsing skill \"{0}\" for {1} object {2} in area {3} on line {4}", value, description, vnum, areaFile, lineNum));
                 else
                     // Store the skill
                     objValue = skill;
@@ -708,11 +654,8 @@ namespace ROMSharp.Models
             // Segment 1 - Container capacity, should be an integer
             int capacity = 0;
             if (!Int32.TryParse(splitLine[0], out capacity))
-            {
                 // Invalid damage dice number
-                Logging.Log.Error(String.Format("Error parsing capacity for fountain/drink container object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[0], lineNum));
-                return false;
-            }
+                throw new ObjectParsingException(String.Format("Error parsing capacity for fountain/drink container object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[0], lineNum));
             else
                 // Store the damage dice number
                 outObj.Values[0] = capacity;
@@ -720,11 +663,8 @@ namespace ROMSharp.Models
             // Segment 2 - Container fill level, should be an integer
             int fillLevel = 0;
             if (!Int32.TryParse(splitLine[1], out fillLevel))
-            {
                 // Invalid damage dice number
-                Logging.Log.Error(String.Format("Error parsing fill level for fountain/drink container object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[1], lineNum));
-                return false;
-            }
+                throw new ObjectParsingException(String.Format("Error parsing fill level for fountain/drink container object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[1], lineNum));
             else
                 // Store the damage dice number
                 outObj.Values[1] = fillLevel;
@@ -753,39 +693,11 @@ namespace ROMSharp.Models
             LiquidType liqiudType = Consts.Liquids.LiquidTable.SingleOrDefault(l => l.Name.ToLower().Equals(liqType.ToLower()));
 
             if (liqiudType == null)
-            {
                 // Invalid weapon class
-                Logging.Log.Error(String.Format("Error parsing liquid type for fountain/drink container object {0} in area {1}: unknown liquid type \"{2}\" found on line {3}", outObj.VNUM, areaFile, splitLine[2], lineNum));
-                return false;
-            }
+                throw new ObjectParsingException(String.Format("Error parsing liquid type for fountain/drink container object {0} in area {1}: unknown liquid type \"{2}\" found on line {3}", outObj.VNUM, areaFile, splitLine[2], lineNum));
             else
                 // Store the weapon class
                 outObj.Values[2] = liqiudType;
-
-            // Segment 4 - Appears to be unused, but should be an integer
-            //int unknown4 = 0;
-            //if (!Int32.TryParse(splitLine[3], out unknown4))
-            //{
-            //    // Invalid damage dice number
-            //    Logging.Log.Error(String.Format("Error parsing unknown value 4 for fountain/drink container object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[3], lineNum));
-            //    return false;
-            //}
-            //else
-            //    // Store the damage dice number
-            //    outObj.Values[0] = unknown4;
-
-
-            //// Segment 5 - Appears to be unused, but should be an integer
-            //int unknown5 = 0;
-            //if (!Int32.TryParse(splitLine[4], out unknown5))
-            //{
-            //    // Invalid damage dice number
-            //    Logging.Log.Error(String.Format("Error parsing unknown value 5 for fountain/drink container object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[4], lineNum));
-            //    return false;
-            //}
-            //else
-                //// Store the damage dice number
-                //outObj.Values[4] = unknown5;
 
             return true;
         }
@@ -802,11 +714,8 @@ namespace ROMSharp.Models
             // Segment 1 - Capacity, should be an integer
             int capacity = 0;
             if(!Int32.TryParse(splitLine[0], out capacity))
-            {
                 // Invalid damage dice number
-                Logging.Log.Error(String.Format("Error parsing capacity for container object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[0], lineNum));
-                return false;
-            }
+                throw new ObjectParsingException(String.Format("Error parsing capacity for container object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[0], lineNum));
             else
                 // Store the damage dice number
                 outObj.Values[0] = capacity;
@@ -820,18 +729,14 @@ namespace ROMSharp.Models
             catch (ArgumentException e)
             {
                 // Invalid extra flags
-                Logging.Log.Error(String.Format("Error parsing container flags for object {0} in area {1}: invalid weapon flag value \"{2}\" found on line {3}", outObj.VNUM, areaFile, splitLine[1], lineNum));
-                return false;
+                throw new ObjectParsingException(String.Format("Error parsing container flags for object {0} in area {1}: invalid weapon flag value \"{2}\" found on line {3}", outObj.VNUM, areaFile, splitLine[1], lineNum), e);
             }
 
             // Segment 3 - Appears to be unused, but should be an integer
             int unknown = 0;
             if (!Int32.TryParse(splitLine[2], out unknown))
-            {
                 // Invalid damage dice number
-                Logging.Log.Error(String.Format("Error parsing unknown value (value #3) for container object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[2], lineNum));
-                return false;
-            }
+                throw new ObjectParsingException(String.Format("Error parsing unknown value (value #3) for container object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[2], lineNum));
             else
                 // Store the damage dice number
                 outObj.Values[2] = unknown;
@@ -839,11 +744,8 @@ namespace ROMSharp.Models
             // Segment 4 - Maximum weight, should be an integer
             int maxWeight = 0;
             if (!Int32.TryParse(splitLine[3], out capacity))
-            {
                 // Invalid damage dice number
-                Logging.Log.Error(String.Format("Error parsing maximum weight for container object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[3], lineNum));
-                return false;
-            }
+                throw new ObjectParsingException(String.Format("Error parsing maximum weight for container object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[3], lineNum));
             else
                 // Store the damage dice number
                 outObj.Values[3] = maxWeight;
@@ -851,17 +753,15 @@ namespace ROMSharp.Models
             // Segment 5 - Weight multiplier, should be an integer
             int weightMult = 0;
             if (!Int32.TryParse(splitLine[4], out capacity))
-            {
                 // Invalid damage dice number
-                Logging.Log.Error(String.Format("Error parsing weight multiplier for container object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[4], lineNum));
-                return false;
-            }
+                throw new ObjectParsingException(String.Format("Error parsing weight multiplier for container object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[4], lineNum));
             else
                 // Store the damage dice number
                 outObj.Values[4] = weightMult;
 
             return true;
         }
+
         /// <summary>
         /// Sets the Values array of <paramref name="outObj"/> based on input values from <paramref name="splitLine"/> appropriate where object type is Weapon
         /// </summary>
@@ -876,11 +776,8 @@ namespace ROMSharp.Models
             WeaponClass weapClass = Consts.WeaponClass.WeaponTable.SingleOrDefault(w => w.Name.ToLower().Equals(splitLine[0].ToLower()));
 
             if (weapClass == null)
-            {
                 // Invalid weapon class
-                Logging.Log.Error(String.Format("Error parsing weapon class for object {0} in area {1}: unknown weapon class \"{2}\" found on line {3}", outObj.VNUM, areaFile, splitLine[0], lineNum));
-                return false;
-            }
+                throw new ObjectParsingException(String.Format("Error parsing weapon class for object {0} in area {1}: unknown weapon class \"{2}\" found on line {3}", outObj.VNUM, areaFile, splitLine[0], lineNum));
             else
                 // Store the weapon class
                 outObj.Values[0] = weapClass;
@@ -888,11 +785,8 @@ namespace ROMSharp.Models
             // Segment 2 - Damage dice number, should be an integer
             int damDiceNum;
             if (!Int32.TryParse(splitLine[1], out damDiceNum))
-            {
                 // Invalid damage dice number
-                Logging.Log.Error(String.Format("Error parsing weapon damage dice number for object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[1], lineNum));
-                return false;
-            }
+                throw new ObjectParsingException(String.Format("Error parsing weapon damage dice number for object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[1], lineNum));
             else
                 // Store the damage dice number
                 outObj.Values[1] = damDiceNum;
@@ -900,11 +794,8 @@ namespace ROMSharp.Models
             // Segment 3 - Damage dice type, should be an integer
             int damDiceType;
             if (!Int32.TryParse(splitLine[2], out damDiceType))
-            {
                 // Invalid damage dice number
-                Logging.Log.Error(String.Format("Error parsing weapon damage dice type for object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[2], lineNum));
-                return false;
-            }
+                throw new ObjectParsingException(String.Format("Error parsing weapon damage dice type for object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[2], lineNum));
             else
                 // Store the damage dice number
                 outObj.Values[2] = damDiceType;
@@ -913,11 +804,8 @@ namespace ROMSharp.Models
             DamageType damType = Consts.DamageTypes.AttackTable.SingleOrDefault(w => w.Abbreviation.ToLower().Equals(splitLine[3].ToLower()));
 
             if (weapClass == null)
-            {
                 // Invalid weapon class
-                Logging.Log.Error(String.Format("Error parsing attack type for object {0} in area {1}: unknown attachk type \"{2}\" found on line {3}", outObj.VNUM, areaFile, splitLine[3], lineNum));
-                return false;
-            }
+                throw new ObjectParsingException(String.Format("Error parsing attack type for object {0} in area {1}: unknown attachk type \"{2}\" found on line {3}", outObj.VNUM, areaFile, splitLine[3], lineNum));
             else
                 // Store the weapon class
                 outObj.Values[3] = damType;
@@ -931,12 +819,18 @@ namespace ROMSharp.Models
             catch (ArgumentException e)
             {
                 // Invalid extra flags
-                Logging.Log.Error(String.Format("Error parsing weapon flags for object {0} in area {1}: invalid weapon flag value \"{2}\" found on line {3}", outObj.VNUM, areaFile, splitLine[4], lineNum));
-                return false;
+                throw new ObjectParsingException(String.Format("Error parsing weapon flags for object {0} in area {1}: invalid weapon flag value \"{2}\" found on line {3}", outObj.VNUM, areaFile, splitLine[4], lineNum), e);
             }
 
             return true;
         }
         #endregion
+    }
+
+    public class ObjectParsingException : Exception
+    {
+        public ObjectParsingException() { }
+        public ObjectParsingException(string message) : base(message) { }
+        public ObjectParsingException(string message, Exception innerException) : base(message, innerException) { }
     }
 }
