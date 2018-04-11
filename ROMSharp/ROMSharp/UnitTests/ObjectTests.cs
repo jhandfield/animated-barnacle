@@ -10,6 +10,88 @@ namespace ROMSharp.UnitTests
     public class ObjectTests
     {
         [Test(), TestOf(typeof(ObjectIndexData))]
+        public void TestValidLight()
+        {
+            // Object data to parse, VNUM 3000 from astral.are, lines 566-582
+            string objData = @"#7713
+stone flame~
+a brightly flaming stone~
+The room is lit by a hot blue flame coming from a small stone.~
+oldstyle~
+light 0 AO
+0 0 -1 0 0
+20 10 1440 P
+A
+20 -2
+A
+17 -2
+E
+stone flame~
+This stone burns with an flame that emits great heat, yet it can be held with
+ease.  The flame creates a light that allows you to see for miles.
+~
+#$";
+
+            StringReader sr = new StringReader(objData);
+            int lineNum = 1;
+            string firstLine = sr.ReadLine();
+
+            // Set up the object we expect to have parsed from the string
+            ObjectIndexData objExpected = new ObjectIndexData();
+            objExpected.VNUM = 7713;
+            objExpected.Name = "stone flame";
+            objExpected.ShortDescription = "a brightly flaming stone";
+            objExpected.Description = "The room is lit by a hot blue flame coming from a small stone.";
+            objExpected.Material = "oldstyle";
+            objExpected.ObjectType = Enums.ItemClass.Light;
+            objExpected.ExtraFlags = Enums.ItemExtraFlag.None;
+            objExpected.WearFlags = (Enums.WearFlag)Enums.AlphaMacros.A | (Enums.WearFlag)Enums.AlphaMacros.O;
+            objExpected.Values[0] = 0;
+            objExpected.Values[1] = 0;
+            objExpected.Values[2] = -1;
+            objExpected.Values[3] = 0;
+            objExpected.Values[4] = 0;
+            objExpected.Level = 20;
+            objExpected.Weight = 10;
+            objExpected.Cost = 1440;
+            objExpected.Condition = 100;
+            objExpected.Affected = new System.Collections.Generic.List<AffectData>();
+            objExpected.Affected.Add(new AffectData() { 
+                Where = Enums.ToWhere.Object,
+                Type = -1,
+                Level = objExpected.Level,
+                Duration = -1,
+                BitVector = 0,
+                Location = Enums.ApplyType.Saves,
+                Modifier = -2
+            }); // -2 to saves
+            objExpected.Affected.Add(new AffectData() { 
+                Where = Enums.ToWhere.Object,
+                Type = -1,
+                Level = objExpected.Level,
+                Duration = -1,
+                BitVector = 0,
+                Location = Enums.ApplyType.AC, 
+                Modifier = -2 
+            }); // -2 to AC
+            objExpected.ExtraDescriptions = new System.Collections.Generic.List<ExtraDescription>();
+            objExpected.ExtraDescriptions.Add(new ExtraDescription() { Keywords = "stone flame", Description = "This stone burns with an flame that emits great heat, yet it can be held with\nease.  The flame creates a light that allows you to see for miles." });
+
+            try
+            {
+                // Parse the object from the string
+                ObjectIndexData obj = ObjectIndexData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
+
+                // Compare the two objects
+                CompareObjects(objExpected, obj);
+            }
+            catch (Exception e)
+            {
+                Assert.Fail(String.Format("Execption thrown loading object: {0} {1}", e.GetType().ToString(), e.Message));
+            }
+        }
+
+        [Test(), TestOf(typeof(ObjectIndexData))]
         public void TestValidDrink()
         {
             // Object data to parse, VNUM 3000 from midgaard.are, lines 959-966
