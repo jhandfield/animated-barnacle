@@ -576,11 +576,11 @@ namespace ROMSharp.Models
         private static bool SetOtherItemTypeValues(string[] splitLine, ObjectIndexData outObj, string areaFile, int lineNum)
         {
             // All segments should be parsed as ints
-            outObj.Values[0] = SetValue_Int(splitLine[0], ref outObj.Values[0], "other type", areaFile, lineNum, outObj.VNUM);
-            outObj.Values[1] = SetValue_Int(splitLine[1], ref outObj.Values[1], "other type", areaFile, lineNum, outObj.VNUM);
-            outObj.Values[2] = SetValue_Int(splitLine[2], ref outObj.Values[2], "other type", areaFile, lineNum, outObj.VNUM);
-            outObj.Values[3] = SetValue_Int(splitLine[3], ref outObj.Values[3], "other type", areaFile, lineNum, outObj.VNUM);
-            outObj.Values[4] = SetValue_Int(splitLine[4], ref outObj.Values[4], "other type", areaFile, lineNum, outObj.VNUM);
+            SetValue_Int(splitLine[0], ref outObj.Values[0], "other type", areaFile, lineNum, outObj.VNUM);
+            SetValue_Int(splitLine[1], ref outObj.Values[1], "other type", areaFile, lineNum, outObj.VNUM);
+            SetValue_Int(splitLine[2], ref outObj.Values[2], "other type", areaFile, lineNum, outObj.VNUM);
+            SetValue_Int(splitLine[3], ref outObj.Values[3], "other type", areaFile, lineNum, outObj.VNUM);
+            SetValue_Int(splitLine[4], ref outObj.Values[4], "other type", areaFile, lineNum, outObj.VNUM);
 
             return true;
         }
