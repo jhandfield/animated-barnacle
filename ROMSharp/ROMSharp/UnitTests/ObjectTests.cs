@@ -10,6 +10,60 @@ namespace ROMSharp.UnitTests
     public class ObjectTests
     {
         [Test(), TestOf(typeof(ObjectIndexData))]
+        public void TestValidStaff()
+        {
+            // Object data to parse, VNUM 2245 from draconia.are, lines 515-522
+            string objData = @"#2245
+staff dragon~
+the staff of the dragon~
+A powerful oak staff has been left here.~
+oldstyle~
+staff AG AO
+25 10 10 'call lightning' 0
+15 50 10200 P
+#$";
+
+            StringReader sr = new StringReader(objData);
+            int lineNum = 1;
+            string firstLine = sr.ReadLine();
+
+            // Set up the object we expect to have parsed from the string
+            ObjectIndexData objExpected = new ObjectIndexData();
+            objExpected.VNUM = 2245;
+            objExpected.Name = "staff dragon";
+            objExpected.ShortDescription = "the staff of the dragon";
+            objExpected.Description = "A powerful oak staff has been left here.";
+            objExpected.Material = "oldstyle";
+            objExpected.ObjectType = Enums.ItemClass.Staff;
+            objExpected.ExtraFlags = Enums.ItemExtraFlag.Glow | Enums.ItemExtraFlag.Magic;
+            objExpected.WearFlags = Enums.WearFlag.Take | Enums.WearFlag.Hold;
+            objExpected.Values[0] = 25; // Level
+            objExpected.Values[1] = 10;  // Current charges
+            objExpected.Values[2] = 10;  // Maximum charges
+            objExpected.Values[3] = Consts.Skills.SkillTable.Single(s => s.Name.Equals("call lightning"));  // Spell
+            objExpected.Values[4] = 0;  // Unused
+            objExpected.Level = 15;
+            objExpected.Weight = 50;
+            objExpected.Cost = 10200;
+            objExpected.Condition = 100;
+            objExpected.ExtraDescriptions = new System.Collections.Generic.List<ExtraDescription>();
+            objExpected.Affected = new System.Collections.Generic.List<AffectData>();
+
+            try
+            {
+                // Parse the object from the string
+                ObjectIndexData obj = ObjectIndexData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
+
+                // Compare the two objects
+                CompareObjects(objExpected, obj);
+            }
+            catch (Exception e)
+            {
+                Assert.Fail(String.Format("Execption thrown loading object: {0} {1}", e.GetType().ToString(), e.Message));
+            }
+        }
+
+        [Test(), TestOf(typeof(ObjectIndexData))]
         public void TestValidWand()
         {
             // Object data to parse, VNUM 9215 from canyon.are, lines 691-698
