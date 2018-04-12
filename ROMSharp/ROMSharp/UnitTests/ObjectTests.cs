@@ -10,6 +10,66 @@ namespace ROMSharp.UnitTests
     public class ObjectTests
     {
         [Test(), TestOf(typeof(ObjectIndexData))]
+        public void TestValidWeapon()
+        {
+            // Object data to parse, VNUM 2005 from catacomb.are, lines 300-311
+            string objData = @"#2005
+sword excalibur~
+the sword Excalibur~
+A sword gleams by the light of its magical silvery blade.~
+oldstyle~
+weapon AGKL AN
+sword 5 4 slash 0
+24 150 3400 P
+A
+1 1
+A
+18 3
+#$";
+
+            StringReader sr = new StringReader(objData);
+            int lineNum = 1;
+            string firstLine = sr.ReadLine();
+
+            // Set up the object we expect to have parsed from the string
+            ObjectIndexData objExpected = new ObjectIndexData();
+            objExpected.VNUM = 2005;
+            objExpected.Name = "sword excalibur";
+            objExpected.ShortDescription = "the sword Excalibur";
+            objExpected.Description = "A sword gleams by the light of its magical silvery blade.";
+            objExpected.Material = "oldstyle";
+            objExpected.ObjectType = Enums.ItemClass.Weapon;
+            objExpected.ExtraFlags = Enums.ItemExtraFlag.Glow | Enums.ItemExtraFlag.Magic | Enums.ItemExtraFlag.AntiEvil | Enums.ItemExtraFlag.AntiNeutral;
+            objExpected.WearFlags = Enums.WearFlag.Take | Enums.WearFlag.Wield;
+            objExpected.Values[0] = Consts.WeaponClass.WeaponTable.Single(s => s.Name.Equals("sword")); // Weapon type
+            objExpected.Values[1] = 5;  // Damage dice number
+            objExpected.Values[2] = 4;  // Damage dice type
+            objExpected.Values[3] = Consts.DamageTypes.AttackTable.Single(s => s.Name.Equals("slash")); // Damage type
+            objExpected.Values[4] = Enums.WeaponFlag.None;  // Weapon flag
+            objExpected.Level = 24;
+            objExpected.Weight = 150;
+            objExpected.Cost = 3400;
+            objExpected.Condition = 100;
+            objExpected.ExtraDescriptions = new System.Collections.Generic.List<ExtraDescription>();
+            objExpected.Affected = new System.Collections.Generic.List<AffectData>();
+            objExpected.Affected.Add(new AffectData() { Where = Enums.ToWhere.Object, Type = -1, Level = objExpected.Level, Duration = -1, BitVector = 0, Location = Enums.ApplyType.Strength, Modifier = 1 });
+            objExpected.Affected.Add(new AffectData() { Where = Enums.ToWhere.Object, Type = -1, Level = objExpected.Level, Duration = -1, BitVector = 0, Location = Enums.ApplyType.HitRoll, Modifier = 3 });
+
+            try
+            {
+                // Parse the object from the string
+                ObjectIndexData obj = ObjectIndexData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
+
+                // Compare the two objects
+                CompareObjects(objExpected, obj);
+            }
+            catch (Exception e)
+            {
+                Assert.Fail(String.Format("Execption thrown loading object: {0} {1}", e.GetType().ToString(), e.Message));
+            }
+        }
+
+        [Test(), TestOf(typeof(ObjectIndexData))]
         public void TestValidStaff()
         {
             // Object data to parse, VNUM 2245 from draconia.are, lines 515-522
