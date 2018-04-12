@@ -10,6 +10,60 @@ namespace ROMSharp.UnitTests
     public class ObjectTests
     {
         [Test(), TestOf(typeof(ObjectIndexData))]
+        public void TestValidWand()
+        {
+            // Object data to parse, VNUM 9215 from canyon.are, lines 691-698
+            string objData = @"#9215
+wand~
+elemental wand of fire~
+A fire wand lies forgotten on the ground.~
+oldstyle~
+wand A AO
+15 3 3 'fireball' 0
+16 70 3900 P
+#$";
+
+            StringReader sr = new StringReader(objData);
+            int lineNum = 1;
+            string firstLine = sr.ReadLine();
+
+            // Set up the object we expect to have parsed from the string
+            ObjectIndexData objExpected = new ObjectIndexData();
+            objExpected.VNUM = 9215;
+            objExpected.Name = "wand";
+            objExpected.ShortDescription = "elemental wand of fire";
+            objExpected.Description = "A fire wand lies forgotten on the ground.";
+            objExpected.Material = "oldstyle";
+            objExpected.ObjectType = Enums.ItemClass.Wand;
+            objExpected.ExtraFlags = Enums.ItemExtraFlag.Glow;
+            objExpected.WearFlags = Enums.WearFlag.Take | Enums.WearFlag.Hold;
+            objExpected.Values[0] = 15; // Level
+            objExpected.Values[1] = 3;  // Current charges
+            objExpected.Values[2] = 3;  // Maximum charges
+            objExpected.Values[3] = Consts.Skills.SkillTable.Single(s => s.Name.Equals("fireball"));  // Spell
+            objExpected.Values[4] = 0;  // Unused
+            objExpected.Level = 16;
+            objExpected.Weight = 70;
+            objExpected.Cost = 3900;
+            objExpected.Condition = 100;
+            objExpected.ExtraDescriptions = new System.Collections.Generic.List<ExtraDescription>();
+            objExpected.Affected = new System.Collections.Generic.List<AffectData>();
+
+            try
+            {
+                // Parse the object from the string
+                ObjectIndexData obj = ObjectIndexData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
+
+                // Compare the two objects
+                CompareObjects(objExpected, obj);
+            }
+            catch (Exception e)
+            {
+                Assert.Fail(String.Format("Execption thrown loading object: {0} {1}", e.GetType().ToString(), e.Message));
+            }
+        }
+
+        [Test(), TestOf(typeof(ObjectIndexData))]
         public void TestValidScroll()
         {
             // Object data to parse, VNUM 3000 from midgaard.are, lines 959-966

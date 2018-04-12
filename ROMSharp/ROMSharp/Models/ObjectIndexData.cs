@@ -624,19 +624,19 @@ namespace ROMSharp.Models
         private static bool SetWandAndStaffValues(string[] splitLine, ObjectIndexData outObj, string areaFile, int lineNum)
         {
             // Segment 1 - Level, should be an integer
-            outObj.Values[0] = SetValue_Int(splitLine[0], ref outObj.Values[0], "staff or wand", areaFile, lineNum, outObj.VNUM);
+            SetValue_Int(splitLine[0], ref outObj.Values[0], "staff or wand", areaFile, lineNum, outObj.VNUM);
             
             // Segment 2 - Current charges, should be an integer
-            outObj.Values[1] = SetValue_Int(splitLine[1], ref outObj.Values[1], "staff or wand", areaFile, lineNum, outObj.VNUM);
+            SetValue_Int(splitLine[1], ref outObj.Values[1], "staff or wand", areaFile, lineNum, outObj.VNUM);
 
             // Segment 3 - Max charges, should be an integer
-            outObj.Values[2] = SetValue_Int(splitLine[2], ref outObj.Values[2], "staff or wand", areaFile, lineNum, outObj.VNUM);
+            SetValue_Int(splitLine[2], ref outObj.Values[2], "staff or wand", areaFile, lineNum, outObj.VNUM);
 
             // Segment 4 - Skill for wielding
-            outObj.Values[3] = SetValue_Skill(splitLine[3], ref outObj.Values[3], "staff or wand", areaFile, lineNum, outObj.VNUM);
+            SetValue_Skill(splitLine[3], ref outObj.Values[3], "staff or wand", areaFile, lineNum, outObj.VNUM);
 
             // Segment 5 - Appears to be unused, but should be an integer
-            outObj.Values[3] = SetValue_Int(splitLine[4], ref outObj.Values[3], "staff or wand", areaFile, lineNum, outObj.VNUM);
+            SetValue_Int(splitLine[4], ref outObj.Values[4], "staff or wand", areaFile, lineNum, outObj.VNUM);
 
             return true;
         }
