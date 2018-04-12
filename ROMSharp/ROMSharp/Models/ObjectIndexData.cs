@@ -596,19 +596,19 @@ namespace ROMSharp.Models
         private static bool SetPotionPillScrollValues(string[] splitLine, ObjectIndexData outObj, string areaFile, int lineNum)
         {
             // Segment 1 - Level, should be an integer
-            outObj.Values[0] = SetValue_Int(splitLine[0], ref outObj.Values[0], "potion, pill, or scroll", areaFile, lineNum, outObj.VNUM);
+            SetValue_Int(splitLine[0], ref outObj.Values[0], "potion, pill, or scroll", areaFile, lineNum, outObj.VNUM);
 
             // Segment 2 - Spell #1, should be a skill
-            outObj.Values[1] = SetValue_Skill(splitLine[1], ref outObj.Values[1], "potion, pill, or scroll", areaFile, lineNum, outObj.VNUM);
+            SetValue_Skill(splitLine[1], ref outObj.Values[1], "potion, pill, or scroll", areaFile, lineNum, outObj.VNUM);
 
             // Segment 3 - Spell #2, should be a skill
-            outObj.Values[2] = SetValue_Skill(splitLine[2], ref outObj.Values[2], "potion, pill, or scroll", areaFile, lineNum, outObj.VNUM);
+            SetValue_Skill(splitLine[2], ref outObj.Values[2], "potion, pill, or scroll", areaFile, lineNum, outObj.VNUM);
 
             // Segment 4 - Spell #3, should be a skill
-            outObj.Values[3] = SetValue_Skill(splitLine[3], ref outObj.Values[3], "potion, pill, or scroll", areaFile, lineNum, outObj.VNUM);
+            SetValue_Skill(splitLine[3], ref outObj.Values[3], "potion, pill, or scroll", areaFile, lineNum, outObj.VNUM);
 
             // Segment 5 - Spell #4, should be a skill
-            outObj.Values[4] = SetValue_Skill(splitLine[4], ref outObj.Values[4], "potion, pill, or scroll", areaFile, lineNum, outObj.VNUM);
+            SetValue_Skill(splitLine[4], ref outObj.Values[4], "potion, pill, or scroll", areaFile, lineNum, outObj.VNUM);
 
             return true;
         }

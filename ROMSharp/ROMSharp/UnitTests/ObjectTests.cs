@@ -10,6 +10,64 @@ namespace ROMSharp.UnitTests
     public class ObjectTests
     {
         [Test(), TestOf(typeof(ObjectIndexData))]
+        public void TestValidScroll()
+        {
+            // Object data to parse, VNUM 3000 from midgaard.are, lines 959-966
+            string objData = @"#7701
+scroll violet~
+a violet scroll~
+A rolled piece of violet parchment lies on the floor.~
+oldstyle~
+scroll I A
+15 'armor' 'bless' 'shield' ''
+11 10 1510 P
+E
+scroll violet~
+The scroll is written on soft violet parchment that has a pleasing smell to it.
+~
+#$";
+
+            StringReader sr = new StringReader(objData);
+            int lineNum = 1;
+            string firstLine = sr.ReadLine();
+
+            // Set up the object we expect to have parsed from the string
+            ObjectIndexData objExpected = new ObjectIndexData();
+            objExpected.VNUM = 7701;
+            objExpected.Name = "scroll violet";
+            objExpected.ShortDescription = "a violet scroll";
+            objExpected.Description = "A rolled piece of violet parchment lies on the floor.";
+            objExpected.Material = "oldstyle";
+            objExpected.ObjectType = Enums.ItemClass.Scroll;
+            objExpected.ExtraFlags = Enums.ItemExtraFlag.Bless;
+            objExpected.WearFlags = Enums.WearFlag.Take;
+            objExpected.Values[0] = 15;  // Level
+            objExpected.Values[1] = Consts.Skills.SkillTable.Single(s => s.Name.Equals("armor"));  // Spell 1
+            objExpected.Values[2] = Consts.Skills.SkillTable.Single(s => s.Name.Equals("bless"));  // Spell 2
+            objExpected.Values[3] = Consts.Skills.SkillTable.Single(s => s.Name.Equals("shield"));  // Spell 3
+            objExpected.Level = 11;
+            objExpected.Weight = 10;
+            objExpected.Cost = 1510;
+            objExpected.Condition = 100;
+            objExpected.ExtraDescriptions = new System.Collections.Generic.List<ExtraDescription>();
+            objExpected.ExtraDescriptions.Add(new ExtraDescription() { Keywords = "scroll violet", Description = "The scroll is written on soft violet parchment that has a pleasing smell to it." });
+            objExpected.Affected = new System.Collections.Generic.List<AffectData>();
+
+            try
+            {
+                // Parse the object from the string
+                ObjectIndexData obj = ObjectIndexData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
+
+                // Compare the two objects
+                CompareObjects(objExpected, obj);
+            }
+            catch (Exception e)
+            {
+                Assert.Fail(String.Format("Execption thrown loading object: {0} {1}", e.GetType().ToString(), e.Message));
+            }
+        }
+
+        [Test(), TestOf(typeof(ObjectIndexData))]
         public void TestValidLight()
         {
             // Object data to parse, VNUM 3000 from astral.are, lines 566-582
