@@ -10,6 +10,58 @@ namespace ROMSharp.UnitTests
     public class ObjectTests
     {
         [Test(), TestOf(typeof(ObjectIndexData))]
+        public void TestValidPotion()
+        {
+            // Object data to parse, VNUM 5019 from eastern.are, lines 414-421
+            string objData = @"#5019
+potion pink~
+a pink potion~
+A pink potion stands here.~
+oldstyle~
+potion 0 A
+25 'heal' 'remove curse' '' ''
+13 60 1220 P
+#$";
+
+            StringReader sr = new StringReader(objData);
+            int lineNum = 1;
+            string firstLine = sr.ReadLine();
+
+            // Set up the object we expect to have parsed from the string
+            ObjectIndexData objExpected = new ObjectIndexData();
+            objExpected.VNUM = 5019;
+            objExpected.Name = "potion pink";
+            objExpected.ShortDescription = "a pink potion";
+            objExpected.Description = "A pink potion stands here.";
+            objExpected.Material = "oldstyle";
+            objExpected.ObjectType = Enums.ItemClass.Potion;
+            objExpected.ExtraFlags = Enums.ItemExtraFlag.None;
+            objExpected.WearFlags = Enums.WearFlag.Take;
+            objExpected.Values[0] = 25; // Spell level
+            objExpected.Values[1] = Consts.Skills.SkillTable.Single(s => s.Name.Equals("heal"));            // Spell 1
+            objExpected.Values[2] = Consts.Skills.SkillTable.Single(s => s.Name.Equals("remove curse"));    // Spell 2
+            objExpected.Level = 13;
+            objExpected.Weight = 60;
+            objExpected.Cost = 1220;
+            objExpected.Condition = 100;
+            objExpected.ExtraDescriptions = new System.Collections.Generic.List<ExtraDescription>();
+            objExpected.Affected = new System.Collections.Generic.List<AffectData>();
+
+            try
+            {
+                // Parse the object from the string
+                ObjectIndexData obj = ObjectIndexData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
+
+                // Compare the two objects
+                CompareObjects(objExpected, obj);
+            }
+            catch (Exception e)
+            {
+                Assert.Fail(String.Format("Execption thrown loading object: {0} {1}", e.GetType().ToString(), e.Message));
+            }
+        }
+
+        [Test(), TestOf(typeof(ObjectIndexData))]
         public void TestValidArmor()
         {
             // Object data to parse, VNUM 9304 from galaxy.are, lines 519-533
