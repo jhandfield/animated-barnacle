@@ -10,6 +10,69 @@ namespace ROMSharp.UnitTests
     public class ObjectTests
     {
         [Test(), TestOf(typeof(ObjectIndexData))]
+        public void TestValidArmor()
+        {
+            // Object data to parse, VNUM 9304 from galaxy.are, lines 519-533
+            string objData = @"#9304
+belt orion~
+the Titanic Belt of Orion~
+A belt of the Zodiac lies here.~
+oldstyle~
+armor AGK AL
+6 6 6 0 0
+17 70 3800 P
+A
+5 2
+E
+belt~
+You can immediately see that it belongs to Orion, from the three stars
+engraved on it.
+~
+#$";
+
+            StringReader sr = new StringReader(objData);
+            int lineNum = 1;
+            string firstLine = sr.ReadLine();
+
+            // Set up the object we expect to have parsed from the string
+            ObjectIndexData objExpected = new ObjectIndexData();
+            objExpected.VNUM = 9304;
+            objExpected.Name = "belt orion";
+            objExpected.ShortDescription = "the Titanic Belt of Orion";
+            objExpected.Description = "A belt of the Zodiac lies here.";
+            objExpected.Material = "oldstyle";
+            objExpected.ObjectType = Enums.ItemClass.Armor;
+            objExpected.ExtraFlags = Enums.ItemExtraFlag.Glow | Enums.ItemExtraFlag.Magic | Enums.ItemExtraFlag.AntiEvil;
+            objExpected.WearFlags = Enums.WearFlag.Take | Enums.WearFlag.Wear_Waist;
+            objExpected.Values[0] = 6;
+            objExpected.Values[1] = 6;
+            objExpected.Values[2] = 6;
+            objExpected.Values[3] = 0;
+            objExpected.Values[4] = 0;
+            objExpected.Level = 17;
+            objExpected.Weight = 70;
+            objExpected.Cost = 3800;
+            objExpected.Condition = 100;
+            objExpected.ExtraDescriptions = new System.Collections.Generic.List<ExtraDescription>();
+            objExpected.ExtraDescriptions.Add(new ExtraDescription() { Keywords = "belt", Description = "You can immediately see that it belongs to Orion, from the three stars\nengraved on it." });
+            objExpected.Affected = new System.Collections.Generic.List<AffectData>();
+            objExpected.Affected.Add(new AffectData() { Where = Enums.ToWhere.Object, Type = -1, Level = objExpected.Level, Duration = -1, BitVector = 0, Location = Enums.ApplyType.Constitution, Modifier = 2 });
+
+            try
+            {
+                // Parse the object from the string
+                ObjectIndexData obj = ObjectIndexData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
+
+                // Compare the two objects
+                CompareObjects(objExpected, obj);
+            }
+            catch (Exception e)
+            {
+                Assert.Fail(String.Format("Execption thrown loading object: {0} {1}", e.GetType().ToString(), e.Message));
+            }
+        }
+
+        [Test(), TestOf(typeof(ObjectIndexData))]
         public void TestValidTreasure()
         {
             // Object data to parse, VNUM 3715 from school.are, lines 509-527, the ever-popular MUD School Diploma
