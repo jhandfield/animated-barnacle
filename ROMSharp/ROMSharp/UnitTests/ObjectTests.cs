@@ -10,6 +10,74 @@ namespace ROMSharp.UnitTests
     public class ObjectTests
     {
         [Test(), TestOf(typeof(ObjectIndexData))]
+        public void TestValidTreasure()
+        {
+            // Object data to parse, VNUM 3715 from school.are, lines 509-527, the ever-popular MUD School Diploma
+            string objData = @"#3715
+diploma~
+a mud school diploma~
+You see a mud school diploma here.~
+vellum~
+treasure GU AO
+0 0 0 0 0
+0 10 1140 P
+A
+4 1
+A
+5 1
+E
+diploma~
+This document shows that you have graduated from Mud School.
+It also has magical effects on your abilities if you hold it!
+
+Merc Industries
+~
+#$";
+
+            StringReader sr = new StringReader(objData);
+            int lineNum = 1;
+            string firstLine = sr.ReadLine();
+
+            // Set up the object we expect to have parsed from the string
+            ObjectIndexData objExpected = new ObjectIndexData();
+            objExpected.VNUM = 3715;
+            objExpected.Name = "diploma";
+            objExpected.ShortDescription = "a mud school diploma";
+            objExpected.Description = "You see a mud school diploma here.";
+            objExpected.Material = "vellum";
+            objExpected.ObjectType = Enums.ItemClass.Treasure;
+            objExpected.ExtraFlags = Enums.ItemExtraFlag.Magic | Enums.ItemExtraFlag.MeltDrop;
+            objExpected.WearFlags = Enums.WearFlag.Take | Enums.WearFlag.Hold;
+            objExpected.Values[0] = 0;
+            objExpected.Values[1] = 0;
+            objExpected.Values[2] = 0;
+            objExpected.Values[3] = 0;
+            objExpected.Values[4] = 0;
+            objExpected.Level = 0;
+            objExpected.Weight = 10;
+            objExpected.Cost = 1140;
+            objExpected.Condition = 100;
+            objExpected.ExtraDescriptions = new System.Collections.Generic.List<ExtraDescription>();
+            objExpected.ExtraDescriptions.Add(new ExtraDescription() { Keywords = "diploma", Description = "This document shows that you have graduated from Mud School.\nIt also has magical effects on your abilities if you hold it!\n\nMerc Industries" });
+            objExpected.Affected = new System.Collections.Generic.List<AffectData>();
+            objExpected.Affected.Add(new AffectData() { Where = Enums.ToWhere.Object, Type = -1, Level = objExpected.Level, Duration = -1, BitVector = 0, Location = Enums.ApplyType.Wisdom, Modifier = 1 });
+            objExpected.Affected.Add(new AffectData() { Where = Enums.ToWhere.Object, Type = -1, Level = objExpected.Level, Duration = -1, BitVector = 0, Location = Enums.ApplyType.Constitution, Modifier = 1 });
+
+            try
+            {
+                // Parse the object from the string
+                ObjectIndexData obj = ObjectIndexData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
+
+                // Compare the two objects
+                CompareObjects(objExpected, obj);
+            }
+            catch (Exception e)
+            {
+                Assert.Fail(String.Format("Execption thrown loading object: {0} {1}", e.GetType().ToString(), e.Message));
+            }
+        }
+
+        [Test(), TestOf(typeof(ObjectIndexData))]
         public void TestValidWeapon()
         {
             // Object data to parse, VNUM 2005 from catacomb.are, lines 300-311
