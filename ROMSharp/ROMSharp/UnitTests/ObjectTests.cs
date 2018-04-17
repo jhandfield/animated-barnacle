@@ -10,6 +10,63 @@ namespace ROMSharp.UnitTests
     public class ObjectTests
     {
         [Test(), TestOf(typeof(ObjectIndexData))]
+        public void TestValidClothing()
+        {
+            // Object data to parse, VNUM 1616 from wyvern.are, lines 500-509
+            string objData = @"#1616
+dark blue cloak~
+a dark blue cloak~
+A valuable cloak of dark blue cloth lies on the floor.~
+oldstyle~
+clothing AG AC
+0 0 0 0 0
+0 20 100 P
+A
+17 6
+#$";
+
+            StringReader sr = new StringReader(objData);
+            int lineNum = 1;
+            string firstLine = sr.ReadLine();
+
+            // Set up the object we expect to have parsed from the string
+            ObjectIndexData objExpected = new ObjectIndexData();
+            objExpected.VNUM = 1616;
+            objExpected.Name = "dark blue cloak";
+            objExpected.ShortDescription = "a dark blue cloak";
+            objExpected.Description = "A valuable cloak of dark blue cloth lies on the floor.";
+            objExpected.Material = "oldstyle";
+            objExpected.ObjectType = Enums.ItemClass.Clothing;
+            objExpected.ExtraFlags = Enums.ItemExtraFlag.Glow | Enums.ItemExtraFlag.Magic;
+            objExpected.WearFlags = Enums.WearFlag.Take | Enums.WearFlag.Wear_Neck;
+            objExpected.Values[0] = 0;
+            objExpected.Values[1] = 0;
+            objExpected.Values[2] = 0;
+            objExpected.Values[3] = 0;
+            objExpected.Values[4] = 0;
+            objExpected.Level = 0;
+            objExpected.Weight = 20;
+            objExpected.Cost = 100;
+            objExpected.Condition = 100;
+            objExpected.ExtraDescriptions = new System.Collections.Generic.List<ExtraDescription>();
+            objExpected.Affected = new System.Collections.Generic.List<AffectData>();
+            objExpected.Affected.Add(new AffectData() { Where = Enums.ToWhere.Object, Type = -1, Level = objExpected.Level, Duration = -1, BitVector = 0, Location = Enums.ApplyType.AC, Modifier = 6 });
+
+            try
+            {
+                // Parse the object from the string
+                ObjectIndexData obj = ObjectIndexData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
+
+                // Compare the two objects
+                CompareObjects(objExpected, obj);
+            }
+            catch (Exception e)
+            {
+                Assert.Fail(String.Format("Execption thrown loading object: {0} {1}", e.GetType().ToString(), e.Message));
+            }
+        }
+
+        [Test(), TestOf(typeof(ObjectIndexData))]
         public void TestValidPotion()
         {
             // Object data to parse, VNUM 5019 from eastern.are, lines 414-421
