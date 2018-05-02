@@ -10,7 +10,62 @@ namespace ROMSharp.UnitTests
     public class ObjectTests
     {
         [Test(), TestOf(typeof(ObjectIndexData))]
-        public void Valid_Furniture()
+        public void TestValidTrash()
+        {
+            // Object data to parse, VNUM 3380 (custom) from midgaard.are - there doesn't appear to be any static trash in the stock areas
+            string objData = @"#3380
+broken brick~
+a broken brick~
+A brick, chipped and broken in half, is lying on the ground.~
+clay~
+trash 0 AO
+0 0 0 0 0
+0 5 10 B
+#$";
+
+            StringReader sr = new StringReader(objData);
+            int lineNum = 1;
+            string firstLine = sr.ReadLine();
+
+            // Set up the object we expect to have parsed from the string
+            ObjectIndexData objExpected = new ObjectIndexData();
+            objExpected.VNUM = 3380;
+            objExpected.Name = "broken brick";
+            objExpected.ShortDescription = "a broken brick";
+            objExpected.Description = "A brick, chipped and broken in half, is lying on the ground.";
+            objExpected.Material = "clay";
+            objExpected.ObjectType = Enums.ItemClass.Trash;
+            objExpected.ExtraFlags = Enums.ItemExtraFlag.None;
+            objExpected.WearFlags = Enums.WearFlag.Take | Enums.WearFlag.Hold;
+            objExpected.Values[0] = 0;  // Unused
+            objExpected.Values[1] = 0;  // Unused
+            objExpected.Values[2] = 0;  // Unused
+            objExpected.Values[3] = 0;  // Unused
+            objExpected.Values[4] = 0;  // Unused
+            objExpected.Level = 0;
+            objExpected.Weight = 5;
+            objExpected.Cost = 10;
+            objExpected.Condition = 10;    // The brick's seen better days
+            objExpected.ExtraDescriptions = new System.Collections.Generic.List<ExtraDescription>();
+            objExpected.Affected = new System.Collections.Generic.List<AffectData>();
+
+            try
+            {
+                // Parse the object from the string
+                ObjectIndexData obj = ObjectIndexData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
+
+                // Compare the two objects
+                CompareObjects(objExpected, obj);
+            }
+            catch (Exception e)
+            {
+                Assert.Fail(String.Format("Execption thrown loading object: {0} {1}", e.GetType().ToString(), e.Message));
+            }
+        }
+
+
+        [Test(), TestOf(typeof(ObjectIndexData))]
+        public void TestValidFurniture()
         {
             // Object data to parse, VNUM 3379 (custom) from midgaard.are - there doesn't appear to be any interactive furniture in the stock areas at all?
             string objData = @"#3379

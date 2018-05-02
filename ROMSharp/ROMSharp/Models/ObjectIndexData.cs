@@ -310,25 +310,25 @@ namespace ROMSharp.Models
             // Segment 4 - Condition
             switch (splitLine[3].ToLower())
             {
-                case "P":
+                case "p":
                     outObj.Condition = 100;
                     break;
-                case "G":
+                case "g":
                     outObj.Condition = 90;
                     break;
-                case "A":
+                case "a":
                     outObj.Condition = 75;
                     break;
-                case "W":
+                case "w":
                     outObj.Condition = 50;
                     break;
-                case "D":
+                case "d":
                     outObj.Condition = 25;
                     break;
-                case "B":
+                case "b":
                     outObj.Condition = 10;
                     break;
-                case "R":
+                case "r":
                     outObj.Condition = 0;
                     break;
                 default:
