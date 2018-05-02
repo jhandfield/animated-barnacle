@@ -10,6 +10,60 @@ namespace ROMSharp.UnitTests
     public class ObjectTests
     {
         [Test(), TestOf(typeof(ObjectIndexData))]
+        public void TestValidKey()
+        {
+            // Object data to parse, VNUM 2001 from catacomb.are
+            string objData = @"#2001
+glowing key~
+a glowing key~
+A circular, glowing key radiates a bright aura around it.~
+oldstyle~
+key ABG A
+39 0 0 0 0
+0 10 0 P
+#$";
+
+            StringReader sr = new StringReader(objData);
+            int lineNum = 1;
+            string firstLine = sr.ReadLine();
+
+            // Set up the object we expect to have parsed from the string
+            ObjectIndexData objExpected = new ObjectIndexData();
+            objExpected.VNUM = 2001;
+            objExpected.Name = "glowing key";
+            objExpected.ShortDescription = "a glowing key";
+            objExpected.Description = "A circular, glowing key radiates a bright aura around it.";
+            objExpected.Material = "oldstyle";
+            objExpected.ObjectType = Enums.ItemClass.Key;
+            objExpected.ExtraFlags = Enums.ItemExtraFlag.Glow | Enums.ItemExtraFlag.Hum | Enums.ItemExtraFlag.Magic;
+            objExpected.WearFlags = Enums.WearFlag.Take;
+            objExpected.Values[0] = 39; // Unknown, not obvious in the old code
+            objExpected.Values[1] = 0;  // Unused
+            objExpected.Values[2] = 0;  // Unused
+            objExpected.Values[3] = 0;  // Unused
+            objExpected.Values[4] = 0;  // Unused
+            objExpected.Level = 0;
+            objExpected.Weight = 10;
+            objExpected.Cost = 0;
+            objExpected.Condition = 100;
+            objExpected.ExtraDescriptions = new System.Collections.Generic.List<ExtraDescription>();
+            objExpected.Affected = new System.Collections.Generic.List<AffectData>();
+
+            try
+            {
+                // Parse the object from the string
+                ObjectIndexData obj = ObjectIndexData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
+
+                // Compare the two objects
+                CompareObjects(objExpected, obj);
+            }
+            catch (Exception e)
+            {
+                Assert.Fail(String.Format("Execption thrown loading object: {0} {1}", e.GetType().ToString(), e.Message));
+            }
+        }
+
+        [Test(), TestOf(typeof(ObjectIndexData))]
         public void TestValidDrinkContainer()
         {
             // Object data to parse, VNUM 3138 from midgaard.are, the ever-popular buffalo water skin
