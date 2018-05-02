@@ -10,6 +10,60 @@ namespace ROMSharp.UnitTests
     public class ObjectTests
     {
         [Test(), TestOf(typeof(ObjectIndexData))]
+        public void Valid_Furniture()
+        {
+            // Object data to parse, VNUM 3379 (custom) from midgaard.are - there doesn't appear to be any interactive furniture in the stock areas at all?
+            string objData = @"#3379
+chair~
+a chair~
+A simple chair is here, waiting for an ass to sit on it.~
+wood~
+furniture 0 A
+1 0 BEHK 5 5
+0 1 2000 P
+#$";
+
+            StringReader sr = new StringReader(objData);
+            int lineNum = 1;
+            string firstLine = sr.ReadLine();
+
+            // Set up the object we expect to have parsed from the string
+            ObjectIndexData objExpected = new ObjectIndexData();
+            objExpected.VNUM = 3379;
+            objExpected.Name = "chair";
+            objExpected.ShortDescription = "a chair";
+            objExpected.Description = "A simple chair is here, waiting for an ass to sit on it.";
+            objExpected.Material = "wood";
+            objExpected.ObjectType = Enums.ItemClass.Furniture;
+            objExpected.ExtraFlags = Enums.ItemExtraFlag.None;
+            objExpected.WearFlags = Enums.WearFlag.Take;
+            objExpected.Values[0] = 1;  // Maximum occupancy
+            objExpected.Values[1] = 0;  // Appears to be unused?
+            objExpected.Values[2] = Enums.FurnitureFlag.StandOn | Enums.FurnitureFlag.SitOn | Enums.FurnitureFlag.RestOn | Enums.FurnitureFlag.SleepOn;  // Furniture flags
+            objExpected.Values[3] = 5;  // Heal rate modifier
+            objExpected.Values[4] = 5;  // Mana rate modifier
+            objExpected.Level = 0;
+            objExpected.Weight = 1;
+            objExpected.Cost = 2000;
+            objExpected.Condition = 100;
+            objExpected.ExtraDescriptions = new System.Collections.Generic.List<ExtraDescription>();
+            objExpected.Affected = new System.Collections.Generic.List<AffectData>();
+
+            try
+            {
+                // Parse the object from the string
+                ObjectIndexData obj = ObjectIndexData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
+
+                // Compare the two objects
+                CompareObjects(objExpected, obj);
+            }
+            catch (Exception e)
+            {
+                Assert.Fail(String.Format("Execption thrown loading object: {0} {1}", e.GetType().ToString(), e.Message));
+            }
+        }
+
+        [Test(), TestOf(typeof(ObjectIndexData))]
         public void TestValidClothing()
         {
             // Object data to parse, VNUM 1616 from wyvern.are, lines 500-509

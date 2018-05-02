@@ -33,7 +33,7 @@ namespace ROMSharp.Helpers
                     charFlagBuffer += c.ToString();
 
                 // If the character is lower case, move to the next iteration
-                if (Char.IsLower(c))
+                if (charFlagBuffer.Length != 2 && Char.IsLower(c))
                     continue;
 
                 // Declare an AlphaMacros object to hold the (potentially) parsed value below

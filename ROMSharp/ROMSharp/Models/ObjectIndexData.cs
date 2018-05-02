@@ -262,6 +262,13 @@ namespace ROMSharp.Models
                         return null;
 
                     break;
+                case ItemClass.Furniture:
+                    // Parse and set values
+                    if (!SetFurnitureValues(splitValues, outObj, areaFile, lineNum))
+                        // An error was encountered, return a null object
+                        return null;
+
+                    break;
                 default:
                     // Parse and set values
                     if (!SetOtherItemTypeValues(splitValues, outObj, areaFile, lineNum))
@@ -561,6 +568,38 @@ namespace ROMSharp.Models
                     // Store the skill
                     objValue = skill;
             }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Sets the Values array of <paramref name="outObj"/> based on input values from <paramref name="splitLine"/> appropriate where object type is Wand or Staff
+        /// </summary>
+        /// <returns><c>true</c> if values were set without errors, <c>false</c> otherwise. Errors are logged within this method.</returns>
+        /// <param name="splitLine">Array of values to parse</param>
+        /// <param name="outObj">Object whose Values property should be set</param>
+        /// <param name="areaFile">Filename of the area file being parsed, used for error messages</param>
+        /// <param name="lineNum">Line number the values came from, used for error messages</param>
+        private static bool SetFurnitureValues(string[] splitLine, ObjectIndexData outObj, string areaFile, int lineNum)
+        {
+            // All segments should be parsed as ints
+            SetValue_Int(splitLine[0], ref outObj.Values[0], "furniture", areaFile, lineNum, outObj.VNUM);
+            SetValue_Int(splitLine[1], ref outObj.Values[1], "furniture", areaFile, lineNum, outObj.VNUM);
+
+            // Segment 3, wear flag
+            try
+            {
+                FurnitureFlag furnFlags = (FurnitureFlag)AlphaConversions.ConvertROMAlphaToInt32(splitLine[2]);
+                outObj.Values[2] = furnFlags;
+            }
+            catch (ArgumentException e)
+            {
+                // Invalid extra flags
+                throw new ObjectParsingException(String.Format("Error parsing furniture flags for object {0} in area {1}: invalid furniture flag value \"{2}\" found on line {3}", outObj.VNUM, areaFile, splitLine[2], lineNum), e);
+            }
+
+            SetValue_Int(splitLine[3], ref outObj.Values[3], "furniture", areaFile, lineNum, outObj.VNUM);
+            SetValue_Int(splitLine[4], ref outObj.Values[4], "furniture", areaFile, lineNum, outObj.VNUM);
 
             return true;
         }
