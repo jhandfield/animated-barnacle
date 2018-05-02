@@ -10,6 +10,58 @@ namespace ROMSharp.UnitTests
     public class ObjectTests
     {
         [Test(), TestOf(typeof(ObjectIndexData))]
+        public void TestValidDrinkContainer()
+        {
+            // Object data to parse, VNUM 3138 from midgaard.are, the ever-popular buffalo water skin
+            string objData = @"#3138
+skin water buffalo~
+a buffalo water skin~
+A bloated dead buffalo is on the floor.~
+leather~
+drink 0 A
+64 64 'water' 0 0
+0 40 24 G
+#$";
+
+            StringReader sr = new StringReader(objData);
+            int lineNum = 1;
+            string firstLine = sr.ReadLine();
+
+            // Set up the object we expect to have parsed from the string
+            ObjectIndexData objExpected = new ObjectIndexData();
+            objExpected.VNUM = 3138;
+            objExpected.Name = "skin water buffalo";
+            objExpected.ShortDescription = "a buffalo water skin";
+            objExpected.Description = "A bloated dead buffalo is on the floor.";
+            objExpected.Material = "leather";
+            objExpected.ObjectType = Enums.ItemClass.DrinkContainer;
+            objExpected.ExtraFlags = Enums.ItemExtraFlag.None;
+            objExpected.WearFlags = Enums.WearFlag.Take;
+            objExpected.Values[0] = 64; // Capacity
+            objExpected.Values[1] = 64; // Fill level
+            objExpected.Values[2] = Consts.Liquids.LiquidTable.Single(l => l.Name.Equals("water")); // Liquid type
+            objExpected.Level = 0;
+            objExpected.Weight = 40;
+            objExpected.Cost = 24;
+            objExpected.Condition = 90;  // A few scuffs
+            objExpected.ExtraDescriptions = new System.Collections.Generic.List<ExtraDescription>();
+            objExpected.Affected = new System.Collections.Generic.List<AffectData>();
+
+            try
+            {
+                // Parse the object from the string
+                ObjectIndexData obj = ObjectIndexData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
+
+                // Compare the two objects
+                CompareObjects(objExpected, obj);
+            }
+            catch (Exception e)
+            {
+                Assert.Fail(String.Format("Execption thrown loading object: {0} {1}", e.GetType().ToString(), e.Message));
+            }
+        }
+
+        [Test(), TestOf(typeof(ObjectIndexData))]
         public void TestValidContainer()
         {
             // Object data to parse, VNUM 3412 from chapel.are
