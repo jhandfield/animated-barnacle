@@ -10,6 +10,66 @@ namespace ROMSharp.UnitTests
     public class ObjectTests
     {
         [Test(), TestOf(typeof(ObjectIndexData))]
+        public void TestValidContainer()
+        {
+            // Object data to parse, VNUM 3412 from chapel.are
+            string objData = @"#3412
+head jubal mummy~
+the mummified head of Jubal the Benevolent~
+The mummified head of Jubal the Benevolent is lolling back and forth.~
+oldstyle~
+container K A
+3 AC -1 3 100
+0 200 0 P
+E
+head jubal mummy~
+ACK! It's half eaten away ... yet it is whole ... in fact I think it can be
+opened and closed ... is there something in its teeth!?!?!? ACK you do it!
+~
+#$";
+
+            StringReader sr = new StringReader(objData);
+            int lineNum = 1;
+            string firstLine = sr.ReadLine();
+
+            // Set up the object we expect to have parsed from the string
+            ObjectIndexData objExpected = new ObjectIndexData();
+            objExpected.VNUM = 3412;
+            objExpected.Name = "head jubal mummy";
+            objExpected.ShortDescription = "the mummified head of Jubal the Benevolent";
+            objExpected.Description = "The mummified head of Jubal the Benevolent is lolling back and forth.";
+            objExpected.Material = "oldstyle";
+            objExpected.ObjectType = Enums.ItemClass.Container;
+            objExpected.ExtraFlags = Enums.ItemExtraFlag.AntiEvil;
+            objExpected.WearFlags = Enums.WearFlag.Take;
+            objExpected.Values[0] = 3;  // Capacity
+            objExpected.Values[1] = Enums.ContainerFlag.Closeable | Enums.ContainerFlag.Closed;  // Container flags
+            objExpected.Values[2] = -1;  // Unused?
+            objExpected.Values[3] = 3;  // Maximum weight
+            objExpected.Values[4] = 100;  // Weight multiplier
+            objExpected.Level = 0;
+            objExpected.Weight = 200;
+            objExpected.Cost = 0;
+            objExpected.Condition = 100;    // The brick's seen better days
+            objExpected.ExtraDescriptions = new System.Collections.Generic.List<ExtraDescription>();
+            objExpected.ExtraDescriptions.Add(new ExtraDescription() { Keywords = "head jubal mummy", Description = "ACK! It's half eaten away ... yet it is whole ... in fact I think it can be\nopened and closed ... is there something in its teeth!?!?!? ACK you do it!" });
+            objExpected.Affected = new System.Collections.Generic.List<AffectData>();
+
+            try
+            {
+                // Parse the object from the string
+                ObjectIndexData obj = ObjectIndexData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
+
+                // Compare the two objects
+                CompareObjects(objExpected, obj);
+            }
+            catch (Exception e)
+            {
+                Assert.Fail(String.Format("Execption thrown loading object: {0} {1}", e.GetType().ToString(), e.Message));
+            }
+        }
+
+        [Test(), TestOf(typeof(ObjectIndexData))]
         public void TestValidTrash()
         {
             // Object data to parse, VNUM 3380 (custom) from midgaard.are - there doesn't appear to be any static trash in the stock areas

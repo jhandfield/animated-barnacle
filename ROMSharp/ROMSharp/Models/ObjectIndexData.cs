@@ -782,7 +782,7 @@ namespace ROMSharp.Models
 
             // Segment 4 - Maximum weight, should be an integer
             int maxWeight = 0;
-            if (!Int32.TryParse(splitLine[3], out capacity))
+            if (!Int32.TryParse(splitLine[3], out maxWeight))
                 // Invalid damage dice number
                 throw new ObjectParsingException(String.Format("Error parsing maximum weight for container object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[3], lineNum));
             else
@@ -791,7 +791,7 @@ namespace ROMSharp.Models
 
             // Segment 5 - Weight multiplier, should be an integer
             int weightMult = 0;
-            if (!Int32.TryParse(splitLine[4], out capacity))
+            if (!Int32.TryParse(splitLine[4], out weightMult))
                 // Invalid damage dice number
                 throw new ObjectParsingException(String.Format("Error parsing weight multiplier for container object {0} in area {1}: expected an integer but found \"{2}\" on line {3}", outObj.VNUM, areaFile, splitLine[4], lineNum));
             else
