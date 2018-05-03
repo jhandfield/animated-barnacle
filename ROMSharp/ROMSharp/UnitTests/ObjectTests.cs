@@ -10,6 +10,65 @@ namespace ROMSharp.UnitTests
     public class ObjectTests
     {
         [Test(), TestOf(typeof(ObjectIndexData))]
+        public void TestValidFood()
+        {
+            // Object data to parse, VNUM 1304 from hitower.are
+            string objData = @"#1304
+pizza slice~
+a slice of pizza~
+A slice of pizza is here looking very tasty.~
+oldstyle~
+food 0 A
+15 15 0 0 0
+0 10 10 P
+E
+pizza slice~
+Ahh!  Round Table pizza!  How appropriate.  Any root beer?
+~
+#$";
+
+            StringReader sr = new StringReader(objData);
+            int lineNum = 1;
+            string firstLine = sr.ReadLine();
+
+            // Set up the object we expect to have parsed from the string
+            ObjectIndexData objExpected = new ObjectIndexData();
+            objExpected.VNUM = 1304;
+            objExpected.Name = "pizza slice";
+            objExpected.ShortDescription = "a slice of pizza";
+            objExpected.Description = "A slice of pizza is here looking very tasty.";
+            objExpected.Material = "oldstyle";
+            objExpected.ObjectType = Enums.ItemClass.Food;
+            objExpected.ExtraFlags = Enums.ItemExtraFlag.None;
+            objExpected.WearFlags = Enums.WearFlag.Take;
+            objExpected.Values[0] = 15; // Fullness impact
+            objExpected.Values[1] = 15; // Hunger impact
+            objExpected.Values[2] = 0;  // Poisoned? (!= 0)
+            objExpected.Values[3] = 0;  // Unused
+            objExpected.Values[4] = 0;  // Unused
+            objExpected.Level = 0;
+            objExpected.Weight = 10;
+            objExpected.Cost = 10;
+            objExpected.Condition = 100;
+            objExpected.ExtraDescriptions = new System.Collections.Generic.List<ExtraDescription>();
+            objExpected.ExtraDescriptions.Add(new ExtraDescription() { Keywords = "pizza slice", Description = "Ahh!  Round Table pizza!  How appropriate.  Any root beer?" });
+            objExpected.Affected = new System.Collections.Generic.List<AffectData>();
+
+            try
+            {
+                // Parse the object from the string
+                ObjectIndexData obj = ObjectIndexData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
+
+                // Compare the two objects
+                CompareObjects(objExpected, obj);
+            }
+            catch (Exception e)
+            {
+                Assert.Fail(String.Format("Execption thrown loading object: {0} {1}", e.GetType().ToString(), e.Message));
+            }
+        }
+
+        [Test(), TestOf(typeof(ObjectIndexData))]
         public void TestValidKey()
         {
             // Object data to parse, VNUM 2001 from catacomb.are
