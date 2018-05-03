@@ -10,6 +10,60 @@ namespace ROMSharp.UnitTests
     public class ObjectTests
     {
         [Test(), TestOf(typeof(ObjectIndexData))]
+        public void TestValidBoat()
+        {
+            // Object data to parse, VNUM 1344 from hitower.are
+            string objData = @"#1344
+ring seashell~
+a seashell ring~
+A small seashell has been left here.~
+oldstyle~
+boat G AB
+0 0 0 0 0
+0 20 1000 P
+#$";
+
+            StringReader sr = new StringReader(objData);
+            int lineNum = 1;
+            string firstLine = sr.ReadLine();
+
+            // Set up the object we expect to have parsed from the string
+            ObjectIndexData objExpected = new ObjectIndexData();
+            objExpected.VNUM = 1344;
+            objExpected.Name = "ring seashell";
+            objExpected.ShortDescription = "a seashell ring";
+            objExpected.Description = "A small seashell has been left here.";
+            objExpected.Material = "oldstyle";
+            objExpected.ObjectType = Enums.ItemClass.Boat;
+            objExpected.ExtraFlags = Enums.ItemExtraFlag.Magic;
+            objExpected.WearFlags = Enums.WearFlag.Take | Enums.WearFlag.Wear_Finger;
+            objExpected.Values[0] = 0;  // Unused
+            objExpected.Values[1] = 0;  // Unused
+            objExpected.Values[2] = 0;  // Unused
+            objExpected.Values[3] = 0;  // Unused
+            objExpected.Values[4] = 0;  // Unused
+            objExpected.Level = 0;
+            objExpected.Weight = 20;
+            objExpected.Cost = 1000;
+            objExpected.Condition = 100;
+            objExpected.ExtraDescriptions = new System.Collections.Generic.List<ExtraDescription>();
+            objExpected.Affected = new System.Collections.Generic.List<AffectData>();
+
+            try
+            {
+                // Parse the object from the string
+                ObjectIndexData obj = ObjectIndexData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
+
+                // Compare the two objects
+                CompareObjects(objExpected, obj);
+            }
+            catch (Exception e)
+            {
+                Assert.Fail(String.Format("Execption thrown loading object: {0} {1}", e.GetType().ToString(), e.Message));
+            }
+        }
+
+        [Test(), TestOf(typeof(ObjectIndexData))]
         public void TestValidMoney()
         {
             // Object data to parse, VNUM 8718 from pyramid.are
