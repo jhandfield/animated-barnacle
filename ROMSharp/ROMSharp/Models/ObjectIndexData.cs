@@ -126,6 +126,11 @@ namespace ROMSharp.Models
             ExtraFlags = new ItemExtraFlag();
             WearFlags = new WearFlag();
             Values = new object[5];
+            Values[0] = 0;
+            Values[1] = 0;
+            Values[2] = 0;
+            Values[3] = 0;
+            Values[4] = 0;
         }
 
         internal static ObjectIndexData ParseObjectData(ref StringReader sr, string areaFile, ref int lineNum, string firstLine, bool log = true)
@@ -737,7 +742,7 @@ namespace ROMSharp.Models
             else
                 // Store the weapon class
                 outObj.Values[2] = liqiudType;
-
+            
             return true;
         }
         /// <summary>

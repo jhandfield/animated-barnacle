@@ -10,6 +10,60 @@ namespace ROMSharp.UnitTests
     public class ObjectTests
     {
         [Test(), TestOf(typeof(ObjectIndexData))]
+        public void TestValidFountain()
+        {
+            // Object data to parse, VNUM 5220 from thalos.are
+            string objData = @"#5220
+fountain water~
+a large cracked fountain~
+Some stagnant water lies in the bottom of the fountain.~
+oldstyle~
+fountain 0 0
+10 10 'water' 1 0
+0 0 0 P
+#$";
+
+            StringReader sr = new StringReader(objData);
+            int lineNum = 1;
+            string firstLine = sr.ReadLine();
+
+            // Set up the object we expect to have parsed from the string
+            ObjectIndexData objExpected = new ObjectIndexData();
+            objExpected.VNUM = 5220;
+            objExpected.Name = "fountain water";
+            objExpected.ShortDescription = "a large cracked fountain";
+            objExpected.Description = "Some stagnant water lies in the bottom of the fountain.";
+            objExpected.Material = "oldstyle";
+            objExpected.ObjectType = Enums.ItemClass.Fountain;
+            objExpected.ExtraFlags = Enums.ItemExtraFlag.None;
+            objExpected.WearFlags = Enums.WearFlag.None;
+            objExpected.Values[0] = 10;  // Capacity
+            objExpected.Values[1] = 10;  // Fill level
+            objExpected.Values[2] = Consts.Liquids.LiquidTable.Single(l => l.Name.Equals("water")); // Liquid type
+            objExpected.Values[3] = 0;  // Unused, even though this item definition does have a value.
+            objExpected.Values[4] = 0;  // Unused
+            objExpected.Level = 0;
+            objExpected.Weight = 0;
+            objExpected.Cost = 0;
+            objExpected.Condition = 100;    // A bit beat up
+            objExpected.ExtraDescriptions = new System.Collections.Generic.List<ExtraDescription>();
+            objExpected.Affected = new System.Collections.Generic.List<AffectData>();
+
+            try
+            {
+                // Parse the object from the string
+                ObjectIndexData obj = ObjectIndexData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
+
+                // Compare the two objects
+                CompareObjects(objExpected, obj);
+            }
+            catch (Exception e)
+            {
+                Assert.Fail(String.Format("Execption thrown loading object: {0} {1}", e.GetType().ToString(), e.Message));
+            }
+        }
+
+        [Test(), TestOf(typeof(ObjectIndexData))]
         public void TestValidPCCorpse()
         {
             // Object data to parse, VNUM 11 from limbo.are (apparently a prototype of a player corpse?)
