@@ -10,6 +10,60 @@ namespace ROMSharp.UnitTests
     public class ObjectTests
     {
         [Test(), TestOf(typeof(ObjectIndexData))]
+        public void TestValidPCCorpse()
+        {
+            // Object data to parse, VNUM 11 from limbo.are (apparently a prototype of a player corpse?)
+            string objData = @"#11
+corpse~
+the corpse of %s~
+The corpse of %s is lying here.~
+meat~
+pc_corpse O A
+0 0 0 1 0
+0 1000 0 D
+#$";
+
+            StringReader sr = new StringReader(objData);
+            int lineNum = 1;
+            string firstLine = sr.ReadLine();
+
+            // Set up the object we expect to have parsed from the string
+            ObjectIndexData objExpected = new ObjectIndexData();
+            objExpected.VNUM = 11;
+            objExpected.Name = "corpse";
+            objExpected.ShortDescription = "the corpse of %s";
+            objExpected.Description = "The corpse of %s is lying here.";
+            objExpected.Material = "meat";
+            objExpected.ObjectType = Enums.ItemClass.CorpsePC;
+            objExpected.ExtraFlags = Enums.ItemExtraFlag.NoPurge;
+            objExpected.WearFlags = Enums.WearFlag.Take;
+            objExpected.Values[0] = 0;  // Unused
+            objExpected.Values[1] = 0;  // Unused
+            objExpected.Values[2] = 0;  // Unused
+            objExpected.Values[3] = 1;  // Unused
+            objExpected.Values[4] = 0;  // Unused
+            objExpected.Level = 0;
+            objExpected.Weight = 1000;
+            objExpected.Cost = 0;
+            objExpected.Condition = 25;    // A bit beat up
+            objExpected.ExtraDescriptions = new System.Collections.Generic.List<ExtraDescription>();
+            objExpected.Affected = new System.Collections.Generic.List<AffectData>();
+
+            try
+            {
+                // Parse the object from the string
+                ObjectIndexData obj = ObjectIndexData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
+
+                // Compare the two objects
+                CompareObjects(objExpected, obj);
+            }
+            catch (Exception e)
+            {
+                Assert.Fail(String.Format("Execption thrown loading object: {0} {1}", e.GetType().ToString(), e.Message));
+            }
+        }
+
+        [Test(), TestOf(typeof(ObjectIndexData))]
         public void TestValidNPCCorpse()
         {
             // Object data to parse, VNUM 4001 from moria.are (one of two corpses in the stock areas)
