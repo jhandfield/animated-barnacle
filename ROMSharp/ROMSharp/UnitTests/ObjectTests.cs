@@ -10,6 +10,66 @@ namespace ROMSharp.UnitTests
     public class ObjectTests
     {
         [Test(), TestOf(typeof(ObjectIndexData))]
+        public void TestValidNPCCorpse()
+        {
+            // Object data to parse, VNUM 4001 from moria.are (one of two corpses in the stock areas)
+            string objData = @"#4001
+corpse~
+a corpse~
+A halfway decayed corpse of a cartographer.~
+flesh~
+npc_corpse P A
+0 0 0 0 0
+0 1000 0 P
+E
+corpse~
+Ew.  This must have been the mapper that was lost in Moria.  His rotted hand
+still clutches a partially digested map...
+~
+#$";
+
+            StringReader sr = new StringReader(objData);
+            int lineNum = 1;
+            string firstLine = sr.ReadLine();
+
+            // Set up the object we expect to have parsed from the string
+            ObjectIndexData objExpected = new ObjectIndexData();
+            objExpected.VNUM = 4001;
+            objExpected.Name = "corpse";
+            objExpected.ShortDescription = "a corpse";
+            objExpected.Description = "A halfway decayed corpse of a cartographer.";
+            objExpected.Material = "flesh";
+            objExpected.ObjectType = Enums.ItemClass.CorpseNPC;
+            objExpected.ExtraFlags = Enums.ItemExtraFlag.RotDeath;
+            objExpected.WearFlags = Enums.WearFlag.Take;
+            objExpected.Values[0] = 0;  // Unused
+            objExpected.Values[1] = 0;  // Unused
+            objExpected.Values[2] = 0;  // Unused
+            objExpected.Values[3] = 0;  // Unused
+            objExpected.Values[4] = 0;  // Unused
+            objExpected.Level = 0;
+            objExpected.Weight = 1000;
+            objExpected.Cost = 0;
+            objExpected.Condition = 100;    // It's in amazing condition for being halfway decayed
+            objExpected.ExtraDescriptions = new System.Collections.Generic.List<ExtraDescription>();
+            objExpected.ExtraDescriptions.Add(new ExtraDescription() { Keywords = "corpse", Description = "Ew.  This must have been the mapper that was lost in Moria.  His rotted hand\nstill clutches a partially digested map..." });
+            objExpected.Affected = new System.Collections.Generic.List<AffectData>();
+
+            try
+            {
+                // Parse the object from the string
+                ObjectIndexData obj = ObjectIndexData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
+
+                // Compare the two objects
+                CompareObjects(objExpected, obj);
+            }
+            catch (Exception e)
+            {
+                Assert.Fail(String.Format("Execption thrown loading object: {0} {1}", e.GetType().ToString(), e.Message));
+            }
+        }
+
+        [Test(), TestOf(typeof(ObjectIndexData))]
         public void TestValidBoat()
         {
             // Object data to parse, VNUM 1344 from hitower.are
