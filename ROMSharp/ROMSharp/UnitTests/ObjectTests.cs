@@ -10,6 +10,66 @@ namespace ROMSharp.UnitTests
     public class ObjectTests
     {
         [Test(), TestOf(typeof(ObjectIndexData))]
+        public void TestValidMoney()
+        {
+            // Object data to parse, VNUM 8718 from pyramid.are
+            string objData = @"#8718
+treasure~
+the treasure of the sphinx~
+The massive treasure of the sphinx lies here in a big pile.~
+oldstyle~
+money 0 A
+1850 23 0 0 0
+0 200 0 P
+E
+treasure~
+The treasure is incredibly large, filled with gold coins and valuables, more 
+wealth than you could ever possibly imagine accumulated in one place.
+~
+#$";
+
+            StringReader sr = new StringReader(objData);
+            int lineNum = 1;
+            string firstLine = sr.ReadLine();
+
+            // Set up the object we expect to have parsed from the string
+            ObjectIndexData objExpected = new ObjectIndexData();
+            objExpected.VNUM = 8718;
+            objExpected.Name = "treasure";
+            objExpected.ShortDescription = "the treasure of the sphinx";
+            objExpected.Description = "The massive treasure of the sphinx lies here in a big pile.";
+            objExpected.Material = "oldstyle";
+            objExpected.ObjectType = Enums.ItemClass.Money;
+            objExpected.ExtraFlags = Enums.ItemExtraFlag.None;
+            objExpected.WearFlags = Enums.WearFlag.Take;
+            objExpected.Values[0] = 1850; // Silver
+            objExpected.Values[1] = 23; // Gold
+            objExpected.Values[2] = 0;  // Unused
+            objExpected.Values[3] = 0;  // Unused
+            objExpected.Values[4] = 0;  // Unused
+            objExpected.Level = 0;
+            objExpected.Weight = 200;
+            objExpected.Cost = 0;
+            objExpected.Condition = 100;
+            objExpected.ExtraDescriptions = new System.Collections.Generic.List<ExtraDescription>();
+            objExpected.ExtraDescriptions.Add(new ExtraDescription() { Keywords = "treasure", Description = "The treasure is incredibly large, filled with gold coins and valuables, more \nwealth than you could ever possibly imagine accumulated in one place." });
+            objExpected.Affected = new System.Collections.Generic.List<AffectData>();
+
+            try
+            {
+                // Parse the object from the string
+                ObjectIndexData obj = ObjectIndexData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
+
+                // Compare the two objects
+                CompareObjects(objExpected, obj);
+            }
+            catch (Exception e)
+            {
+                Assert.Fail(String.Format("Execption thrown loading object: {0} {1}", e.GetType().ToString(), e.Message));
+            }
+        }
+
+        [Test(), TestOf(typeof(ObjectIndexData))]
         public void TestValidFood()
         {
             // Object data to parse, VNUM 1304 from hitower.are
