@@ -75,7 +75,7 @@ namespace ROMSharp.Helpers
             if (!foundEnd)
                 Logging.Log.Warn(String.Format("When reading long text of object with vnum {0} in area {1}, did not find the description's end in the expected {2} lines", vNUM, areaFile, Consts.Misc.Safety.MaxLongTextLines));
 
-            return sb.ToString().Trim().TrimEnd('~');
+            return sb.ToString().Trim().TrimEnd('~').Trim();
         }
     }
 }

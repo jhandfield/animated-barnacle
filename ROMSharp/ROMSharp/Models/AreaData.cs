@@ -196,27 +196,34 @@ namespace ROMSharp.Models
                                         // Otherwise, just move on to the next iteration of the loop
                                         else
                                             continue;
-                                    
+
                                     if (lineData == null)
                                         readingObjects = false;
                                     else if (lineData.Trim().Equals("#0"))
                                         readingObjects = false;
                                     else if (!lineData.Trim().Equals("#0") && !lineData.Trim().Equals("#$") && !lineData.Trim().Equals(""))
                                     {
-                                        ObjectIndexData newObj = ObjectIndexData.ParseObjectData(ref strRdr, areaFile, ref lineNum, lineData);
+                                        try
+                                        {
+                                            ObjectIndexData newObj = ObjectIndexData.ParseObjectData(ref strRdr, areaFile, ref lineNum, lineData);
 
-                                        // If we have a loaded room, add it to the world
-                                        if (newObj != null)
-                                        {
-                                            Program.World.Objects.Add(newObj);
-                                            loaded++;
+                                            // If we have a loaded room, add it to the world
+                                            if (newObj != null)
+                                            {
+                                                Program.World.Objects.Add(newObj);
+                                                loaded++;
+                                            }
+                                            else
+                                            {
+                                                // Record a failed mob load, and set the indicator that we're back because of an error and should keep reading
+                                                // but do nothing until we find a new mob
+                                                errors++;
+                                                backFromError = true;
+                                            }
                                         }
-                                        else
+                                        catch (ObjectParsingException ex)
                                         {
-                                            // Record a failed mob load, and set the indicator that we're back because of an error and should keep reading
-                                            // but do nothing until we find a new mob
-                                            errors++;
-                                            backFromError = true;
+                                            Logging.Log.Error(String.Format("Error parsing object: {0}", ex.Message));
                                         }
                                     }
                                 }

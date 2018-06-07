@@ -18,5 +18,22 @@ namespace ROMSharp.Models
         {
             Where = new Enums.ToWhere();
         }
-    }
+
+		public override bool Equals(object obj)
+		{
+            if (obj == null || GetType() != obj.GetType())
+                return false;
+
+            AffectData ad = (AffectData)obj;
+
+            return Valid == ad.Valid
+                              && Where == ad.Where
+                              && Type == ad.Type
+                              && Level == ad.Level
+                              && Duration == ad.Duration
+                              && Location == ad.Location
+                              && Modifier == ad.Modifier
+                              && BitVector == ad.BitVector;
+		}
+	}
 }

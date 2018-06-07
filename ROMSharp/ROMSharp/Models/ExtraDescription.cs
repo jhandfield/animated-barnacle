@@ -18,6 +18,16 @@ namespace ROMSharp.Models
 
         #region Constructors
         public ExtraDescription() { }
-        #endregion
-    }
+		#endregion
+
+		public override bool Equals(object obj)
+		{
+            if (obj == null || GetType() != obj.GetType())
+                return false;
+
+            ExtraDescription ed = (ExtraDescription)obj;
+
+            return Keywords == ed.Keywords && Description == ed.Description;
+		}
+	}
 }

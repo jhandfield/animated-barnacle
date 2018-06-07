@@ -6,28 +6,28 @@ namespace ROMSharp.Enums
     {
         None = 0,
         /// <summary>
-        /// Legacy CONT_CLOSEABLE (1)
+        /// Legacy CONT_CLOSEABLE (A)
         /// </summary>
-        Closeable = 1 << 0,
+        Closeable = AlphaMacros.A,
 
         /// <summary>
-        /// Legacy CONT_PICKPROOF (2)
+        /// Legacy CONT_PICKPROOF (B)
         /// </summary>
-        PickProof = 1 << 1,
+        PickProof = AlphaMacros.B,
 
         /// <summary>
-        /// Legacy CONT_CLOSED (4)
+        /// Legacy CONT_CLOSED (C)
         /// </summary>
-        Closed = 1 << 2,
+        Closed = AlphaMacros.C,
 
         /// <summary>
-        /// Legacy CONT_LOCKED (8)
+        /// Legacy CONT_LOCKED (D)
         /// </summary>
-        Locked = 1 << 3,
+        Locked = AlphaMacros.D,
 
         /// <summary>
-        /// Legacy CONT_PUT_ON (16)
+        /// Legacy CONT_PUT_ON (E)
         /// </summary>
-        PutOn = 1 << 4
+        PutOn = AlphaMacros.E
     }
 }

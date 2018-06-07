@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2020
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ROMSharp", "ROMSharp\ROMSharp.csproj", "{7D49506B-FAC8-42D9-92C0-76C1EFB6C2D8}"
 EndProject
@@ -31,26 +31,13 @@ Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {369DBBEF-4523-474C-BBBE-37094B2D1CA8}
+	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0
 		$0.DotNetNamingPolicy = $1
 		$1.DirectoryNamespaceAssociation = PrefixedHierarchical
-		$0.TextStylePolicy = $2
-		$2.inheritsSet = null
-		$2.scope = text/x-csharp
-		$0.CSharpFormattingPolicy = $3
-		$3.scope = text/x-csharp
-		$0.TextStylePolicy = $4
-		$4.FileWidth = 80
-		$4.TabsToSpaces = True
-		$4.scope = text/plain
 		$0.TextStylePolicy = $5
-		$5.inheritsSet = null
-		$5.scope = application/config+xml
-		$0.XmlFormattingPolicy = $6
-		$6.inheritsSet = null
-		$6.scope = application/config+xml
-		$0.StandardHeader = $7
-		$0.VersionControlPolicy = $8
 	EndGlobalSection
 EndGlobal
