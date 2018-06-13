@@ -12,7 +12,7 @@ namespace ROMSharp.Models
     /// <summary>
     /// Object prototype data - represents a potential object, but not an actual materialized object
     /// </summary>
-    public class ObjectIndexData
+    public class ObjectPrototypeData
     {
         #region Properties
         /// <summary>
@@ -119,7 +119,7 @@ namespace ROMSharp.Models
         #endregion
 
         #region Constructors
-        public ObjectIndexData()
+        public ObjectPrototypeData()
         {
             Affected = new List<AffectData>();
             ExtraDescriptions = new List<ExtraDescription>();
@@ -133,13 +133,13 @@ namespace ROMSharp.Models
             Values[4] = 0;
         }
 
-        internal static ObjectIndexData ParseObjectData(ref StringReader sr, string areaFile, ref int lineNum, string firstLine, bool log = true)
+        internal static ObjectPrototypeData ParseObjectData(ref StringReader sr, string areaFile, ref int lineNum, string firstLine, bool log = true)
         {
             if (log)
                 Logging.Log.Debug(String.Format("ParseObjectData() called for area {0} starting on line {1}", areaFile, lineNum));
 
             // Instantiate variables for the method
-            ObjectIndexData outObj = new ObjectIndexData();
+            ObjectPrototypeData outObj = new ObjectPrototypeData();
             string lineData = firstLine;
 
             // First, pull the VNUM, then set it if it's valid
@@ -502,7 +502,7 @@ namespace ROMSharp.Models
             return outObj;
         }
 
-        private static string[] ParseValuesLine(string lineData, ObjectIndexData outObj, string areaFile, int lineNum)
+        private static string[] ParseValuesLine(string lineData, ObjectPrototypeData outObj, string areaFile, int lineNum)
         {
             string[] splitInput = lineData.Split(' ');
             string[] output = new string[5];
@@ -585,7 +585,7 @@ namespace ROMSharp.Models
         /// <param name="outObj">Object whose Values property should be set</param>
         /// <param name="areaFile">Filename of the area file being parsed, used for error messages</param>
         /// <param name="lineNum">Line number the values came from, used for error messages</param>
-        private static bool SetFurnitureValues(string[] splitLine, ObjectIndexData outObj, string areaFile, int lineNum)
+        private static bool SetFurnitureValues(string[] splitLine, ObjectPrototypeData outObj, string areaFile, int lineNum)
         {
             // All segments should be parsed as ints
             SetValue_Int(splitLine[0], ref outObj.Values[0], "furniture", areaFile, lineNum, outObj.VNUM);
@@ -617,7 +617,7 @@ namespace ROMSharp.Models
         /// <param name="outObj">Object whose Values property should be set</param>
         /// <param name="areaFile">Filename of the area file being parsed, used for error messages</param>
         /// <param name="lineNum">Line number the values came from, used for error messages</param>
-        private static bool SetOtherItemTypeValues(string[] splitLine, ObjectIndexData outObj, string areaFile, int lineNum)
+        private static bool SetOtherItemTypeValues(string[] splitLine, ObjectPrototypeData outObj, string areaFile, int lineNum)
         {
             // All segments should be parsed as ints
             SetValue_Int(splitLine[0], ref outObj.Values[0], "other type", areaFile, lineNum, outObj.VNUM);
@@ -637,7 +637,7 @@ namespace ROMSharp.Models
         /// <param name="outObj">Object whose Values property should be set</param>
         /// <param name="areaFile">Filename of the area file being parsed, used for error messages</param>
         /// <param name="lineNum">Line number the values came from, used for error messages</param>
-        private static bool SetPotionPillScrollValues(string[] splitLine, ObjectIndexData outObj, string areaFile, int lineNum)
+        private static bool SetPotionPillScrollValues(string[] splitLine, ObjectPrototypeData outObj, string areaFile, int lineNum)
         {
             // Segment 1 - Level, should be an integer
             SetValue_Int(splitLine[0], ref outObj.Values[0], "potion, pill, or scroll", areaFile, lineNum, outObj.VNUM);
@@ -665,7 +665,7 @@ namespace ROMSharp.Models
         /// <param name="outObj">Object whose Values property should be set</param>
         /// <param name="areaFile">Filename of the area file being parsed, used for error messages</param>
         /// <param name="lineNum">Line number the values came from, used for error messages</param>
-        private static bool SetWandAndStaffValues(string[] splitLine, ObjectIndexData outObj, string areaFile, int lineNum)
+        private static bool SetWandAndStaffValues(string[] splitLine, ObjectPrototypeData outObj, string areaFile, int lineNum)
         {
             // Segment 1 - Level, should be an integer
             SetValue_Int(splitLine[0], ref outObj.Values[0], "staff or wand", areaFile, lineNum, outObj.VNUM);
@@ -693,7 +693,7 @@ namespace ROMSharp.Models
         /// <param name="outObj">Object whose Values property should be set</param>
         /// <param name="areaFile">Filename of the area file being parsed, used for error messages</param>
         /// <param name="lineNum">Line number the values came from, used for error messages</param>
-        private static bool SetFountainAndDrinkContainerValues(string[] splitLine, ObjectIndexData outObj, string areaFile, int lineNum)
+        private static bool SetFountainAndDrinkContainerValues(string[] splitLine, ObjectPrototypeData outObj, string areaFile, int lineNum)
         {
             // Segment 1 - Container capacity, should be an integer
             int capacity = 0;
@@ -753,7 +753,7 @@ namespace ROMSharp.Models
         /// <param name="outObj">Object whose Values property should be set</param>
         /// <param name="areaFile">Filename of the area file being parsed, used for error messages</param>
         /// <param name="lineNum">Line number the values came from, used for error messages</param>
-        private static bool SetContainerValues(string[] splitLine, ObjectIndexData outObj, string areaFile, int lineNum)
+        private static bool SetContainerValues(string[] splitLine, ObjectPrototypeData outObj, string areaFile, int lineNum)
         {
             // Segment 1 - Capacity, should be an integer
             int capacity = 0;
@@ -814,7 +814,7 @@ namespace ROMSharp.Models
         /// <param name="outObj">Object whose Values property should be set</param>
         /// <param name="areaFile">Filename of the area file being parsed, used for error messages</param>
         /// <param name="lineNum">Line number the values came from, used for error messages</param>
-        private static bool SetWeaponValues(string[] splitLine, ObjectIndexData outObj, string areaFile, int lineNum)
+        private static bool SetWeaponValues(string[] splitLine, ObjectPrototypeData outObj, string areaFile, int lineNum)
         {
             // Segment 1 - Weapon Type, should be a string matching the Name of a WeaponClass in the WeaponTable
             WeaponClass weapClass = Consts.WeaponClass.WeaponTable.SingleOrDefault(w => w.Name.ToLower().Equals(splitLine[0].ToLower()));
