@@ -85,7 +85,7 @@ namespace ROMSharp
 			string[] commandArr = input.Split (' ');
 
 			// The first word of a user input is the command - isolate it
-			string command = commandArr [0].ToLower ();
+			string command = commandArr[0].ToLower ();
 
             // Determine what command was requested
             switch (command)
@@ -118,6 +118,22 @@ namespace ROMSharp
                 // Repeats the last command
                 case "!":
                     ParseCommand(state.LastCommand, state.ID);
+                    break;
+
+                case "serverstats":
+                    Commands.DoServerStats(state.ID);
+                    break;
+
+                case "stat":
+                    switch (commandArr[1])
+                    {
+                        case "room":
+                            Commands.DoStatRoom(state.ID, Convert.ToInt32(commandArr[2]));
+                            break;
+                        default:
+                            Commands.UnknownCommand(state.ID, command);
+                            break;
+                    }
                     break;
 
                 // Unknown command

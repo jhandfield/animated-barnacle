@@ -37,7 +37,10 @@ namespace ROMSharp.Models
         /// </summary>
         public AffectData Affected { get; set; }
 
-
+        /// <summary>
+        /// Name of the object
+        /// </summary>
+        public string Name { get; set; }
         #endregion
 
         #region Constructors
