@@ -20,10 +20,9 @@ namespace ROMSharp.Models
         public RoomIndexData NextRoom { get; set; }
 
         /// <summary>
-        /// Contains references to all characters currently in the room
+        /// Contains references to all characters (playable and non-) currently in the room
         /// </summary>
-        /// <value>The people.</value>
-        public List<CharacterData> People { get; set; }
+        public List<CharacterData> Characters { get; set; }
 
         /// <summary>
         /// Contains references to all objects currently in the room
@@ -94,7 +93,7 @@ namespace ROMSharp.Models
         public RoomIndexData() {
             this.HealRate = 100;
             this.ManaRate = 100;
-            this.People = new List<CharacterData>();
+            this.Characters = new List<CharacterData>();
             this.Objects = new List<ObjectData>();
             this.Exits = new Exits();
             this.ExtraDescriptions = new List<ExtraDescription>();

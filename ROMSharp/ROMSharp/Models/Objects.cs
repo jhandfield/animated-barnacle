@@ -4,11 +4,11 @@ using System.Linq;
 
 namespace ROMSharp.Models
 {
-    public class Objects : List<ObjectIndexData>
+    public class Objects : List<ObjectPrototypeData>
     {
         public Objects() { }
 
-        public new ObjectIndexData this[int key]
+        public new ObjectPrototypeData this[int key]
         {
             get
             {

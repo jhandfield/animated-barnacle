@@ -5,7 +5,7 @@ namespace ROMSharp.Models
     {
         public string Name { get; set; }
         public Enums.WeaponClass Type { get; set; }
-        public ObjectIndexData StarterWeapon { get { return Program.World.Objects[this.StarterWeaponVNUM]; } }
+        public ObjectPrototypeData StarterWeapon { get { return Program.World.Objects[this.StarterWeaponVNUM]; } }
         public int StarterWeaponVNUM { get; set; }
         public object PrimarySkill { get { throw new NotImplementedException(); } }
 

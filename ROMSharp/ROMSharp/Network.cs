@@ -214,7 +214,8 @@ namespace ROMSharp
                 Program.listener.BeginAccept(new AsyncCallback(AcceptCallback), Program.listener);
 
                 // Call the greeting method
-                Commands.DoGreeting(state.ID);
+                Commands.SingleUser(state.ID);
+                //Commands.DoGreeting(state.ID);
             }
             catch (ObjectDisposedException)
             {

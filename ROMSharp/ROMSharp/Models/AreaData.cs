@@ -205,7 +205,7 @@ namespace ROMSharp.Models
                                     {
                                         try
                                         {
-                                            ObjectIndexData newObj = ObjectIndexData.ParseObjectData(ref strRdr, areaFile, ref lineNum, lineData);
+                                            ObjectPrototypeData newObj = ObjectPrototypeData.ParseObjectData(ref strRdr, areaFile, ref lineNum, lineData);
 
                                             // If we have a loaded room, add it to the world
                                             if (newObj != null)

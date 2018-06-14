@@ -39,7 +39,7 @@ namespace ROMSharp.Models
         /// <summary>
         /// The starting weapon of the class
         /// </summary>
-        public ObjectIndexData StarterWeapon { get { return Program.World.Objects[StarterWeaponVNUM]; } }
+        public ObjectPrototypeData StarterWeapon { get { return Program.World.Objects[StarterWeaponVNUM]; } }
     
         /// <summary>
         /// VNUM of the starting weapon of the class

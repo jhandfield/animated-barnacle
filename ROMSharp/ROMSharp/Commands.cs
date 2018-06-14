@@ -91,5 +91,86 @@ namespace ROMSharp
 			//					handler.BeginReceive (state.buffer, 0, ClientConnection.BufferSize, 0, new AsyncCallback (ReadCallback), state);
 			//				}
 		}
+
+        public static void SingleUser(int connID)
+        {
+            // For now, get a ClientConnection since I haven't reworked everything to just use the ID yet
+            Network.ClientConnection state = Network.ClientConnections.Single(c => c.ID == connID);
+
+            // Send the single user login text
+            Network.Send("Connected to server running in single-user mode.\n", state);
+        }
+
+        public static void DoServerStats(int connID)
+        {
+            // For now, get a ClientConnection since I haven't reworked everything to just use the ID yet
+            Network.ClientConnection state = Network.ClientConnections.Single(c => c.ID == connID);
+
+            // Send statistics
+            Network.Send(String.Format("SERVER STATISTICS\n=================\n{0} rooms loaded\n{1} mobiles loaded\n{2} object prototypes loaded\n{3} connections currently open\nServer uptime is {4}\n\n",
+                Program.World.Rooms.Count,
+                Program.World.Mobs.Count,
+                Program.World.Objects.Count,
+                Network.ClientConnections.Count,
+                                       (DateTime.Now - Program.World.StartupTime).ToString()), state);
+            
+        }
+
+        /// <summary>
+        /// Returns information about a given room VNUM
+        /// </summary>
+        public static void DoStatRoom(int connID, int vnum)
+        {
+            // For now, get a ClientConnection since I haven't reworked everything to just use the ID yet
+            Network.ClientConnection state = Network.ClientConnections.Single(c => c.ID == connID);
+
+            // Attempt to find the room
+            Models.RoomIndexData targetRoom = Program.World.Rooms.SingleOrDefault(r => r.VNUM.Equals(vnum));
+
+            // Did we find it?
+            if (targetRoom == null)
+            {
+                // Inform the user
+                Network.Send("No such location\n\n", state);
+            }
+            else
+            {
+                string output = String.Empty;
+                output += String.Format("Name: '{0}'\nArea: '{1}'\n", targetRoom.Name, Program.World.Areas.Single(a => a.MinVNum <= targetRoom.VNUM && a.MaxVNum >= targetRoom.VNUM).Name);
+                output += String.Format("VNUM: {0}  Sector: {1}  Light: {2}  Healing: {3}  Mana: {4}\n",
+                                        targetRoom.VNUM,
+                                        targetRoom.SectorType.ToString(),
+                                        targetRoom.LightLevel,
+                                        targetRoom.HealRate.ToString(),
+                                        targetRoom.ManaRate.ToString());
+                output += String.Format("Room Flags: {0}\n", ((Enums.AlphaMacros)targetRoom.Attributes).ToString().Replace(",","").Replace(" ",""));
+                output += String.Format("Description:\n{0}\n", targetRoom.Description);
+                output += "Extra description keywords: " + String.Join(",", targetRoom.ExtraDescriptions.Select(ed => ed.Keywords)) + "\n";
+
+                // TODO: Should check that the character can be seen by the person invoking this command
+                output += "Characters: " + String.Join(",", targetRoom.Characters.Select(person => person.Name)) + "\n";
+                output += "Objects: " + String.Join(",", targetRoom.Objects.Select(obj => obj.Name)) + "\n";
+
+                // Loop over possible exits
+                for (int i = 0; i <= 5; i++)
+                {
+                    // Check that the exit is defined
+                    if (targetRoom.Exits[i] != null)
+                        // Add to output
+                        output += String.Format("Door: {0}.  To: {1}.  Key: {2}.  Exit flags: {3}.\nKeyword: '{4}'.  Description: {5}\n",
+                                                i,
+                                                targetRoom.Exits[i].ToVNUM,
+                                                targetRoom.Exits[i].KeyVNUM,
+                                                ((Enums.AlphaMacros)targetRoom.Exits[i].Attributes).ToString(),
+                                                targetRoom.Exits[i].Keywords,
+                                                targetRoom.Exits[i].Description);
+                }
+
+                output += "\n";
+
+                // Send output to the user
+                Network.Send(output, state);
+            }
+        }
 	}
 }

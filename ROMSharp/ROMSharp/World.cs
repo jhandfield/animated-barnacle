@@ -45,6 +45,11 @@ namespace ROMSharp
         /// Collection of objects that make up the flora of the world
         /// </summary>
         public Models.Objects Objects { get; set; }
+
+        /// <summary>
+        /// The date and time the server started
+        /// </summary>
+        public DateTime StartupTime { get; }
         #endregion
 
         #region Constructors
@@ -55,6 +60,7 @@ namespace ROMSharp
             this.Rooms = new Models.Rooms();
             this.Mobs = new Models.Mobs();
             this.Objects = new Models.Objects();
+            this.StartupTime = DateTime.Now;
         }
         #endregion
 

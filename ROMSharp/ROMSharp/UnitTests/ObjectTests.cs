@@ -9,7 +9,7 @@ namespace ROMSharp.UnitTests
     [TestFixture()]
     public class ObjectTests
     {
-        [Test(), TestOf(typeof(ObjectIndexData))]
+        [Test(), TestOf(typeof(ObjectPrototypeData))]
         public void TestValidFountain()
         {
             // Object data to parse, VNUM 5220 from thalos.are
@@ -28,7 +28,7 @@ fountain 0 0
             string firstLine = sr.ReadLine();
 
             // Set up the object we expect to have parsed from the string
-            ObjectIndexData objExpected = new ObjectIndexData();
+            ObjectPrototypeData objExpected = new ObjectPrototypeData();
             objExpected.VNUM = 5220;
             objExpected.Name = "fountain water";
             objExpected.ShortDescription = "a large cracked fountain";
@@ -52,7 +52,7 @@ fountain 0 0
             try
             {
                 // Parse the object from the string
-                ObjectIndexData obj = ObjectIndexData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
+                ObjectPrototypeData obj = ObjectPrototypeData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
 
                 // Compare the two objects
                 CompareObjects(objExpected, obj);
@@ -63,7 +63,7 @@ fountain 0 0
             }
         }
 
-        [Test(), TestOf(typeof(ObjectIndexData))]
+        [Test(), TestOf(typeof(ObjectPrototypeData))]
         public void TestValidPCCorpse()
         {
             // Object data to parse, VNUM 11 from limbo.are (apparently a prototype of a player corpse?)
@@ -82,7 +82,7 @@ pc_corpse O A
             string firstLine = sr.ReadLine();
 
             // Set up the object we expect to have parsed from the string
-            ObjectIndexData objExpected = new ObjectIndexData();
+            ObjectPrototypeData objExpected = new ObjectPrototypeData();
             objExpected.VNUM = 11;
             objExpected.Name = "corpse";
             objExpected.ShortDescription = "the corpse of %s";
@@ -106,7 +106,7 @@ pc_corpse O A
             try
             {
                 // Parse the object from the string
-                ObjectIndexData obj = ObjectIndexData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
+                ObjectPrototypeData obj = ObjectPrototypeData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
 
                 // Compare the two objects
                 CompareObjects(objExpected, obj);
@@ -117,7 +117,7 @@ pc_corpse O A
             }
         }
 
-        [Test(), TestOf(typeof(ObjectIndexData))]
+        [Test(), TestOf(typeof(ObjectPrototypeData))]
         public void TestValidNPCCorpse()
         {
             // Object data to parse, VNUM 4001 from moria.are (one of two corpses in the stock areas)
@@ -141,7 +141,7 @@ still clutches a partially digested map...
             string firstLine = sr.ReadLine();
 
             // Set up the object we expect to have parsed from the string
-            ObjectIndexData objExpected = new ObjectIndexData();
+            ObjectPrototypeData objExpected = new ObjectPrototypeData();
             objExpected.VNUM = 4001;
             objExpected.Name = "corpse";
             objExpected.ShortDescription = "a corpse";
@@ -166,7 +166,7 @@ still clutches a partially digested map...
             try
             {
                 // Parse the object from the string
-                ObjectIndexData obj = ObjectIndexData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
+                ObjectPrototypeData obj = ObjectPrototypeData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
 
                 // Compare the two objects
                 CompareObjects(objExpected, obj);
@@ -177,7 +177,7 @@ still clutches a partially digested map...
             }
         }
 
-        [Test(), TestOf(typeof(ObjectIndexData))]
+        [Test(), TestOf(typeof(ObjectPrototypeData))]
         public void TestValidBoat()
         {
             // Object data to parse, VNUM 1344 from hitower.are
@@ -196,7 +196,7 @@ boat G AB
             string firstLine = sr.ReadLine();
 
             // Set up the object we expect to have parsed from the string
-            ObjectIndexData objExpected = new ObjectIndexData();
+            ObjectPrototypeData objExpected = new ObjectPrototypeData();
             objExpected.VNUM = 1344;
             objExpected.Name = "ring seashell";
             objExpected.ShortDescription = "a seashell ring";
@@ -220,7 +220,7 @@ boat G AB
             try
             {
                 // Parse the object from the string
-                ObjectIndexData obj = ObjectIndexData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
+                ObjectPrototypeData obj = ObjectPrototypeData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
 
                 // Compare the two objects
                 CompareObjects(objExpected, obj);
@@ -231,7 +231,7 @@ boat G AB
             }
         }
 
-        [Test(), TestOf(typeof(ObjectIndexData))]
+        [Test(), TestOf(typeof(ObjectPrototypeData))]
         public void TestValidMoney()
         {
             // Object data to parse, VNUM 8718 from pyramid.are
@@ -255,7 +255,7 @@ wealth than you could ever possibly imagine accumulated in one place.
             string firstLine = sr.ReadLine();
 
             // Set up the object we expect to have parsed from the string
-            ObjectIndexData objExpected = new ObjectIndexData();
+            ObjectPrototypeData objExpected = new ObjectPrototypeData();
             objExpected.VNUM = 8718;
             objExpected.Name = "treasure";
             objExpected.ShortDescription = "the treasure of the sphinx";
@@ -280,7 +280,7 @@ wealth than you could ever possibly imagine accumulated in one place.
             try
             {
                 // Parse the object from the string
-                ObjectIndexData obj = ObjectIndexData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
+                ObjectPrototypeData obj = ObjectPrototypeData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
 
                 // Compare the two objects
                 CompareObjects(objExpected, obj);
@@ -291,7 +291,7 @@ wealth than you could ever possibly imagine accumulated in one place.
             }
         }
 
-        [Test(), TestOf(typeof(ObjectIndexData))]
+        [Test(), TestOf(typeof(ObjectPrototypeData))]
         public void TestValidFood()
         {
             // Object data to parse, VNUM 1304 from hitower.are
@@ -314,7 +314,7 @@ Ahh!  Round Table pizza!  How appropriate.  Any root beer?
             string firstLine = sr.ReadLine();
 
             // Set up the object we expect to have parsed from the string
-            ObjectIndexData objExpected = new ObjectIndexData();
+            ObjectPrototypeData objExpected = new ObjectPrototypeData();
             objExpected.VNUM = 1304;
             objExpected.Name = "pizza slice";
             objExpected.ShortDescription = "a slice of pizza";
@@ -339,7 +339,7 @@ Ahh!  Round Table pizza!  How appropriate.  Any root beer?
             try
             {
                 // Parse the object from the string
-                ObjectIndexData obj = ObjectIndexData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
+                ObjectPrototypeData obj = ObjectPrototypeData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
 
                 // Compare the two objects
                 CompareObjects(objExpected, obj);
@@ -350,7 +350,7 @@ Ahh!  Round Table pizza!  How appropriate.  Any root beer?
             }
         }
 
-        [Test(), TestOf(typeof(ObjectIndexData))]
+        [Test(), TestOf(typeof(ObjectPrototypeData))]
         public void TestValidKey()
         {
             // Object data to parse, VNUM 2001 from catacomb.are
@@ -369,7 +369,7 @@ key ABG A
             string firstLine = sr.ReadLine();
 
             // Set up the object we expect to have parsed from the string
-            ObjectIndexData objExpected = new ObjectIndexData();
+            ObjectPrototypeData objExpected = new ObjectPrototypeData();
             objExpected.VNUM = 2001;
             objExpected.Name = "glowing key";
             objExpected.ShortDescription = "a glowing key";
@@ -393,7 +393,7 @@ key ABG A
             try
             {
                 // Parse the object from the string
-                ObjectIndexData obj = ObjectIndexData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
+                ObjectPrototypeData obj = ObjectPrototypeData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
 
                 // Compare the two objects
                 CompareObjects(objExpected, obj);
@@ -404,7 +404,7 @@ key ABG A
             }
         }
 
-        [Test(), TestOf(typeof(ObjectIndexData))]
+        [Test(), TestOf(typeof(ObjectPrototypeData))]
         public void TestValidDrinkContainer()
         {
             // Object data to parse, VNUM 3138 from midgaard.are, the ever-popular buffalo water skin
@@ -423,7 +423,7 @@ drink 0 A
             string firstLine = sr.ReadLine();
 
             // Set up the object we expect to have parsed from the string
-            ObjectIndexData objExpected = new ObjectIndexData();
+            ObjectPrototypeData objExpected = new ObjectPrototypeData();
             objExpected.VNUM = 3138;
             objExpected.Name = "skin water buffalo";
             objExpected.ShortDescription = "a buffalo water skin";
@@ -445,7 +445,7 @@ drink 0 A
             try
             {
                 // Parse the object from the string
-                ObjectIndexData obj = ObjectIndexData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
+                ObjectPrototypeData obj = ObjectPrototypeData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
 
                 // Compare the two objects
                 CompareObjects(objExpected, obj);
@@ -456,7 +456,7 @@ drink 0 A
             }
         }
 
-        [Test(), TestOf(typeof(ObjectIndexData))]
+        [Test(), TestOf(typeof(ObjectPrototypeData))]
         public void TestValidContainer()
         {
             // Object data to parse, VNUM 3412 from chapel.are
@@ -480,7 +480,7 @@ opened and closed ... is there something in its teeth!?!?!? ACK you do it!
             string firstLine = sr.ReadLine();
 
             // Set up the object we expect to have parsed from the string
-            ObjectIndexData objExpected = new ObjectIndexData();
+            ObjectPrototypeData objExpected = new ObjectPrototypeData();
             objExpected.VNUM = 3412;
             objExpected.Name = "head jubal mummy";
             objExpected.ShortDescription = "the mummified head of Jubal the Benevolent";
@@ -505,7 +505,7 @@ opened and closed ... is there something in its teeth!?!?!? ACK you do it!
             try
             {
                 // Parse the object from the string
-                ObjectIndexData obj = ObjectIndexData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
+                ObjectPrototypeData obj = ObjectPrototypeData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
 
                 // Compare the two objects
                 CompareObjects(objExpected, obj);
@@ -516,7 +516,7 @@ opened and closed ... is there something in its teeth!?!?!? ACK you do it!
             }
         }
 
-        [Test(), TestOf(typeof(ObjectIndexData))]
+        [Test(), TestOf(typeof(ObjectPrototypeData))]
         public void TestValidTrash()
         {
             // Object data to parse, VNUM 3380 (custom) from midgaard.are - there doesn't appear to be any static trash in the stock areas
@@ -535,7 +535,7 @@ trash 0 AO
             string firstLine = sr.ReadLine();
 
             // Set up the object we expect to have parsed from the string
-            ObjectIndexData objExpected = new ObjectIndexData();
+            ObjectPrototypeData objExpected = new ObjectPrototypeData();
             objExpected.VNUM = 3380;
             objExpected.Name = "broken brick";
             objExpected.ShortDescription = "a broken brick";
@@ -559,7 +559,7 @@ trash 0 AO
             try
             {
                 // Parse the object from the string
-                ObjectIndexData obj = ObjectIndexData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
+                ObjectPrototypeData obj = ObjectPrototypeData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
 
                 // Compare the two objects
                 CompareObjects(objExpected, obj);
@@ -571,7 +571,7 @@ trash 0 AO
         }
 
 
-        [Test(), TestOf(typeof(ObjectIndexData))]
+        [Test(), TestOf(typeof(ObjectPrototypeData))]
         public void TestValidFurniture()
         {
             // Object data to parse, VNUM 3379 (custom) from midgaard.are - there doesn't appear to be any interactive furniture in the stock areas at all?
@@ -590,7 +590,7 @@ furniture 0 A
             string firstLine = sr.ReadLine();
 
             // Set up the object we expect to have parsed from the string
-            ObjectIndexData objExpected = new ObjectIndexData();
+            ObjectPrototypeData objExpected = new ObjectPrototypeData();
             objExpected.VNUM = 3379;
             objExpected.Name = "chair";
             objExpected.ShortDescription = "a chair";
@@ -614,7 +614,7 @@ furniture 0 A
             try
             {
                 // Parse the object from the string
-                ObjectIndexData obj = ObjectIndexData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
+                ObjectPrototypeData obj = ObjectPrototypeData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
 
                 // Compare the two objects
                 CompareObjects(objExpected, obj);
@@ -625,7 +625,7 @@ furniture 0 A
             }
         }
 
-        [Test(), TestOf(typeof(ObjectIndexData))]
+        [Test(), TestOf(typeof(ObjectPrototypeData))]
         public void TestValidClothing()
         {
             // Object data to parse, VNUM 1616 from wyvern.are, lines 500-509
@@ -646,7 +646,7 @@ A
             string firstLine = sr.ReadLine();
 
             // Set up the object we expect to have parsed from the string
-            ObjectIndexData objExpected = new ObjectIndexData();
+            ObjectPrototypeData objExpected = new ObjectPrototypeData();
             objExpected.VNUM = 1616;
             objExpected.Name = "dark blue cloak";
             objExpected.ShortDescription = "a dark blue cloak";
@@ -671,7 +671,7 @@ A
             try
             {
                 // Parse the object from the string
-                ObjectIndexData obj = ObjectIndexData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
+                ObjectPrototypeData obj = ObjectPrototypeData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
 
                 // Compare the two objects
                 CompareObjects(objExpected, obj);
@@ -682,7 +682,7 @@ A
             }
         }
 
-        [Test(), TestOf(typeof(ObjectIndexData))]
+        [Test(), TestOf(typeof(ObjectPrototypeData))]
         public void TestValidPotion()
         {
             // Object data to parse, VNUM 5019 from eastern.are, lines 414-421
@@ -701,7 +701,7 @@ potion 0 A
             string firstLine = sr.ReadLine();
 
             // Set up the object we expect to have parsed from the string
-            ObjectIndexData objExpected = new ObjectIndexData();
+            ObjectPrototypeData objExpected = new ObjectPrototypeData();
             objExpected.VNUM = 5019;
             objExpected.Name = "potion pink";
             objExpected.ShortDescription = "a pink potion";
@@ -723,7 +723,7 @@ potion 0 A
             try
             {
                 // Parse the object from the string
-                ObjectIndexData obj = ObjectIndexData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
+                ObjectPrototypeData obj = ObjectPrototypeData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
 
                 // Compare the two objects
                 CompareObjects(objExpected, obj);
@@ -734,7 +734,7 @@ potion 0 A
             }
         }
 
-        [Test(), TestOf(typeof(ObjectIndexData))]
+        [Test(), TestOf(typeof(ObjectPrototypeData))]
         public void TestValidArmor()
         {
             // Object data to parse, VNUM 9304 from galaxy.are, lines 519-533
@@ -760,7 +760,7 @@ engraved on it.
             string firstLine = sr.ReadLine();
 
             // Set up the object we expect to have parsed from the string
-            ObjectIndexData objExpected = new ObjectIndexData();
+            ObjectPrototypeData objExpected = new ObjectPrototypeData();
             objExpected.VNUM = 9304;
             objExpected.Name = "belt orion";
             objExpected.ShortDescription = "the Titanic Belt of Orion";
@@ -786,7 +786,7 @@ engraved on it.
             try
             {
                 // Parse the object from the string
-                ObjectIndexData obj = ObjectIndexData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
+                ObjectPrototypeData obj = ObjectPrototypeData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
 
                 // Compare the two objects
                 CompareObjects(objExpected, obj);
@@ -797,7 +797,7 @@ engraved on it.
             }
         }
 
-        [Test(), TestOf(typeof(ObjectIndexData))]
+        [Test(), TestOf(typeof(ObjectPrototypeData))]
         public void TestValidTreasure()
         {
             // Object data to parse, VNUM 3715 from school.are, lines 509-527, the ever-popular MUD School Diploma
@@ -827,7 +827,7 @@ Merc Industries
             string firstLine = sr.ReadLine();
 
             // Set up the object we expect to have parsed from the string
-            ObjectIndexData objExpected = new ObjectIndexData();
+            ObjectPrototypeData objExpected = new ObjectPrototypeData();
             objExpected.VNUM = 3715;
             objExpected.Name = "diploma";
             objExpected.ShortDescription = "a mud school diploma";
@@ -854,7 +854,7 @@ Merc Industries
             try
             {
                 // Parse the object from the string
-                ObjectIndexData obj = ObjectIndexData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
+                ObjectPrototypeData obj = ObjectPrototypeData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
 
                 // Compare the two objects
                 CompareObjects(objExpected, obj);
@@ -865,7 +865,7 @@ Merc Industries
             }
         }
 
-        [Test(), TestOf(typeof(ObjectIndexData))]
+        [Test(), TestOf(typeof(ObjectPrototypeData))]
         public void TestValidWeapon()
         {
             // Object data to parse, VNUM 2005 from catacomb.are, lines 300-311
@@ -888,7 +888,7 @@ A
             string firstLine = sr.ReadLine();
 
             // Set up the object we expect to have parsed from the string
-            ObjectIndexData objExpected = new ObjectIndexData();
+            ObjectPrototypeData objExpected = new ObjectPrototypeData();
             objExpected.VNUM = 2005;
             objExpected.Name = "sword excalibur";
             objExpected.ShortDescription = "the sword Excalibur";
@@ -914,7 +914,7 @@ A
             try
             {
                 // Parse the object from the string
-                ObjectIndexData obj = ObjectIndexData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
+                ObjectPrototypeData obj = ObjectPrototypeData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
 
                 // Compare the two objects
                 CompareObjects(objExpected, obj);
@@ -925,7 +925,7 @@ A
             }
         }
 
-        [Test(), TestOf(typeof(ObjectIndexData))]
+        [Test(), TestOf(typeof(ObjectPrototypeData))]
         public void TestValidStaff()
         {
             // Object data to parse, VNUM 2245 from draconia.are, lines 515-522
@@ -944,7 +944,7 @@ staff AG AO
             string firstLine = sr.ReadLine();
 
             // Set up the object we expect to have parsed from the string
-            ObjectIndexData objExpected = new ObjectIndexData();
+            ObjectPrototypeData objExpected = new ObjectPrototypeData();
             objExpected.VNUM = 2245;
             objExpected.Name = "staff dragon";
             objExpected.ShortDescription = "the staff of the dragon";
@@ -968,7 +968,7 @@ staff AG AO
             try
             {
                 // Parse the object from the string
-                ObjectIndexData obj = ObjectIndexData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
+                ObjectPrototypeData obj = ObjectPrototypeData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
 
                 // Compare the two objects
                 CompareObjects(objExpected, obj);
@@ -979,7 +979,7 @@ staff AG AO
             }
         }
 
-        [Test(), TestOf(typeof(ObjectIndexData))]
+        [Test(), TestOf(typeof(ObjectPrototypeData))]
         public void TestValidWand()
         {
             // Object data to parse, VNUM 9215 from canyon.are, lines 691-698
@@ -998,7 +998,7 @@ wand A AO
             string firstLine = sr.ReadLine();
 
             // Set up the object we expect to have parsed from the string
-            ObjectIndexData objExpected = new ObjectIndexData();
+            ObjectPrototypeData objExpected = new ObjectPrototypeData();
             objExpected.VNUM = 9215;
             objExpected.Name = "wand";
             objExpected.ShortDescription = "elemental wand of fire";
@@ -1022,7 +1022,7 @@ wand A AO
             try
             {
                 // Parse the object from the string
-                ObjectIndexData obj = ObjectIndexData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
+                ObjectPrototypeData obj = ObjectPrototypeData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
 
                 // Compare the two objects
                 CompareObjects(objExpected, obj);
@@ -1033,7 +1033,7 @@ wand A AO
             }
         }
 
-        [Test(), TestOf(typeof(ObjectIndexData))]
+        [Test(), TestOf(typeof(ObjectPrototypeData))]
         public void TestValidScroll()
         {
             // Object data to parse, VNUM 3000 from midgaard.are, lines 959-966
@@ -1056,7 +1056,7 @@ The scroll is written on soft violet parchment that has a pleasing smell to it.
             string firstLine = sr.ReadLine();
 
             // Set up the object we expect to have parsed from the string
-            ObjectIndexData objExpected = new ObjectIndexData();
+            ObjectPrototypeData objExpected = new ObjectPrototypeData();
             objExpected.VNUM = 7701;
             objExpected.Name = "scroll violet";
             objExpected.ShortDescription = "a violet scroll";
@@ -1080,7 +1080,7 @@ The scroll is written on soft violet parchment that has a pleasing smell to it.
             try
             {
                 // Parse the object from the string
-                ObjectIndexData obj = ObjectIndexData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
+                ObjectPrototypeData obj = ObjectPrototypeData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
 
                 // Compare the two objects
                 CompareObjects(objExpected, obj);
@@ -1091,7 +1091,7 @@ The scroll is written on soft violet parchment that has a pleasing smell to it.
             }
         }
 
-        [Test(), TestOf(typeof(ObjectIndexData))]
+        [Test(), TestOf(typeof(ObjectPrototypeData))]
         public void TestValidLight()
         {
             // Object data to parse, VNUM 3000 from astral.are, lines 566-582
@@ -1119,7 +1119,7 @@ ease.  The flame creates a light that allows you to see for miles.
             string firstLine = sr.ReadLine();
 
             // Set up the object we expect to have parsed from the string
-            ObjectIndexData objExpected = new ObjectIndexData();
+            ObjectPrototypeData objExpected = new ObjectPrototypeData();
             objExpected.VNUM = 7713;
             objExpected.Name = "stone flame";
             objExpected.ShortDescription = "a brightly flaming stone";
@@ -1162,7 +1162,7 @@ ease.  The flame creates a light that allows you to see for miles.
             try
             {
                 // Parse the object from the string
-                ObjectIndexData obj = ObjectIndexData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
+                ObjectPrototypeData obj = ObjectPrototypeData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
 
                 // Compare the two objects
                 CompareObjects(objExpected, obj);
@@ -1173,7 +1173,7 @@ ease.  The flame creates a light that allows you to see for miles.
             }
         }
 
-        [Test(), TestOf(typeof(ObjectIndexData))]
+        [Test(), TestOf(typeof(ObjectPrototypeData))]
         public void TestValidDrink()
         {
             // Object data to parse, VNUM 3000 from midgaard.are, lines 959-966
@@ -1192,7 +1192,7 @@ drink 0 A
             string firstLine = sr.ReadLine();
 
             // Set up the object we expect to have parsed from the string
-            ObjectIndexData objExpected = new ObjectIndexData();
+            ObjectPrototypeData objExpected = new ObjectPrototypeData();
             objExpected.VNUM = 3000;
             objExpected.Name = "barrel beer";
             objExpected.ShortDescription = "a barrel of beer";
@@ -1214,7 +1214,7 @@ drink 0 A
             try
             {
                 // Parse the object from the string
-                ObjectIndexData obj = ObjectIndexData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
+                ObjectPrototypeData obj = ObjectPrototypeData.ParseObjectData(ref sr, "testArea", ref lineNum, firstLine, false);
 
                 // Compare the two objects
                 CompareObjects(objExpected, obj);
@@ -1230,7 +1230,7 @@ drink 0 A
         /// </summary>
         /// <param name="objExpected">Model object to compare the parsed version against</param>
         /// <param name="obj">Object returned by ParseObjectData()</param>
-        private void CompareObjects(ObjectIndexData objExpected, ObjectIndexData obj)
+        private void CompareObjects(ObjectPrototypeData objExpected, ObjectPrototypeData obj)
         {
             // Compare
             if (!objExpected.Equals(obj))

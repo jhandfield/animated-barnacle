@@ -6,8 +6,7 @@ namespace ROMSharp.Models
     /// </summary>
     public class CharacterData
     {
-        public CharacterData()
-        {
-        }
+        public string Name { get; set; }
+        public CharacterData() { }
     }
 }

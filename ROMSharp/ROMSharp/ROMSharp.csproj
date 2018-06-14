@@ -113,7 +113,7 @@
     <Compile Include="UnitTests\RoomTests.cs" />
     <Compile Include="Models\ObjectIndexes.cs" />
     <Compile Include="Models\AffectData.cs" />
-    <Compile Include="Models\ObjectIndexData.cs" />
+    <Compile Include="Models\ObjectPrototypeData.cs" />
     <Compile Include="Enums\ItemType.cs" />
     <Compile Include="Enums\ItemExtraFlag.cs" />
     <Compile Include="Enums\WearFlag.cs" />
