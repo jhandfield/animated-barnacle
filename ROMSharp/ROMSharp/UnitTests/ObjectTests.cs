@@ -9,16 +9,6 @@ namespace ROMSharp.UnitTests
     [TestFixture()]
     public class ObjectTests
     {
-        [Test()]
-        public void SimpleTest()
-        {
-            AffectData ad1 = new AffectData() { BitVector = Enums.AffectedByFlag.None, Duration = -1, Level = 17, Location = Enums.ApplyType.Constitution, Modifier = 2, Type = null, Valid = false, Where = Enums.ToWhere.Object };
-            AffectData ad2 = new AffectData() { BitVector = Enums.AffectedByFlag.None, Duration = -1, Level = 17, Location = Enums.ApplyType.Constitution, Modifier = 2, Type = null, Valid = false, Where = Enums.ToWhere.Object };
-
-            Assert.AreEqual(ad1, ad2, "Huh?");
-            Assert.IsTrue(true);
-        }
-
         [Test(), TestOf(typeof(ObjectPrototypeData))]
         public void TestValidFountain()
         {
