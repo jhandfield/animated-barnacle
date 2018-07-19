@@ -9,6 +9,16 @@ namespace ROMSharp.UnitTests
     [TestFixture()]
     public class ObjectTests
     {
+        [Test()]
+        public void SimpleTest()
+        {
+            AffectData ad1 = new AffectData() { BitVector = Enums.AffectedByFlag.None, Duration = -1, Level = 17, Location = Enums.ApplyType.Constitution, Modifier = 2, Type = null, Valid = false, Where = Enums.ToWhere.Object };
+            AffectData ad2 = new AffectData() { BitVector = Enums.AffectedByFlag.None, Duration = -1, Level = 17, Location = Enums.ApplyType.Constitution, Modifier = 2, Type = null, Valid = false, Where = Enums.ToWhere.Object };
+
+            Assert.AreEqual(ad1, ad2, "Huh?");
+            Assert.IsTrue(true);
+        }
+
         [Test(), TestOf(typeof(ObjectPrototypeData))]
         public void TestValidFountain()
         {
@@ -666,7 +676,7 @@ A
             objExpected.Condition = 100;
             objExpected.ExtraDescriptions = new System.Collections.Generic.List<ExtraDescription>();
             objExpected.Affected = new System.Collections.Generic.List<AffectData>();
-            objExpected.Affected.Add(new AffectData() { Where = Enums.ToWhere.Object, Type = -1, Level = objExpected.Level, Duration = -1, BitVector = 0, Location = Enums.ApplyType.AC, Modifier = 6 });
+            objExpected.Affected.Add(new AffectData() { Where = Enums.ToWhere.Object, Type = null, Level = objExpected.Level, Duration = -1, BitVector = Enums.AffectedByFlag.None, Location = Enums.ApplyType.AC, Modifier = 6 });
 
             try
             {
@@ -781,7 +791,7 @@ engraved on it.
             objExpected.ExtraDescriptions = new System.Collections.Generic.List<ExtraDescription>();
             objExpected.ExtraDescriptions.Add(new ExtraDescription() { Keywords = "belt", Description = "You can immediately see that it belongs to Orion, from the three stars\nengraved on it." });
             objExpected.Affected = new System.Collections.Generic.List<AffectData>();
-            objExpected.Affected.Add(new AffectData() { Where = Enums.ToWhere.Object, Type = -1, Level = objExpected.Level, Duration = -1, BitVector = 0, Location = Enums.ApplyType.Constitution, Modifier = 2 });
+            objExpected.Affected.Add(new AffectData() { Where = Enums.ToWhere.Object, Type = null, Level = objExpected.Level, Duration = -1, BitVector = Enums.AffectedByFlag.None, Location = Enums.ApplyType.Constitution, Modifier = 2 });
 
             try
             {
@@ -848,8 +858,8 @@ Merc Industries
             objExpected.ExtraDescriptions = new System.Collections.Generic.List<ExtraDescription>();
             objExpected.ExtraDescriptions.Add(new ExtraDescription() { Keywords = "diploma", Description = "This document shows that you have graduated from Mud School.\nIt also has magical effects on your abilities if you hold it!\n\nMerc Industries" });
             objExpected.Affected = new System.Collections.Generic.List<AffectData>();
-            objExpected.Affected.Add(new AffectData() { Where = Enums.ToWhere.Object, Type = -1, Level = objExpected.Level, Duration = -1, BitVector = 0, Location = Enums.ApplyType.Wisdom, Modifier = 1 });
-            objExpected.Affected.Add(new AffectData() { Where = Enums.ToWhere.Object, Type = -1, Level = objExpected.Level, Duration = -1, BitVector = 0, Location = Enums.ApplyType.Constitution, Modifier = 1 });
+            objExpected.Affected.Add(new AffectData() { Where = Enums.ToWhere.Object, Type = null, Level = objExpected.Level, Duration = -1, BitVector = Enums.AffectedByFlag.None, Location = Enums.ApplyType.Wisdom, Modifier = 1 });
+            objExpected.Affected.Add(new AffectData() { Where = Enums.ToWhere.Object, Type = null, Level = objExpected.Level, Duration = -1, BitVector = Enums.AffectedByFlag.None, Location = Enums.ApplyType.Constitution, Modifier = 1 });
 
             try
             {
@@ -908,8 +918,8 @@ A
             objExpected.Condition = 100;
             objExpected.ExtraDescriptions = new System.Collections.Generic.List<ExtraDescription>();
             objExpected.Affected = new System.Collections.Generic.List<AffectData>();
-            objExpected.Affected.Add(new AffectData() { Where = Enums.ToWhere.Object, Type = -1, Level = objExpected.Level, Duration = -1, BitVector = 0, Location = Enums.ApplyType.Strength, Modifier = 1 });
-            objExpected.Affected.Add(new AffectData() { Where = Enums.ToWhere.Object, Type = -1, Level = objExpected.Level, Duration = -1, BitVector = 0, Location = Enums.ApplyType.HitRoll, Modifier = 3 });
+            objExpected.Affected.Add(new AffectData() { Where = Enums.ToWhere.Object, Type = null, Level = objExpected.Level, Duration = -1, BitVector = Enums.AffectedByFlag.None, Location = Enums.ApplyType.Strength, Modifier = 1 });
+            objExpected.Affected.Add(new AffectData() { Where = Enums.ToWhere.Object, Type = null, Level = objExpected.Level, Duration = -1, BitVector = Enums.AffectedByFlag.None, Location = Enums.ApplyType.HitRoll, Modifier = 3 });
 
             try
             {
@@ -1140,19 +1150,19 @@ ease.  The flame creates a light that allows you to see for miles.
             objExpected.Affected = new System.Collections.Generic.List<AffectData>();
             objExpected.Affected.Add(new AffectData() { 
                 Where = Enums.ToWhere.Object,
-                Type = -1,
+                Type = null,
                 Level = objExpected.Level,
                 Duration = -1,
-                BitVector = 0,
+                BitVector = Enums.AffectedByFlag.None,
                 Location = Enums.ApplyType.Saves,
                 Modifier = -2
             }); // -2 to saves
             objExpected.Affected.Add(new AffectData() { 
                 Where = Enums.ToWhere.Object,
-                Type = -1,
+                Type = null,
                 Level = objExpected.Level,
                 Duration = -1,
-                BitVector = 0,
+                BitVector = Enums.AffectedByFlag.None,
                 Location = Enums.ApplyType.AC, 
                 Modifier = -2 
             }); // -2 to AC
@@ -1253,8 +1263,8 @@ drink 0 A
                 Assert.AreEqual(objExpected.Weight, obj.Weight, String.Format("Object weight mismatch, expected \"{0}\" but parsed \"{1}\"", objExpected.Weight, obj.Weight));
                 Assert.AreEqual(objExpected.Cost, obj.Cost, String.Format("Object cost mismatch, expected \"{0}\" but parsed \"{1}\"", objExpected.Cost, obj.Cost));
                 Assert.AreEqual(objExpected.Condition, obj.Condition, String.Format("Object condition mismatch, expected \"{0}\" but parsed \"{1}\"", objExpected.Condition, obj.Condition));
-                Assert.AreEqual(objExpected.Affected, obj.Affected, String.Format("Object affected mismatch, expected \"{0}\" but parsed \"{1}\"", objExpected.Affected.ToString(), obj.Affected.ToString()));
-                Assert.AreEqual(objExpected.ExtraDescriptions, obj.ExtraDescriptions, String.Format("Object extradescription mismatch, expected \"{0}\" but parsed \"{1}\"", objExpected.ExtraDescriptions.ToString(), obj.ExtraDescriptions.ToString()));
+                Assert.IsTrue(objExpected.Affected.SequenceEqual(obj.Affected), String.Format("Object affected mismatch, expected \"{0}\" but parsed \"{1}\"", objExpected.Affected.ToString(), obj.Affected.ToString()));
+                Assert.IsTrue(objExpected.ExtraDescriptions.SequenceEqual(obj.ExtraDescriptions), String.Format("Object extradescription mismatch, expected \"{0}\" but parsed \"{1}\"", objExpected.ExtraDescriptions.ToString(), obj.ExtraDescriptions.ToString()));
             }
             else
                 Assert.Pass();

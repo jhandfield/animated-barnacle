@@ -41,6 +41,11 @@ namespace ROMSharp.Models
         /// Name of the object
         /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
+        /// Weight of the object
+        /// </summary>
+        public int Weight { get; set; }
         #endregion
 
         #region Constructors

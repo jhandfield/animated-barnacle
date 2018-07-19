@@ -13,16 +13,6 @@ namespace ROMSharp.Models
     {
         #region Properties
         /// <summary>
-        /// Contains the next area in the sequence of loading
-        /// </summary>
-        /// <remarks>Is this needed in this code? I'm not so sure.</remarks>
-        public AreaData NextArea
-        {
-            get { throw new NotImplementedException(); }
-            set { throw new NotSupportedException(); }
-        }
-
-        /// <summary>
         /// Collection of all rooms contained within this area
         /// </summary>
         public List<RoomIndexData> Rooms {
@@ -33,16 +23,10 @@ namespace ROMSharp.Models
         }
 
         /// <summary>
-        /// Used when resetting area, identifies the first object to be reset
+        /// Collection of all resets for the area
         /// </summary>
-        /// <value>The reset first.</value>
-        public ResetData ResetFirst { get; set; }
-
-        /// <summary>
-        /// Used when resetting area, identifies the last object to be reset
-        /// </summary>
-        /// <value>The reset last.</value>
-        public ResetData ResetLast { get; set; }
+        /// <value>The resets.</value>
+        public List<ResetData> Resets { get; set; }
 
         /// <summary>
         /// Filename the area was loaded from
@@ -91,8 +75,7 @@ namespace ROMSharp.Models
         #region Constructors
         public AreaData()
         {
-            this.ResetFirst = new ResetData();
-            this.ResetFirst = new ResetData();
+            Resets = new List<ResetData>();
         }
         #endregion
 
@@ -264,14 +247,35 @@ namespace ROMSharp.Models
                                         // Otherwise, just move on to the next iteration of the loop
                                         else
                                             continue;
-                                    
+
                                     if (lineData == null)
-                                        readingResets= false;
+                                        readingResets = false;
                                     else if (lineData.Trim().Equals("#0"))
                                         readingResets = false;
                                     else if (!lineData.Trim().Equals("#0") && !lineData.Trim().Equals("#$") && !lineData.Trim().Equals(""))
                                     {
-                                        // TODO: Implement #RESETS parsing
+                                        try
+                                        {
+                                            ResetData newObj = ResetData.ParseResetData(ref strRdr, areaFile, ref lineNum, lineData);
+
+                                            // If we have a loaded room, add it to the world
+                                            if (newObj != null)
+                                            {
+                                                areaOut.Resets.Add(newObj);
+                                                loaded++;
+                                            }
+                                            else
+                                            {
+                                                // Record a failed mob load, and set the indicator that we're back because of an error and should keep reading
+                                                // but do nothing until we find a new mob
+                                                errors++;
+                                                backFromError = true;
+                                            }
+                                        }
+                                        catch (ObjectParsingException ex)
+                                        {
+                                            Logging.Log.Error(String.Format("Error parsing object: {0}", ex.Message));
+                                        }
                                     }
                                 }
 
@@ -406,7 +410,7 @@ namespace ROMSharp.Models
                                         readingMobs = false;
                                     else if (!lineData.Trim().Equals("#0") && !lineData.Trim().Equals("#$") && !lineData.Trim().Equals(""))
                                     {
-                                        MobData newMob = MobData.ParseMobData(ref strRdr, areaFile, ref lineNum, lineData);
+                                        MobPrototypeData newMob = MobPrototypeData.ParseMobData(ref strRdr, areaFile, ref lineNum, lineData);
 
                                         // If we have a loaded room, add it to the world
                                         if (newMob != null)

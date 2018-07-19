@@ -373,10 +373,10 @@ namespace ROMSharp.Models
 
                             // Set up properties of the affect
                             aff.Where = ToWhere.Object;
-                            aff.Type = -1;
+                            aff.Type = null;
                             aff.Level = outObj.Level;
                             aff.Duration = -1;
-                            aff.BitVector = 0;
+                            aff.BitVector = AffectedByFlag.None;
 
                             // Segment 1 - Location
                             int location = 0;
@@ -411,7 +411,7 @@ namespace ROMSharp.Models
                                 throw new ObjectParsingException(String.Format("Error parsing object {0} in area {1}: invalid affect line, expected 4 segments but got {2} - value {3} on line {4}", outObj.VNUM, areaFile, splitLine.Length, lineData, lineNum));
 
                             // Set up properties of the affect
-                            aff.Type = -1;
+                            aff.Type = null;
                             aff.Level = outObj.Level;
                             aff.Duration = -1;
 
@@ -452,7 +452,7 @@ namespace ROMSharp.Models
                             try
                             {
                                 int bitvector = AlphaConversions.ConvertROMAlphaToInt32(splitLine[3]);
-                                aff.BitVector = bitvector;
+                                aff.BitVector = (AffectedByFlag)bitvector;
                             }
                             catch (ArgumentException e)
                             {

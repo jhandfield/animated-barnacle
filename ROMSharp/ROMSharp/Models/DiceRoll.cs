@@ -26,7 +26,11 @@ namespace ROMSharp.Models
         #endregion
 
         #region Constructors
-        public DiceRoll() { }
+        public DiceRoll() {
+            NumDice = 0;
+            DiceType = 0;
+            Bonus = 0;
+        }
 
         /// <summary>
         /// Initialize a new DiceRoll object from the supplied string representation <paramref name="input"/>

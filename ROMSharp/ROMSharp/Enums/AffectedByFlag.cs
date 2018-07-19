@@ -76,7 +76,7 @@ namespace ROMSharp.Enums
         /// <summary>
         /// Legacy AFF_PROTECT_EVIL (N)
         /// </summary>
-        ProectEvil = AlphaMacros.N,
+        ProtectEvil = AlphaMacros.N,
 
         /// <summary>
         /// Legacy AFF_PROTECT_GOOD (O)

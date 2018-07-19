@@ -1,4 +1,7 @@
 ﻿using System;
+using System.IO;
+using System.Text.RegularExpressions;
+
 namespace ROMSharp.Models
 {
     public class ResetData
@@ -31,6 +34,33 @@ namespace ROMSharp.Models
         #endregion
 
         public ResetData() { }
+
+        internal static ResetData ParseResetData(ref StringReader sr, string areaFile, ref int lineNum, string firstLine, bool log = true)
+        {
+            if (log)
+                Logging.Log.Debug(String.Format("ParseObjectData() called for area {0} starting on line {1}", areaFile, lineNum));
+
+            // Instantiate variables for the method
+            ResetData outReset = new ResetData();
+            string lineData = firstLine;
+
+            // Read the first character
+            do
+            {
+                // Regex to parse reset lines
+                Regex lineRegex = new Regex(@"(\w+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)");  // Mob
+                lineRegex = new Regex(@"([a-zA-Z]){1}\s+(\d+)\s+(\d+)\s+(-?\d+)");  // Give
+
+
+                // Attempt to parse the line
+                Match matches = lineRegex.Match(lineData);
+
+                // Ensure we got the expected number of matches 
+            }
+            while ((lineData = sr.ReadLine()) != null);
+
+            return outReset;
+        }
     }
 
     public enum ResetCommand {
