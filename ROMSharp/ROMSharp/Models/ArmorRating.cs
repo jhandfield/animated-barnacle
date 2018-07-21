@@ -68,6 +68,12 @@ namespace ROMSharp.Models
             Slash += modifier;
             Exotic += modifier;
         }
-        #endregion
-    }
+
+		public override bool Equals(object obj)
+		{
+            ArmorRating otherObj = (ArmorRating)obj;
+            return otherObj.Bash.Equals(Bash) && otherObj.Exotic.Equals(Exotic) && otherObj.Pierce.Equals(Pierce) && otherObj.Slash.Equals(Slash);
+		}
+		#endregion
+	}
 }

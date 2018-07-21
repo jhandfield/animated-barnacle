@@ -242,7 +242,7 @@ namespace ROMSharp.Models
                 return null;
             }
             else
-                outMob.Alignment = Convert.ToInt32(splitLine[3]);
+                outMob.Group = Convert.ToInt32(splitLine[3]);
 
             // Read the next line and split - expect six segments
             lineData = sr.ReadLine();

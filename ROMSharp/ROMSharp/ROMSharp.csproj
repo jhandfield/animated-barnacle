@@ -151,6 +151,7 @@
     <Compile Include="Models\AttributeBonus\StrengthBonus.cs" />
     <Compile Include="Consts\AttributeBonuses.cs" />
     <Compile Include="Helpers\URange.cs" />
+    <Compile Include="UnitTests\MobTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
