@@ -548,6 +548,42 @@ namespace ROMSharp.Models
 
             return outMob;
         }
+
+        public override bool Equals(object obj)
+        {
+            MobPrototypeData other = (MobPrototypeData)obj;
+
+            return other.VNUM.Equals(other.VNUM)
+                        && other.Killed.Equals(Killed)
+                        && other.Name.Equals(Name)
+                        && other.ShortDescription.Equals(ShortDescription)
+                        && other.LongDescription.Equals(LongDescription)
+                        && other.Description.Equals(Description)
+                        && other.Race.Equals(Race)
+                        && other.Resistance.Equals(Resistance)
+                        && other.Vulnerability.Equals(Vulnerability)
+                        && other.Form.Equals(Form)
+                        && other.Parts.Equals(Parts)
+                        && other.Actions.Equals(Actions)
+                        && other.AffectedBy.Equals(AffectedBy)
+                        && other.Alignment.Equals(Alignment)
+                        && other.Group.Equals(Group)
+                        && other.Level.Equals(Level)
+                        && other.HitRoll.Equals(HitRoll)
+                        && other.Health.Equals(Health)
+                        && other.Mana.Equals(Mana)
+                        && other.Damage.Equals(Damage)
+                        && other.DamageType.Equals(DamageType)
+                        && other.ArmorRating.Equals(ArmorRating)
+                        && other.Offense.Equals(Offense)
+                        && other.Immunity.Equals(Immunity)
+                        && other.Resistance.Equals(Resistance)
+                        && other.StartingPosition.Equals(StartingPosition)
+                        && other.DefaultPosition.Equals(DefaultPosition)
+                        && other.Gender.Equals(Gender)
+                        && other.Wealth.Equals(Wealth)
+                        && other.Size.Equals(Size);
+        }
         #endregion
     }
 
@@ -630,7 +666,7 @@ namespace ROMSharp.Models
             StartingStats = new Stats();
             MaxStats = new Stats();
         }
-    }
+	}
 
     /// <summary>
     /// Special behaviors inherited by some mobiles

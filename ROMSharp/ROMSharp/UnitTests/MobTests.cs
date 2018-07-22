@@ -10,6 +10,72 @@ namespace ROMSharp.UnitTests
     public class MobPrototypeTests
     {
         [Test(), TestOf(typeof(Models.MobPrototypeData))]
+        public void TestBrotherJohn()
+        {
+            // Mob data to parse, VNUM 3011 from midgaard.are, lines 167-185
+            string mobData = @"#9506
+oldstyle john brother singer lead~
+Brother John~
+Brother John, lead singer for the Lokettes, stands on stage.
+~
+You see the lead singer of the Lokettes lip synching to an old Zeppelin tune.
+~
+human~
+ABG D 0 0
+18 0 3d9+283 9d9+100 2d7+4 none
+-3 -3 -3 7
+EFNU 0 0 0
+stand stand male 250
+0 0 tiny 0
+F par GHIJK";
+
+            // Set up the mob prototype we expect to have parsed from the string
+            MobPrototypeData mobExpected = new MobPrototypeData();
+            mobExpected.VNUM = 9506;
+            mobExpected.Name = "oldstyle john brother singer lead";
+            mobExpected.ShortDescription = "Brother John";
+            mobExpected.LongDescription = "Brother John, lead singer for the Lokettes, stands on stage.";
+            mobExpected.Description = @"You see the lead singer of the Lokettes lip synching to an old Zeppelin tune.";
+            mobExpected.Race = Consts.Races.RaceTable.SingleOrDefault(r => r.Name.ToLower().Equals("human"));
+            mobExpected.Resistance = Enums.ResistanceFlag.None;
+            mobExpected.Vulnerability = Enums.VulnerabilityFlag.None;
+            mobExpected.Form = Enums.FormFlag.Edible | Enums.FormFlag.Sentient | Enums.FormFlag.Biped | Enums.FormFlag.Mammal;
+            mobExpected.Parts = Enums.PartFlag.Head | Enums.PartFlag.Arms | Enums.PartFlag.Legs | Enums.PartFlag.Heart | Enums.PartFlag.Brains | Enums.PartFlag.Guts | Enums.PartFlag.Hands | Enums.PartFlag.Feet | Enums.PartFlag.Fingers | Enums.PartFlag.Ear | Enums.PartFlag.Eye;
+            mobExpected.Actions = Enums.ActionFlag.IsNPC | Enums.ActionFlag.Sentinel | Enums.ActionFlag.StayInArea;
+            mobExpected.AffectedBy = Enums.AffectedByFlag.DetectInvis;
+            mobExpected.Alignment = 0;
+            mobExpected.Group = 0;
+            mobExpected.Level = 18;
+            mobExpected.HitRoll = 0;
+            mobExpected.Health = new DiceRoll("3d9+283");
+            mobExpected.Mana = new DiceRoll("9d9+100");
+            mobExpected.Damage = new DiceRoll("2d7+4");
+            mobExpected.DamageType = Consts.DamageTypes.AttackTable.Single(a => a.Abbreviation.ToLower().Equals("none"));
+            mobExpected.ArmorRating = new ArmorRating(-3, -3, -3, 7);
+            mobExpected.Offense |= Enums.OffensiveFlag.Offense_Disarm | Enums.OffensiveFlag.Offense_Dodge | Enums.OffensiveFlag.Offense_Trip | Enums.OffensiveFlag.Assist_VNUM;
+            mobExpected.Immunity |= Enums.ImmunityFlag.None;
+            mobExpected.Resistance |= Enums.ResistanceFlag.None;
+            mobExpected.StartingPosition = Consts.Positions.PositionTable.Single(p => p.ShortName.ToLower().Equals("stand"));
+            mobExpected.DefaultPosition = Consts.Positions.PositionTable.Single(p => p.ShortName.ToLower().Equals("stand"));
+            mobExpected.Gender = Consts.Gender.GenderTable.Single(g => g.Name.ToLower().Equals("male"));
+            mobExpected.Wealth = 250;
+            mobExpected.Size = Consts.Size.SizeTable.Single(s => s.Name.ToLower().Equals("tiny"));
+
+            // "F par" removes parts flags GHIJK
+            mobExpected.Parts &= ~(Enums.PartFlag.Hands) & ~(Enums.PartFlag.Feet) & ~(Enums.PartFlag.Fingers) & ~(Enums.PartFlag.Ear) & ~(Enums.PartFlag.Eye);
+
+            StringReader sr = new StringReader(mobData);
+            int lineNum = 1;
+            string firstLine = sr.ReadLine();
+
+            // Parse the object from the string
+            MobPrototypeData mob = MobPrototypeData.ParseMobData(ref sr, "testArea", ref lineNum, firstLine);
+
+            // Compare the two objects
+            CompareMobs(mobExpected, mob);
+        }
+
+        [Test(), TestOf(typeof(Models.MobPrototypeData))]
         public void TestHassan()
         {
             // Mob data to parse, VNUM 3011 from midgaard.are, lines 167-185
@@ -59,7 +125,7 @@ in his presence.";
             mobExpected.Health = new DiceRoll("1d1+3999");
             mobExpected.Mana = new DiceRoll("1d1+499");
             mobExpected.Damage = new DiceRoll("5d4+40");
-            mobExpected.DamageType = Consts.DamageTypes.AttackTable.Single(a => a.Name.ToLower().Equals("crush"));
+            mobExpected.DamageType = Consts.DamageTypes.AttackTable.Single(a => a.Abbreviation.ToLower().Equals("crush"));
             mobExpected.ArmorRating = new ArmorRating(-25, -25, -25, -15);
             mobExpected.Offense |= Enums.OffensiveFlag.Offense_AreaAttack | Enums.OffensiveFlag.Offense_Bash | Enums.OffensiveFlag.Offense_Berserk | Enums.OffensiveFlag.Offense_Disarm | Enums.OffensiveFlag.Offense_Dodge | Enums.OffensiveFlag.Offense_Fast | Enums.OffensiveFlag.Offense_Kick | Enums.OffensiveFlag.Offense_Parry | Enums.OffensiveFlag.Offense_Rescue | Enums.OffensiveFlag.Offense_Trip | Enums.OffensiveFlag.Offense_Crush | Enums.OffensiveFlag.Assist_Guard;
             mobExpected.Immunity |= Enums.ImmunityFlag.Summon | Enums.ImmunityFlag.Charm | Enums.ImmunityFlag.Mental;
@@ -70,22 +136,15 @@ in his presence.";
             mobExpected.Wealth = 0;
             mobExpected.Size = Consts.Size.SizeTable.Single(s => s.Name.ToLower().Equals("huge"));
 
-            try 
-            {
-                StringReader sr = new StringReader(mobData);
-                int lineNum = 1;
-                string firstLine = sr.ReadLine();
+            StringReader sr = new StringReader(mobData);
+            int lineNum = 1;
+            string firstLine = sr.ReadLine();
 
-                // Parse the object from the string
-                MobPrototypeData mob = MobPrototypeData.ParseMobData(ref sr, "testArea", ref lineNum, firstLine);
+            // Parse the object from the string
+            MobPrototypeData mob = MobPrototypeData.ParseMobData(ref sr, "testArea", ref lineNum, firstLine);
 
-                // Compare the two objects
-                CompareObjects(mobExpected, mob);
-            }
-            catch (Exception e)
-            {
-                Assert.Fail(String.Format("Execption thrown loading mobile: {0} {1}", e.GetType().ToString(), e.Message));
-            }
+            // Compare the two objects
+            CompareMobs(mobExpected, mob);
         }
 
         /// <summary>
@@ -93,7 +152,7 @@ in his presence.";
         /// </summary>
         /// <param name="objExpected">Model object to compare the parsed version against</param>
         /// <param name="obj">Object returned by ParseObjectData()</param>
-        private void CompareObjects(MobPrototypeData mobExpected, MobPrototypeData mob)
+        private void CompareMobs(MobPrototypeData mobExpected, MobPrototypeData mob)
         {
             // Compare
             if (!mobExpected.Equals(mob))
