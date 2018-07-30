@@ -584,8 +584,18 @@ namespace ROMSharp.Models
                         && other.Wealth.Equals(Wealth)
                         && other.Size.Equals(Size);
         }
-        #endregion
-    }
+
+		public override int GetHashCode()
+		{
+            return base.GetHashCode();
+		}
+
+		public override string ToString()
+		{
+            return base.ToString();
+		}
+		#endregion
+	}
 
     /// <summary>
     /// Defines a race and the attributes which make it up
