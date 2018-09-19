@@ -9,7 +9,7 @@ namespace ROMSharp.Consts
             new Models.Gender("none", Sex.Neutral),
             new Models.Gender("male", Sex.Male),
             new Models.Gender("female", Sex.Female),
-            new Models.Gender("random", Sex.Random)
+            new Models.Gender("either", Sex.Random)
         };
 
         public Gender() { }
