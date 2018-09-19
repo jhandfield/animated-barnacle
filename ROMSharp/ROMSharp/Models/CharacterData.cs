@@ -14,6 +14,7 @@ namespace ROMSharp.Models
     public class CharacterData
     {
         private Func<CharacterData, bool> _specialFunction;
+        private RoomIndexData _inRoom;
 
         /// <summary>
         /// Indicates whether the character is a PC
@@ -108,7 +109,21 @@ namespace ROMSharp.Models
         /// <summary>
         /// Room the character is currently in
         /// </summary>
-        public RoomIndexData InRoom { get; set; }
+        public RoomIndexData InRoom
+        {
+            get
+            {
+                if (_inRoom == null)
+                    return Program.World.Rooms[3001];
+                else
+                    return _inRoom;
+
+            }
+            set
+            {
+                _inRoom = value;
+            }
+        }
 
         /// <summary>
         /// Previous room the character was in

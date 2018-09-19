@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
 
 namespace ROMSharp
 {
@@ -19,6 +20,51 @@ namespace ROMSharp
 			Program.PointTimerCallback (state);
 			Network.Send ("Point tick forced.\n\r", state);
 		}
+
+        /// <summary>
+        /// Describes the room, its contents, and the people in it to the player. Not fully implemented.
+        /// </summary>
+        /// <param name="connID">Conn identifier.</param>
+        public static void DoLook(int connID)
+        {
+            Network.ClientConnection state = Network.ClientConnections.Single(c => c.ID == connID);
+            Models.PlayerCharacterData character = state.PlayerCharacter;
+            Models.RoomIndexData room = character.InRoom;
+
+            StringBuilder sb = new StringBuilder();
+            sb.Append(String.Format("{0}\n\r\n\r{1}\n\r\n\r", room.Name, room.Description));
+
+            foreach (Models.CharacterData person in room.Characters)
+            {
+                sb.Append(person.Name + " is here\n\r");
+            }
+
+            Network.Send(sb.ToString(), state);
+        }
+
+        public static void DoSpawn(int mobID, int roomID, int connID)
+        {
+            Network.ClientConnection state = Network.ClientConnections.Single(c => c.ID == connID);
+            Models.PlayerCharacterData character = state.PlayerCharacter;
+            Models.RoomIndexData room = Program.World.Rooms[roomID];
+
+            // Check that the mob is valid
+            Models.MobPrototypeData mobProto = Program.World.Mobs.SingleOrDefault(m => m.VNUM.Equals(mobID));
+
+            if (mobProto != null)
+            {
+                // Instantiate a new mob
+                Models.CharacterData newMob = new Models.CharacterData(mobProto);
+
+                // Place the mob into the room
+                room.Characters.Add(newMob);
+
+                Network.Send("OK.", state);
+            }
+            else
+                Network.Send("Invalid mob VNUM " + mobID, state);
+
+        }
 
 		/// <summary>
 		/// Requests the current server time be sent to the client

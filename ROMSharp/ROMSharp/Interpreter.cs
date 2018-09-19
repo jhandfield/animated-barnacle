@@ -28,7 +28,7 @@ namespace ROMSharp
 					// Is the name legal?
 					if (Character.IsLegalName (input.Trim())) {
                         // Instantiate a new Character in the user's state and set the name
-                        state.PlayerCharacter = new Character(input.Trim());
+                        state.PlayerCharacter = new Models.PlayerCharacterData();
 
                         // Do we recognize this username?
                         if (Character.Exists (input)) {
@@ -134,6 +134,14 @@ namespace ROMSharp
                             Commands.UnknownCommand(state.ID, command);
                             break;
                     }
+                    break;
+
+                case "look":
+                    Commands.DoLook(state.ID);
+                    break;
+
+                case "spawn":
+                    Commands.DoSpawn(Convert.ToInt32(commandArr[1]), Convert.ToInt32(commandArr[2]), state.ID);
                     break;
 
                 // Unknown command
