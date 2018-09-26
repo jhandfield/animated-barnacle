@@ -78,7 +78,7 @@ namespace ROMSharp
             /// <summary>
             /// Holds the PlayerCharacter object
             /// </summary>
-            public Character PlayerCharacter { get; set; }
+            public Models.PlayerCharacterData PlayerCharacter { get; set; }
 
             /// <summary>
             /// Temporary storage for password during character creation - is erased on the first read

@@ -225,6 +225,7 @@ namespace ROMSharp.Models
                                 backFromError = false;
                                 errors = 0;
                                 loaded = 0;
+                                int lastMob = 0;
 
                                 while (readingResets)
                                 {
@@ -232,36 +233,20 @@ namespace ROMSharp.Models
                                     lineData = strRdr.ReadLine();
                                     lineNum++;
 
-                                    // If we've recently come back from failing to load a mob, we need to ignore some lines
-                                    // until we get to the start of the next mob definition
-                                    if (backFromError)
-                                        // If the line is not the section terminator but it does begin with #, it is
-                                        // (should be) a new mob definition, so un-set the backFromError flag
-                                        if (!lineData.Trim().Equals("#0") && lineData.Trim().Length > 0 && lineData.Trim()[0].Equals('#'))
-                                        {
-                                            // Un-set the backFromError flag; it's time to resume loading
-                                            backFromError = false;
-
-                                            Logging.Log.Debug(String.Format("Resuming loading of #RESETS section in area {0} on line {1} with mob {2}", areaFile, lineNum, lineData.Trim()));
-                                        }
-                                        // Otherwise, just move on to the next iteration of the loop
-                                        else
-                                            continue;
-
                                     if (lineData == null)
                                         readingResets = false;
-                                    else if (lineData.Trim().Equals("#0"))
+                                    else if (lineData.Trim().Equals("S"))
                                         readingResets = false;
-                                    else if (!lineData.Trim().Equals("#0") && !lineData.Trim().Equals("#$") && !lineData.Trim().Equals(""))
+                                    else if (!lineData.Trim().Equals("S") && !lineData.Trim().Equals("#$") && !lineData.Trim().Equals(""))
                                     {
                                         try
                                         {
-                                            ResetData newObj = ResetData.ParseResetData(ref strRdr, areaFile, ref lineNum, lineData);
+                                            ResetData newReset = ResetData.ParseResetData(areaFile, ref lineNum, lineData, lastMob, out lastMob);
 
                                             // If we have a loaded room, add it to the world
-                                            if (newObj != null)
+                                            if (newReset != null)
                                             {
-                                                areaOut.Resets.Add(newObj);
+                                                areaOut.Resets.Add(newReset);
                                                 loaded++;
                                             }
                                             else
