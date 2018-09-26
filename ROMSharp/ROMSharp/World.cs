@@ -116,6 +116,14 @@ namespace ROMSharp
                     //    Logging.Log.Fatal(String.Format("Unhandled exception caught: {0}: {1}\n{2}", e.GetType(), e.Message, e.StackTrace));
                     //}
 
+                    // Reset all areas
+                    Logging.Log.Info("Performing initial world reset...");
+
+                    foreach(Models.AreaData area in Program.World.Areas)
+                    {
+                        area.Reset();
+                    }
+
                     // Listen for connections
                     Network.StartListening(Program.config);
 

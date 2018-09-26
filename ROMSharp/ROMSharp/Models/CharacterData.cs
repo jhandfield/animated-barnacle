@@ -341,6 +341,9 @@ namespace ROMSharp.Models
             Parts = prototype.Parts;
             Size = prototype.Size;
             Material = prototype.Material;
+            Affects = new List<AffectData>();
+            PermanentStats = new Stats();
+            ModifiedStats = new Stats();
 
             // Calculated assignments
             if (prototype.Wealth == 0)
@@ -431,10 +434,11 @@ namespace ROMSharp.Models
             // Sanctuary
             if (AffectedBy.HasFlag(AffectedByFlag.Sanctuary))
             {
+                SkillType skill = Consts.Skills.SkillTable.SingleOrDefault(s => s.Name.ToLower().Equals("sanctuary"));
                 AffectData affect = new AffectData()
                 {
                     Where = ToWhere.Affects,
-                    Type = Consts.Skills.SkillTable.Single(s => s.Name.ToLower().Equals("sactuary")),
+                    Type = skill,
                     Level = Level,
                     Duration = -1,
                     Location = ApplyType.None,
@@ -448,10 +452,11 @@ namespace ROMSharp.Models
             // Haste - also applies a dexterity modifier based on level
             if (AffectedBy.HasFlag(AffectedByFlag.Haste))
             {
+                SkillType skill = Consts.Skills.SkillTable.Single(s => s.Name.ToLower().Equals("haste"));
                 AffectData affect = new AffectData()
                 {
                     Where = ToWhere.Affects,
-                    Type = Consts.Skills.SkillTable.Single(s => s.Name.ToLower().Equals("haste")),
+                    Type = skill,
                     Level = Level,
                     Duration = -1,
                     Location = ApplyType.Dexterity,
@@ -465,10 +470,11 @@ namespace ROMSharp.Models
             // Protection from Evil
             if (AffectedBy.HasFlag(AffectedByFlag.ProtectEvil))
             {
+                SkillType skill = Consts.Skills.SkillTable.Single(s => s.Name.ToLower().Equals("protection evil"));
                 AffectData affect = new AffectData()
                 {
                     Where = ToWhere.Affects,
-                    Type = Consts.Skills.SkillTable.Single(s => s.Name.ToLower().Equals("protection evil")),
+                    Type = skill,
                     Level = Level,
                     Duration = -1,
                     Location = ApplyType.Saves,
@@ -482,10 +488,11 @@ namespace ROMSharp.Models
             // Protection from Good
             if (AffectedBy.HasFlag(AffectedByFlag.ProtectGood))
             {
+                SkillType skill = Consts.Skills.SkillTable.Single(s => s.Name.ToLower().Equals("protection good"))
                 AffectData affect = new AffectData()
                 {
                     Where = ToWhere.Affects,
-                    Type = Consts.Skills.SkillTable.Single(s => s.Name.ToLower().Equals("protection good")),
+                    Type = skill,
                     Level = Level,
                     Duration = -1,
                     Location = ApplyType.Saves,

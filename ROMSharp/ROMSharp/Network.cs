@@ -112,6 +112,9 @@ namespace ROMSharp
 
 				// Set TCP Keepalive properties
 				ConfigureSocketKeepalive(this.workSocket);
+
+                PlayerCharacter = new Models.PlayerCharacterData();
+                PlayerCharacter.InRoom = Program.World.Rooms[3001];
 			}
 			#endregion
 

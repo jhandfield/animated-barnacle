@@ -80,6 +80,46 @@ namespace ROMSharp.Models
         #endregion
 
         #region Methods
+        public bool Reset()
+        {
+            Logging.Log.Debug(String.Format("Resetting area {0}", this.Name));
+
+            foreach(ResetData reset in this.Resets)
+            {
+                switch(reset.Command)
+                {
+                    case ResetCommand.SpawnMobile:
+                        Logging.Log.Debug(String.Format("Processing Mob reset for VNUM {0}", reset.Arg1));
+
+                        MobileResetData mobReset = new MobileResetData(reset);
+
+                        if (mobReset != null)
+                        {
+                            // Check that the mob is valid
+                            Models.MobPrototypeData mobProto = mobReset.Mobile;
+
+                            if (mobProto != null)
+                            {
+                                // Instantiate a new mob
+                                Models.CharacterData newMob = new Models.CharacterData(mobProto);
+
+                                // Place the mob into the room
+                                mobReset.Room.Characters.Add(newMob);
+                            }
+                        }
+                        else
+                            Logging.Log.Error("Unable to cast reset as MobileResetData");
+
+                        break;
+                }
+            }
+
+            Logging.Log.Debug(String.Format("Area {0} reset", this.Name));
+
+            // Report success
+            return true;
+        }
+
         public static AreaData LoadFromFile(string areaPath)
         {
             // Check that the file exists
@@ -225,7 +265,7 @@ namespace ROMSharp.Models
                                 backFromError = false;
                                 errors = 0;
                                 loaded = 0;
-                                int lastMob = 0;
+                                ResetData lastMob = null;
 
                                 while (readingResets)
                                 {
@@ -241,12 +281,25 @@ namespace ROMSharp.Models
                                     {
                                         try
                                         {
-                                            ResetData newReset = ResetData.ParseResetData(areaFile, ref lineNum, lineData, lastMob, out lastMob);
+                                            // Parse the reset
+                                            ResetData newReset = ResetData.ParseResetData(areaFile, ref lineNum, lineData, lastMob);
 
-                                            // If we have a loaded room, add it to the world
+                                            // Check that the reset parsed
                                             if (newReset != null)
                                             {
-                                                areaOut.Resets.Add(newReset);
+                                                // Special handling if the new reset is an E(quip) or G(ive)
+                                                if (newReset.Command == ResetCommand.EquipObjectOnMob || newReset.Command == ResetCommand.GiveObjectToMob)
+                                                    // Nest in the mob reset it relates to
+                                                    lastMob.Inner.Add(newReset);
+                                                else
+                                                    // Otherwise, add the reset to the area
+                                                    areaOut.Resets.Add(newReset);
+
+                                                // If the reset was to spawn a M(ob), reset lastMob
+                                                if (newReset.Command == ResetCommand.SpawnMobile)
+                                                    lastMob = newReset;
+
+                                                // Finally, increment the loaded count
                                                 loaded++;
                                             }
                                             else

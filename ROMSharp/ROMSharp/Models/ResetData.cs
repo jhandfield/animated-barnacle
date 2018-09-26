@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 
@@ -27,6 +28,19 @@ namespace ROMSharp.Models
         /// </summary>
         public int RoomLimit { get { return this.Arg4; } }
         #endregion
+
+        #region Constructors
+        public MobileResetData() { this.Inner = new List<ResetData>(); }
+        public MobileResetData(ResetData data) 
+        {
+            this.Arg1 = data.Arg1;
+            this.Arg2 = data.Arg2;
+            this.Arg3 = data.Arg3;
+            this.Arg4 = data.Arg4;
+            this.Command = data.Command;
+            this.Inner = data.Inner;
+        }
+        #endregion
     }
 
     public class EquipResetData : ResetData
@@ -39,6 +53,19 @@ namespace ROMSharp.Models
         public int Limit { get { return this.Arg2; } }
 
         public Enums.WearFlag WearLocation { get { return (Enums.WearFlag)this.Arg3; } }
+        #endregion
+
+        #region Constructors
+        public EquipResetData() { this.Inner = new List<ResetData>(); }
+        public EquipResetData(ResetData data)
+        {
+            this.Arg1 = data.Arg1;
+            this.Arg2 = data.Arg2;
+            this.Arg3 = data.Arg3;
+            this.Arg4 = data.Arg4;
+            this.Command = data.Command;
+            this.Inner = data.Inner;
+        }
         #endregion
     }
 
@@ -69,11 +96,16 @@ namespace ROMSharp.Models
         /// Fourth argument for the reset - varies by reset type
         /// </summary>
         public int Arg4 { get; set; }
+
+        /// <summary>
+        /// Collection of resets related to this one
+        /// </summary>
+        public List<ResetData> Inner { get; set; }
         #endregion
 
-        public ResetData() { }
+        public ResetData() { Inner = new List<ResetData>();  }
 
-        internal static ResetData ParseResetData(string areaFile, ref int lineNum, string firstLine, int lastMob, out int newLastMob)
+        internal static ResetData ParseResetData(string areaFile, ref int lineNum, string firstLine, ResetData lastMob)
         {
             //if (log)
                 //Logging.Log.Debug(String.Format("ParseResetData() called for area {0} starting on line {1}", areaFile, lineNum));
@@ -81,9 +113,6 @@ namespace ROMSharp.Models
             // Instantiate variables for the method
             ResetData outReset = new ResetData();
             string lineData = firstLine;
-
-            // Set output parameter default - will be reset if appropriate
-            newLastMob = lastMob;
 
             // Regex to parse reset lines
             Regex lineRegex = new Regex(@"^(\w){1}\s+(\d+)\s+(\d+)\s+(-*\d+)\s*(\d+)*\s*(\d+)*(\s*\*(.*))*$");
@@ -121,9 +150,6 @@ namespace ROMSharp.Models
                         {
                             Logging.Log.Debug(String.Format("Loaded mobile reset for mobile {0} in room {1} with maximum occupancy {2} for area {3}", outReset.Arg1, outReset.Arg3, outReset.Arg2, areaFile));
 
-                            // Reset the newLastMob to keep track of who was most recently loaded - needed for E and G resets
-                            newLastMob = outReset.Arg1;
-
                             // Return the reset
                             return outReset;
                         }
@@ -133,7 +159,7 @@ namespace ROMSharp.Models
                         outReset.Command = ResetCommand.EquipObjectOnMob;
 
                         // Ensure we have a mob
-                        if (lastMob == 0)
+                        if (lastMob == null || lastMob.Command != ResetCommand.SpawnMobile)
                         {
                             Logging.Log.Error(String.Format("Encountered equip reset command in an invalid location, no previous mob to apply to - line {0} of area {1}", lineNum, areaFile));
                             return null;
@@ -155,9 +181,6 @@ namespace ROMSharp.Models
                         // Reset Arg2 based on the old limit rules
                         if (outReset.Arg2 > 50) outReset.Arg2 = 6;
                         else if (outReset.Arg2 == -1) outReset.Arg2 = 999;
-
-                        // Finally, store the mob number in the reset - Arg4 is unused
-                        outReset.Arg4 = lastMob;
 
                         Logging.Log.Debug(String.Format("Loaded equip reset for mobile {0} with item {1} in wear location {2} with limit of {3} on line {4} of area {5}", outReset.Arg4, outReset.Arg1, outReset.Arg3, outReset.Arg2, lineNum, areaFile));
 
