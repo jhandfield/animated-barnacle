@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace ROMSharp
 {
@@ -9,37 +11,145 @@ namespace ROMSharp
 	/// </summary>
 	public class Commands
 	{
-		/// <summary>
-		/// Forces the point pulse outside of its regular schedule. Invoking this does not reset the point pulse schedule, the next automated pulse will happen as scheduled.
-		/// </summary>
-		/// <param name="connID">Connection ID of the user requesting the point pulse</param>
-		public static void ForcePointPulse(int connID)
-		{
-			Network.ClientConnection state = Network.ClientConnections.Single (c => c.ID == connID);
+        /// <summary>
+        /// Forces the point pulse outside of its regular schedule. Invoking this does not reset the point pulse schedule, the next automated pulse will happen as scheduled.
+        /// </summary>
+        /// <param name="connID">Connection ID of the user requesting the point pulse</param>
+        public static void ForcePointPulse(int connID)
+        {
+            Network.ClientConnection state = Network.ClientConnections.Single(c => c.ID == connID);
 
-			Program.PointTimerCallback (state);
-			Network.Send ("Point tick forced.\n\r", state);
-		}
+            Program.PointTimerCallback(state);
+            Network.Send("Point tick forced.\n\r", state);
+        }
+
+        /// <summary>
+        /// Retrieves one argument (either a single word or a quoted phrase) from <paramref name="input"/>
+        /// </summary>
+        /// <returns>The input string <paramref name="input"/> with the first argument remoed.</returns>
+        /// <param name="input">Input string to parse</param>
+        /// <param name="argument">The first argument of <paramref name="input"/></param>
+        static string GetOneArgument(string input, out string argument)
+        {
+            char endCharacter = ' ';
+            int pos = 0;
+            argument = String.Empty;
+
+            // Trim input
+            input = input.Trim();
+
+            // If the input string has no data, return and be done
+            if (input.Length == 0)
+                return String.Empty;
+            
+            // Reset endCharacter if the input starts with a quote
+            if (input[0] == '\'' || input[0] == '"')
+            {
+                endCharacter = input[0];    // End on the matched quote
+                pos++;                      // Move position ahead to 1 character
+            }
+
+            while (pos < input.Length)
+            {
+                if (input[pos] == endCharacter)
+                    break;
+                else
+                    argument += input[pos].ToString();
+
+                pos++;
+            }
+
+            // Remove what we cut off off input and return it
+            return input.Remove(0, pos);
+        }
+
+        static string ShowCharToChar(Models.CharacterData character, Models.CharacterData victim)
+        {
+            int percent;
+            StringBuilder sb = new StringBuilder();
+
+            if (!String.IsNullOrWhiteSpace(victim.Description))
+                sb.Append(String.Format("{0}\n\r", victim.Description));
+
+            if (victim.MaxHealth > 0)
+                percent = (100 * victim.Health) / victim.MaxHealth;
+            else
+                percent = -1;
+
+            if (percent >= 100)
+                sb.Append(String.Format("{0} is in excellent condition", victim.Name));
+            else if (percent >= 90)
+                sb.Append(String.Format("{0} has a few scratches.", victim.Name));
+            else if (percent >= 75)
+                sb.Append(String.Format("{0} has some small wounds and bruises.", victim.Name));
+            else if (percent >= 50)
+                sb.Append(String.Format("{0} has quite a few wounds.", victim.Name));
+            else if (percent >= 30)
+                sb.Append(String.Format("{0} has some big nasty wounds and scratches.", victim.Name));
+            else if (percent >= 15)
+                sb.Append(String.Format("{0} looks pretty hurt.", victim.Name));
+            else if (percent >= 0)
+                sb.Append(String.Format("{0} is in awful condition.", victim.Name));
+            else
+                sb.Append(String.Format("{0} is bleeding to death.", victim.Name));
+
+            // This function ultimately needs to call Network.Send() itself, but we don't have a version
+            //   that doesn't set up a new callback yet.
+            return sb.ToString();
+        }
 
         /// <summary>
         /// Describes the room, its contents, and the people in it to the player. Not fully implemented.
         /// </summary>
         /// <param name="connID">Conn identifier.</param>
-        public static void DoLook(int connID)
+        public static void DoLook(int connID, string[] args)
         {
-            Network.ClientConnection state = Network.ClientConnections.Single(c => c.ID == connID);
-            Models.PlayerCharacterData character = state.PlayerCharacter;
-            Models.RoomIndexData room = character.InRoom;
+            string arguments = String.Empty;
+            string arg1, arg2;
 
-            StringBuilder sb = new StringBuilder();
-            sb.Append(String.Format("{0}\n\r\n\r{1}\n\r\n\r", room.Name, room.Description));
+            // Recombine args
+            List<string> argList = args.ToList();
+            argList.RemoveAt(0);
+            arguments = String.Join(" ", argList);
 
-            foreach (Models.CharacterData person in room.Characters)
+            // Pull arguments
+            arguments = GetOneArgument(arguments, out arg1);
+            arguments = GetOneArgument(arguments, out arg2);
+
+            Network.ClientConnection state;
+            Models.PlayerCharacterData character;
+            Models.CharacterData victim;
+            Models.RoomIndexData room;
+
+            // Get the client state
+            state = Network.ClientConnections.Single(c => c.ID == connID);
+
+            // Get the client character
+            character = state.PlayerCharacter;
+
+            // Get the character's current room
+            room = character.InRoom;
+
+            // Attempt to pull a character from the first argument
+            victim = room.Characters.SingleOrDefault(c => c.Name.ToLower().Equals(arg1));
+
+            if (victim != null)
             {
-                sb.Append(person.Name + " is here\n\r");
+                string output = ShowCharToChar(character, victim);
+                Network.Send(output + "\n\r", state);
+            }
+            else
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.Append(String.Format("{0}\n\r\n\r{1}\n\r\n\r", room.Name, room.Description));
+
+                foreach (Models.CharacterData person in room.Characters)
+                    sb.Append(person.LongDescription + "\n\r");
+
+                Network.Send(sb.ToString() + "\n\r", state);
             }
 
-            Network.Send(sb.ToString(), state);
+
         }
 
         public static void DoSpawn(int mobID, int roomID, int connID)

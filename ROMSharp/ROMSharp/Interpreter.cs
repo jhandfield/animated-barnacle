@@ -137,7 +137,7 @@ namespace ROMSharp
                     break;
 
                 case "look":
-                    Commands.DoLook(state.ID);
+                    Commands.DoLook(state.ID, commandArr);
                     break;
 
                 case "spawn":

@@ -488,7 +488,8 @@ namespace ROMSharp.Models
             // Protection from Good
             if (AffectedBy.HasFlag(AffectedByFlag.ProtectGood))
             {
-                SkillType skill = Consts.Skills.SkillTable.Single(s => s.Name.ToLower().Equals("protection good"))
+                SkillType skill = Consts.Skills.SkillTable.Single(s => s.Name.ToLower().Equals("protection good"));
+
                 AffectData affect = new AffectData()
                 {
                     Where = ToWhere.Affects,
