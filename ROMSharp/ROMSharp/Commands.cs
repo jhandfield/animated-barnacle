@@ -98,6 +98,105 @@ namespace ROMSharp
             return sb.ToString();
         }
 
+        public static void DoLoad(int connID, string[] args)
+        {
+            Network.ClientConnection state;
+            state = Network.ClientConnections.Single(c => c.ID == connID);
+
+            if (args.Length < 3)
+            {
+                // Invalid, we need at least 3 arguments
+                Network.Send("Syntax:\n\r  load mob <vnum>\n\r  load obj <vnum> <level>\n\r", state);
+                return;
+            }
+            else
+            {
+                switch (args[1].ToLower().Trim())
+                {
+                    case "obj":
+                        int objVNUM, objLevel;
+
+                        // Need 4 args for this
+                        if (args.Length != 4)
+                        {
+                            Network.Send("Syntax:\n\r  load mob <vnum>\n\r  load obj <vnum> <level>\n\r", state);
+                            return;
+                        }
+
+                        // VNUM must be numeric
+                        if (!Int32.TryParse(args[2], out objVNUM))
+                        {
+                            Network.Send("Syntax: load obj <vnum:int> <level:int>\n\r", state);
+                            return;
+                        }
+
+                        // Level must be numeric and between 0 and the player's level
+                        if (!Int32.TryParse(args[3], out objLevel))
+                        {
+                            Network.Send("Syntax: load obj <vnum:int> <level:int>\n\r", state);
+                            return;
+                        }
+                        else
+                        {
+                            // Level needs to be between 0 and the player's trust level 9using player level for now)
+                            // TODO: Switch to using trust level
+                            if (objLevel < 0 || objLevel > state.PlayerCharacter.Level)
+                            {
+                                Network.Send("Level must be between 0 and your level.\n\r", state);
+                                return;
+                            }
+                        }
+
+                        // Object VNUM must exist
+                        if (Program.World.Objects[objVNUM] == null)
+                        {
+                            Network.Send("No object has that VNUM.\n\r", state);
+                            return;
+                        }
+
+                        // Go ahead and instantiate the object
+                        Models.ObjectData newObj = new Models.ObjectData(Program.World.Objects[objVNUM]);
+
+                        // Give it to the character
+                        state.PlayerCharacter.Inventory.Add(newObj);
+
+                        // Send feedback
+                        Network.Send("Ok.\n\r\n\r", state);
+
+                        break;
+                    default:
+                        Network.Send("Syntax:\n\r  load mob <vnum>\n\r  load obj <vnum> <level>\n\r", state);
+                        break;
+                }
+            }
+        }
+
+        public static void DoInventory(int connID)
+        {
+            Network.ClientConnection state;
+
+            // Get the client state
+            state = Network.ClientConnections.Single(c => c.ID == connID);
+
+            StringBuilder sb = new StringBuilder();
+            sb.Append("You are carrying:\n\r");
+
+            if (state.PlayerCharacter.Inventory.Count == 0)
+            {
+                sb.Append("Nothing.\n\r");
+            }
+            else
+            {
+                foreach(Models.ObjectData obj in state.PlayerCharacter.Inventory)
+                {
+                    sb.Append(obj.ShortDescription + "\n\r");
+                }
+            }
+
+            // Send output
+            Network.Send(sb.ToString() + "\n\r", state);
+        }
+
         /// <summary>
         /// Describes the room, its contents, and the people in it to the player. Not fully implemented.
         /// </summary>

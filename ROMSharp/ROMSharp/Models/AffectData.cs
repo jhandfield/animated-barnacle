@@ -11,7 +11,7 @@ namespace ROMSharp.Models
         public int Duration { get; set; }
         public Enums.ApplyType Location { get; set; }
         public int Modifier { get; set; }
-        public Enum BitVector { get; set; }
+        public Enums.AffectedByFlag BitVector { get; set; }
         #endregion
 
         public AffectData()

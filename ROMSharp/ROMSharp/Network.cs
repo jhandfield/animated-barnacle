@@ -115,6 +115,7 @@ namespace ROMSharp
 
                 PlayerCharacter = new Models.PlayerCharacterData();
                 PlayerCharacter.InRoom = Program.World.Rooms[3001];
+                PlayerCharacter.Level = 60;
 			}
 			#endregion
 

@@ -144,6 +144,15 @@ namespace ROMSharp
                     Commands.DoSpawn(Convert.ToInt32(commandArr[1]), Convert.ToInt32(commandArr[2]), state.ID);
                     break;
 
+                case "load":
+                    Commands.DoLoad(state.ID, commandArr);
+                    break;
+
+                case "inv":
+                case "inventory":
+                    Commands.DoInventory(state.ID);
+                    break;
+
                 // Unknown command
                 default:
                     Commands.UnknownCommand(state.ID, command);

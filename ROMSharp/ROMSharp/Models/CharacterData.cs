@@ -4,10 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 namespace ROMSharp.Models
 {
-    public class MobileBase 
-    {
-        
-    }
     /// <summary>
     /// Represents a character (player or non-player) within the game
     /// </summary>
@@ -302,6 +298,7 @@ namespace ROMSharp.Models
             Damage = new DiceRoll();
             Affects = new List<AffectData>();
             Equipment = new WearSlots();
+            Inventory = new List<ObjectData>();
 
             // Set default stats
             //for (int i = 0; i < PermanentStats.Length; i++)
