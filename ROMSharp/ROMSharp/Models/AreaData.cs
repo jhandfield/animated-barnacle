@@ -103,6 +103,24 @@ namespace ROMSharp.Models
                                 // Instantiate a new mob
                                 Models.CharacterData newMob = new Models.CharacterData(mobProto);
 
+                                // Check for any nested resets for the mob
+                                foreach(ResetData innerReset in mobReset.Inner)
+                                {
+                                    switch(innerReset.Command)
+                                    {
+                                        case ResetCommand.EquipObjectOnMob:
+                                            // Reload this reset as an EquipReset
+                                            EquipResetData equipReset = new EquipResetData(innerReset);
+
+                                            // Instantiate the object
+                                            Models.ObjectData mobObj = new ObjectData(equipReset.Object);
+
+                                            // Give to the mob (TODO: Equip the item, not give)
+                                            newMob.Inventory.Add(mobObj);
+                                            break;
+                                    }
+                                }
+
                                 // Place the mob into the room
                                 mobReset.Room.Characters.Add(newMob);
                             }

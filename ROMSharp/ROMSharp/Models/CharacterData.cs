@@ -308,7 +308,7 @@ namespace ROMSharp.Models
             //}
         }
 
-        public CharacterData(MobPrototypeData prototype)
+        public CharacterData(MobPrototypeData prototype) : this()
         {
             // Simple assignments
             Name = prototype.Name;

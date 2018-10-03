@@ -77,21 +77,31 @@ namespace ROMSharp
                 percent = -1;
 
             if (percent >= 100)
-                sb.Append(String.Format("{0} is in excellent condition", victim.Name));
+                sb.Append(String.Format("{0} is in excellent condition.\n\r", victim.Name));
             else if (percent >= 90)
-                sb.Append(String.Format("{0} has a few scratches.", victim.Name));
+                sb.Append(String.Format("{0} has a few scratches.\n\r", victim.Name));
             else if (percent >= 75)
-                sb.Append(String.Format("{0} has some small wounds and bruises.", victim.Name));
+                sb.Append(String.Format("{0} has some small wounds and bruises.\n\r", victim.Name));
             else if (percent >= 50)
-                sb.Append(String.Format("{0} has quite a few wounds.", victim.Name));
+                sb.Append(String.Format("{0} has quite a few wounds.\n\r", victim.Name));
             else if (percent >= 30)
-                sb.Append(String.Format("{0} has some big nasty wounds and scratches.", victim.Name));
+                sb.Append(String.Format("{0} has some big nasty wounds and scratches.\n\r", victim.Name));
             else if (percent >= 15)
-                sb.Append(String.Format("{0} looks pretty hurt.", victim.Name));
+                sb.Append(String.Format("{0} looks pretty hurt.\n\r", victim.Name));
             else if (percent >= 0)
-                sb.Append(String.Format("{0} is in awful condition.", victim.Name));
+                sb.Append(String.Format("{0} is in awful condition.\n\r", victim.Name));
             else
-                sb.Append(String.Format("{0} is bleeding to death.", victim.Name));
+                sb.Append(String.Format("{0} is bleeding to death.\n\r", victim.Name));
+
+            sb.Append("\n\r");
+
+            // Peek at the inventory - TODO: Only do this when we're supposed to
+            sb.Append("You peek at the inventory:\n\r");
+
+            foreach(Models.ObjectData obj in victim.Inventory)
+            {
+                sb.Append(obj.ShortDescription + "\n\r");
+            }
 
             // This function ultimately needs to call Network.Send() itself, but we don't have a version
             //   that doesn't set up a new callback yet.
