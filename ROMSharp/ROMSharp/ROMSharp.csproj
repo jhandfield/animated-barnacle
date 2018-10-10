@@ -147,11 +147,13 @@
     <Compile Include="Consts\GameParameters.cs" />
     <Compile Include="Models\Stats.cs" />
     <Compile Include="Helpers\LowerOf.cs" />
-    <Compile Include="Models\WearSlots.cs" />
+    <Compile Include="Models\EquipSlots.cs" />
     <Compile Include="Models\AttributeBonus\StrengthBonus.cs" />
     <Compile Include="Consts\AttributeBonuses.cs" />
     <Compile Include="Helpers\URange.cs" />
     <Compile Include="UnitTests\MobTests.cs" />
+    <Compile Include="Consts\Lookups.cs" />
+    <Compile Include="Enums\EquipSlot.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -5,8 +5,6 @@ namespace ROMSharp.Models
     public class ObjectData : ObjectPrototypeData
     {
         #region Properties
-        public int VNUM { get; set; }
-
         /// <summary>
         /// List of objects contained within this object
         /// </summary>
@@ -34,9 +32,16 @@ namespace ROMSharp.Models
 
         public RoomIndexData InRoom { get; set; }
 
+        public ObjectData InObject { get; set; }
+
         public bool Enchanted { get; set; }
 
         public int Timer { get; set; }
+
+        /// <summary>
+        /// The multiplier for the weight of objects contained within, in percentage; typically 100%, but containers can override
+        /// </summary>
+        public int WeightMultiplier { get { return (this.ObjectType == Enums.ItemClass.Container) ? (int)this.Values[4] : 100; } }
 
         /// <summary>
         /// Effects inherent in this obejct
@@ -55,12 +60,12 @@ namespace ROMSharp.Models
         #endregion
 
         #region Constructors
-        public ObjectData() : base()
+        public ObjectData()
         {
             Contains = new List<ObjectData>();
-
         }
-        public ObjectData(ObjectPrototypeData proto) : base()
+
+        public ObjectData(ObjectPrototypeData proto) : this()
         {
             Level = proto.Level;
             Name = proto.Name;
@@ -86,6 +91,62 @@ namespace ROMSharp.Models
         }
         #endregion
         #region Methods
+        public void GiveTo(CharacterData ch)
+        {
+            CarriedBy = ch;
+            InRoom = null;
+            InObject = null;
+            ch.CarryNumber = GetObjectNumber();
+            ch.CarryWeight = GetObjectWeight();
+
+            ch.Inventory.Add(this);
+        }
+
+        /// <summary>
+        /// Returns the true weight of an object, ignoring any container multipliers
+        /// </summary>
+        protected int GetTrueObjectWeight()
+        {
+            return GetObjectWeight(true);
+        }
+
+        /// <summary>
+        /// Determine the weight of the object
+        /// </summary>
+        /// <returns>The weight of the object, plus any objects it contains.</returns>
+        protected int GetObjectWeight(bool ignoreMultiplier = false)
+        {
+            // Base weight is the weight of the object
+            int weight = this.Weight;
+
+            // Add weight of any objects contained within
+            foreach (ObjectData containedObj in this.Contains)
+                if (ignoreMultiplier)
+                    weight += containedObj.GetObjectWeight();
+                else
+                    weight += containedObj.GetObjectWeight() * this.WeightMultiplier;
+
+            // Return the calculated weight
+            return weight;
+        }
+
+        // Return the number of objects this object counts as - most count as 1, plus any objects they contain
+        protected int GetObjectNumber()
+        {
+            int number = 0;
+
+            // Most objects count as 1
+            if (ObjectType != Enums.ItemClass.Container || ObjectType != Enums.ItemClass.Money || ObjectType != Enums.ItemClass.Jewelry || ObjectType != Enums.ItemClass.Gem)
+                number = 1;
+
+            // Add any objects this object contains
+            foreach(ObjectData obj in Contains)
+                number += obj.GetObjectNumber();
+
+            // Return the number
+            return number;
+        }
+
         public void ApplyAffect(AffectData aff)
         {
             // Add the affect to the object

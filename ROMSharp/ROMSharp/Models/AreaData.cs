@@ -115,8 +115,17 @@ namespace ROMSharp.Models
                                             // Instantiate the object
                                             Models.ObjectData mobObj = new ObjectData(equipReset.Object);
 
+                                            // Check that the level of the item is appropriate for the mob
+                                            if (mobObj.Level > newMob.Level + 3 || (mobObj.ObjectType == Enums.ItemClass.Weapon && mobObj.Level < newMob.Level - 5 && mobObj.Level < 45))
+                                            {
+                                                Logging.Log.Error(String.Format("Level mismatch equipping mob {0} ({1}) lv{2} with object {3} ({4}) lv{5}", newMob.ShortDescription, newMob.Prototype.VNUM, newMob.Level, mobObj.ShortDescription, mobObj.VNUM, mobObj.Level));
+                                                break;
+                                            }
+
                                             // Give to the mob (TODO: Equip the item, not give)
-                                            newMob.Inventory.Add(mobObj);
+                                            mobObj.GiveTo(newMob);
+                                            newMob.EquipObject(mobObj, equipReset.Slot);
+
                                             break;
                                     }
                                 }

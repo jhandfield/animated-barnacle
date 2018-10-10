@@ -100,7 +100,7 @@ namespace ROMSharp.Models
         /// <summary>
         /// Objects the character is wearing / holding
         /// </summary>
-        public WearSlots Equipment { get; set; }
+        public EquipSlots Equipment { get; set; }
 
         /// <summary>
         /// Room the character is currently in
@@ -282,6 +282,11 @@ namespace ROMSharp.Models
         public Position StartPosition { get; set; }
         public Position DefaultPosition { get; set; }
 
+        /// <summary>
+        /// Prototype from which this character was created, if applicable
+        /// </summary>
+        public MobPrototypeData Prototype { get; set; }
+
         public CharacterData() {
             Lines = Consts.GameParameters.Defaults.PageLength;
             Armor = new ArmorRating(Consts.GameParameters.Defaults.ArmorRating);
@@ -297,7 +302,7 @@ namespace ROMSharp.Models
             Logon = DateTime.Now;
             Damage = new DiceRoll();
             Affects = new List<AffectData>();
-            Equipment = new WearSlots();
+            Equipment = new EquipSlots();
             Inventory = new List<ObjectData>();
 
             // Set default stats
@@ -311,6 +316,7 @@ namespace ROMSharp.Models
         public CharacterData(MobPrototypeData prototype) : this()
         {
             // Simple assignments
+            Prototype = prototype;
             Name = prototype.Name;
             ShortDescription = prototype.ShortDescription;
             LongDescription = prototype.LongDescription;
@@ -666,6 +672,24 @@ namespace ROMSharp.Models
 
             // Run the mob's stats and max through URange for the answer
             return Helpers.Miscellaneous.URange(3, PermanentStats[(int)stat] + ModifiedStats[(int)stat], max);
+        }
+
+        public void EquipObject(ObjectData obj, EquipSlot slot)
+        {
+            // TODO: Is the character already wearing this item?
+
+            // TODO: Is the item anti-good|neutral|evil and can't be worn by this character?
+
+            // TODO: Adjust character AC for the new object
+
+            // TODO: Wear the object
+            this.Equipment[slot] = obj;
+
+            // TODO: Apply effects of the object prototype to char
+
+            // TODO: Apply effects of the object instance to char
+
+            // TODO: Update luminence of the room
         }
     }
 }

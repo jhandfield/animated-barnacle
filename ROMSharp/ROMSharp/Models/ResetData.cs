@@ -52,7 +52,7 @@ namespace ROMSharp.Models
 
         public int Limit { get { return this.Arg2; } }
 
-        public Enums.WearFlag WearLocation { get { return (Enums.WearFlag)this.Arg3; } }
+        public Enums.EquipSlot Slot { get { return (Enums.EquipSlot)this.Arg3; } }
         #endregion
 
         #region Constructors

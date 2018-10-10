@@ -95,6 +95,22 @@ namespace ROMSharp
 
             sb.Append("\n\r");
 
+            // Check if the victim has anything equipped
+            if (!victim.Equipment.IsNaked)
+            {
+                sb.Append(String.Format("{0} is using:\n\r", victim.Name));
+
+                for (int i = 0; i < Models.EquipSlots.MaxValue; i++)
+                {
+                    // List the equipment
+                    if (victim.Equipment[i] != null)
+                        sb.Append(String.Format("{0}{1}\n\r", Consts.Lookups.EquipSlotNames[(Enums.EquipSlot)i], victim.Equipment[i].ShortDescription));
+                }
+
+                // Final line break
+                sb.Append("\n\r");
+            }
+
             // Peek at the inventory - TODO: Only do this when we're supposed to
             sb.Append("You peek at the inventory:\n\r");
 
