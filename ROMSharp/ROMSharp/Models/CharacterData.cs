@@ -12,6 +12,12 @@ namespace ROMSharp.Models
         private Func<CharacterData, bool> _specialFunction;
         private RoomIndexData _inRoom;
 
+        #region Facts
+        public bool IsAffected(Enums.AffectedByFlag aff)
+        {
+            return this.Affects.Exists(a => a.BitVector.HasFlag(aff));
+        }
+
         /// <summary>
         /// Indicates whether the character is a PC
         /// </summary>
@@ -23,6 +29,7 @@ namespace ROMSharp.Models
         /// </summary>
         /// <value><c>true</c> if is NPC; otherwise, <c>false</c>.</value>
         public bool IsNPC { get { return !IsPC; } }
+        #endregion
 
         /// <summary>
         /// The master of a charmed character
@@ -684,6 +691,9 @@ namespace ROMSharp.Models
 
             // TODO: Wear the object
             this.Equipment[slot] = obj;
+
+            // Remove the object from inventory
+            this.Inventory.Remove(obj);
 
             // TODO: Apply effects of the object prototype to char
 

@@ -104,7 +104,7 @@ namespace ROMSharp
                 {
                     // List the equipment
                     if (victim.Equipment[i] != null)
-                        sb.Append(String.Format("{0}{1}\n\r", Consts.Lookups.EquipSlotNames[(Enums.EquipSlot)i], victim.Equipment[i].ShortDescription));
+                        sb.Append(String.Format("{0}{1}\n\r", Consts.Lookups.EquipSlotNames[(Enums.EquipSlot)i], victim.Equipment[i].FormatObjToChar(character, true)));
                 }
 
                 // Final line break
@@ -116,7 +116,7 @@ namespace ROMSharp
 
             foreach(Models.ObjectData obj in victim.Inventory)
             {
-                sb.Append(obj.ShortDescription + "\n\r");
+                sb.Append(obj.FormatObjToChar(character, true) + "\n\r");
             }
 
             // This function ultimately needs to call Network.Send() itself, but we don't have a version

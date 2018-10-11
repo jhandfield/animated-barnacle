@@ -1,8 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using ROMSharp.Enums;
+using ROMSharp.Models;
 
 namespace ROMSharp.Models
 {
-    public class ObjectData : ObjectPrototypeData
+    public class ObjectData
     {
         #region Properties
         /// <summary>
@@ -25,11 +29,6 @@ namespace ROMSharp.Models
         /// </summary>
         public CharacterData CarriedBy { get; set; }
 
-        /// <summary>
-        /// Extra descriptions for this object
-        /// </summary>
-        public ExtraDescription ExtraDescription { get; set; }
-
         public RoomIndexData InRoom { get; set; }
 
         public ObjectData InObject { get; set; }
@@ -44,25 +43,123 @@ namespace ROMSharp.Models
         public int WeightMultiplier { get { return (this.ObjectType == Enums.ItemClass.Container) ? (int)this.Values[4] : 100; } }
 
         /// <summary>
-        /// Effects inherent in this obejct
+        /// Extra descriptions for the object
         /// </summary>
-        //public AffectData Affected { get; set; }
+        public List<ExtraDescription> ExtraDescriptions { get; set; }
+
+        /// <summary>
+        /// Effects provided by the object
+        /// </summary>
+        public List<AffectData> Affected { get; set; }
+
+        /// <summary>
+        /// Whether the object definition is in the new format?
+        /// </summary>
+        /// <remarks>Is this needed still?</remarks>
+        /// <value><c>true</c> if new format; otherwise, <c>false</c>.</value>
+        public bool NewFormat { get; set; }
 
         /// <summary>
         /// Name of the object
         /// </summary>
-        //public string Name { get; set; }
+        public string Name { get; set; }
+
+        /// <summary>
+        /// Short description of the object
+        /// </summary>
+        public string ShortDescription { get; set; }
+
+        /// <summary>
+        /// Long description of the object
+        /// </summary>
+        public string Description { get; set; }
+
+        /// <summary>
+        /// VNUM of the object
+        /// </summary>
+        public int VNUM { get; set; }
+
+        /// <summary>
+        /// Reset number of the object
+        /// </summary>
+        public int ResetNum { get; set; }
+
+        /// <summary>
+        /// Material of the object
+        /// </summary>
+        public string Material { get; set; }
+
+        /// <summary>
+        /// Type of the object
+        /// </summary>
+        public ItemClass ObjectType { get; set; }
+
+        /// <summary>
+        /// Extra flags to describe the object
+        /// </summary>
+        public ItemExtraFlag ExtraFlags { get; set; }
+
+        /// <summary>
+        /// Wear flags of the object, describing how it is worn
+        /// </summary>
+        public WearFlag WearFlags { get; set; }
+
+        /// <summary>
+        /// Level of the object
+        /// </summary>
+        public int Level { get; set; }
+
+        /// <summary>
+        /// Condition of the object
+        /// </summary>
+        public int Condition { get; set; }
+
+        /// <summary>
+        /// ???
+        /// </summary>
+        public int Count { get; set; }
 
         /// <summary>
         /// Weight of the object
         /// </summary>
-        //public int Weight { get; set; }
+        public int Weight { get; set; }
+
+        /// <summary>
+        /// Cost/value of the object
+        /// </summary>
+        public int Cost { get; set; }
+
+        /// <summary>
+        /// Additional values for the object, dependent on the <seealso cref="ObjectType"/>
+        /// </summary>
+        /// <remarks>
+        /// This is probably the first place I'm diverging from the stock ROM
+        /// 2.4 source code in a significant way. In the original source, there
+        /// are cases where this array will contain integer representations of
+        /// things like weapon types (sword, dagger, etc.) which are stored as
+        /// the array index of the matching row. This is 2018, there's simpler
+        /// ways to handle this now, so Values is an array of objects and we'll
+        /// just know what to convert them to inherently based on other factors
+        /// when the time to read them comes. Deal with it.
+        /// </remarks>
+        public object[] Values { get; set; }
+
+        public ObjectPrototypeData Prototype { get; set; }
+
+        #region Facts
+        public bool IsAffected(Enums.ItemExtraFlag aff)
+        {
+            return this.ExtraFlags.HasFlag(aff);
+        }
+        #endregion
         #endregion
 
         #region Constructors
         public ObjectData()
         {
             Contains = new List<ObjectData>();
+            ExtraDescriptions = new List<ExtraDescription>();
+            Affected = new List<AffectData>();
         }
 
         public ObjectData(ObjectPrototypeData proto) : this()
@@ -78,6 +175,7 @@ namespace ROMSharp.Models
             Values = proto.Values;
             Weight = proto.Weight;
             Cost = proto.Cost;
+            Prototype = proto;
 
             if (ObjectType == Enums.ItemClass.Light && (int)Values[2] == 999)
                 Values[2] = -1;
@@ -86,7 +184,6 @@ namespace ROMSharp.Models
             {
                 if (aff.Location == Enums.ApplyType.SpellAffect)
                     ApplyAffect(aff);
-
             }
         }
         #endregion
@@ -168,6 +265,39 @@ namespace ROMSharp.Models
                         break;
                 }
             }
+        }
+
+        public string FormatObjToChar(CharacterData ch, bool shortVersion)
+        {
+            if ((shortVersion && String.IsNullOrWhiteSpace(this.ShortDescription)) || String.IsNullOrWhiteSpace(this.Description))
+                return String.Empty;
+
+            StringBuilder sb = new StringBuilder();
+
+            if (this.IsAffected(ItemExtraFlag.Invis))
+                sb.Append("(Invis) ");
+
+            if (ch.IsAffected(AffectedByFlag.DetectEvil) && this.IsAffected(ItemExtraFlag.Evil))
+                sb.Append("(Red Aura) ");
+
+            if (ch.IsAffected(AffectedByFlag.DetectGood) && this.IsAffected(ItemExtraFlag.Bless))
+                sb.Append("(Blue Aura)");
+
+            if (ch.IsAffected(AffectedByFlag.DetectMagic) && this.IsAffected(ItemExtraFlag.Magic))
+                sb.Append("(Magical) ");
+
+            if (this.IsAffected(ItemExtraFlag.Glow))
+                sb.Append("(Glowing) ");
+
+            if (this.IsAffected(ItemExtraFlag.Hum))
+                sb.Append("(Humming) ");
+
+            if (shortVersion)
+                sb.Append(this.ShortDescription);
+            else
+                sb.Append(this.Description);
+
+            return sb.ToString();
         }
         #endregion
     }
