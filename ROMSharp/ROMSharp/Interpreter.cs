@@ -124,6 +124,10 @@ namespace ROMSharp
                     Commands.DoServerStats(state.ID);
                     break;
 
+                case "goto":
+                    Commands.DoGoto(state.ID, commandArr[1]);
+                    break;
+
                 case "stat":
                     switch (commandArr[1])
                     {

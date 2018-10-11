@@ -113,12 +113,12 @@ namespace ROMSharp.Models
                                             EquipResetData equipReset = new EquipResetData(innerReset);
 
                                             // Instantiate the object
-                                            Models.ObjectData mobObj = new ObjectData(equipReset.Object);
+                                            Models.ObjectData mobObj = new ObjectData(equipReset.Object, newMob.Level - 2);
 
                                             // Check that the level of the item is appropriate for the mob
                                             if (mobObj.Level > newMob.Level + 3 || (mobObj.ObjectType == Enums.ItemClass.Weapon && mobObj.Level < newMob.Level - 5 && mobObj.Level < 45))
                                             {
-                                                Logging.Log.Error(String.Format("Level mismatch equipping mob {0} ({1}) lv{2} with object {3} ({4}) lv{5}", newMob.ShortDescription, newMob.Prototype.VNUM, newMob.Level, mobObj.ShortDescription, mobObj.VNUM, mobObj.Level));
+                                                Logging.Log.Error(String.Format("Level mismatch equipping mob {0} ({1}) lv{2} with object {3} ({4}) lv{5}", newMob.ShortDescription, newMob.Prototype.VNUM, newMob.Level, mobObj.ShortDescription, mobObj.Prototype.VNUM, mobObj.Level));
                                                 break;
                                             }
 

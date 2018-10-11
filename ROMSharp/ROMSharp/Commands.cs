@@ -124,6 +124,20 @@ namespace ROMSharp
             return sb.ToString();
         }
 
+        public static void DoGoto(int connID, string dest)
+        {
+            Network.ClientConnection state;
+            state = Network.ClientConnections.Single(c => c.ID == connID);
+
+            if (Int32.TryParse(dest, out int roomID) && Program.World.Rooms[roomID] != null)
+            {
+                state.PlayerCharacter.InRoom = Program.World.Rooms[roomID];
+                Network.Send("Ok.\n\r\n\r", state);
+            }
+            else
+                Network.Send("Syntax: goto [room VNUM]\n\r\n\r", state);
+        }
+
         public static void DoLoad(int connID, string[] args)
         {
             Network.ClientConnection state;

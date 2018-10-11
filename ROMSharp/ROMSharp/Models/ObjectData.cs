@@ -162,6 +162,11 @@ namespace ROMSharp.Models
             Affected = new List<AffectData>();
         }
 
+        public ObjectData(ObjectPrototypeData proto, int level) : this(proto)
+        {
+            Level = (level > 0) ? level : 0;
+        }
+
         public ObjectData(ObjectPrototypeData proto) : this()
         {
             Level = proto.Level;
