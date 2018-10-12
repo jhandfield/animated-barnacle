@@ -43,6 +43,28 @@ namespace ROMSharp.Models
         #endregion
     }
 
+    public class GiveResetData : ResetData
+    {
+        #region Properties
+        public MobPrototypeData Mobile { get { return Program.World.Mobs[this.Arg4]; } }
+        public ObjectPrototypeData Object { get { return Program.World.Objects[this.Arg1]; } }
+        public int Limit { get { return this.Arg2; } }
+        #endregion
+
+        #region Constructors
+        public GiveResetData() : base() { }
+        public GiveResetData(ResetData data) : base()
+        {
+            this.Arg1 = data.Arg1;
+            this.Arg2 = data.Arg2;
+            this.Arg3 = data.Arg3;
+            this.Arg4 = data.Arg4;
+            this.Command = data.Command;
+            this.Inner = data.Inner;
+        }
+        #endregion
+    }
+
     public class EquipResetData : ResetData
     {
         #region Properties
@@ -56,8 +78,8 @@ namespace ROMSharp.Models
         #endregion
 
         #region Constructors
-        public EquipResetData() { this.Inner = new List<ResetData>(); }
-        public EquipResetData(ResetData data)
+        public EquipResetData() : base() { }
+        public EquipResetData(ResetData data) : base()
         {
             this.Arg1 = data.Arg1;
             this.Arg2 = data.Arg2;
@@ -186,12 +208,34 @@ namespace ROMSharp.Models
 
                         return outReset;
 
-                    case "O":
-                        // Object reset
-                        return null;
-
                     case "G":
                         // Give reset
+                        outReset.Command = ResetCommand.GiveObjectToMob;
+
+                        // Ensure we have a mob
+                        if (lastMob == null || lastMob.Command != ResetCommand.SpawnMobile)
+                        {
+                            Logging.Log.Error(String.Format("Encountered give reset command in an invalid location, no previous mob to apply to - line {0} of area {1}", lineNum, areaFile));
+                            return null;
+                        }
+
+                        // Validate the object VNUM
+                        if (!Program.World.Objects.Exists(o => o.VNUM == outReset.Arg1))
+                        {
+                            Logging.Log.Error(String.Format("Encountered unknown object VNUM {0} in equip reset data on line {1} of area {2}", outReset.Arg1, lineNum, areaFile));
+                            return null;
+                        }
+
+                        // Reset Arg2 based on the old limit rules
+                        if (outReset.Arg2 > 50) outReset.Arg2 = 6;
+                        else if (outReset.Arg2 == -1) outReset.Arg2 = 999;
+
+                        Logging.Log.Debug(String.Format("Loaded give reset for mobile {0} with item {1} with limit of {2} on line {3} of area {4}", outReset.Arg4, outReset.Arg1, outReset.Arg2, lineNum, areaFile));
+
+                        return outReset;
+
+                    case "O":
+                        // Object reset
                         return null;
 
                     case "P":

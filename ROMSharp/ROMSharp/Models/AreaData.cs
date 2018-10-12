@@ -106,6 +106,8 @@ namespace ROMSharp.Models
                                 // Check for any nested resets for the mob
                                 foreach(ResetData innerReset in mobReset.Inner)
                                 {
+                                    Models.ObjectData mobObj = null;
+
                                     switch(innerReset.Command)
                                     {
                                         case ResetCommand.EquipObjectOnMob:
@@ -113,7 +115,7 @@ namespace ROMSharp.Models
                                             EquipResetData equipReset = new EquipResetData(innerReset);
 
                                             // Instantiate the object
-                                            Models.ObjectData mobObj = new ObjectData(equipReset.Object, newMob.Level - 2);
+                                            mobObj = new ObjectData(equipReset.Object, newMob.Level - 2);
 
                                             // Check that the level of the item is appropriate for the mob
                                             if (mobObj.Level > newMob.Level + 3 || (mobObj.ObjectType == Enums.ItemClass.Weapon && mobObj.Level < newMob.Level - 5 && mobObj.Level < 45))
@@ -122,9 +124,27 @@ namespace ROMSharp.Models
                                                 break;
                                             }
 
-                                            // Give to the mob (TODO: Equip the item, not give)
+                                            // Give to the mob
                                             mobObj.GiveTo(newMob);
                                             newMob.EquipObject(mobObj, equipReset.Slot);
+
+                                            break;
+                                        case ResetCommand.GiveObjectToMob:
+                                            // Reload this reset as 
+                                            GiveResetData giveReset = new GiveResetData(innerReset);
+
+                                            // Instantiate the object
+                                            mobObj = new ObjectData(giveReset.Object, newMob.Level - 2);
+
+                                            // Check that the level of the item is appropriate for the mob
+                                            if (mobObj.Level > newMob.Level + 3 || (mobObj.ObjectType == Enums.ItemClass.Weapon && mobObj.Level < newMob.Level - 5 && mobObj.Level < 45))
+                                            {
+                                                Logging.Log.Error(String.Format("Level mismatch giving object {0} ({1}) lv{2} to mob {3} ({4}) lv{5}", mobObj.ShortDescription, mobObj.Prototype.VNUM, mobObj.Level, newMob.ShortDescription, newMob.Prototype.VNUM, newMob.Level));
+                                                break;
+                                            }
+
+                                            // Give to the mob
+                                            mobObj.GiveTo(newMob);
 
                                             break;
                                     }

@@ -75,11 +75,6 @@ namespace ROMSharp.Models
         public string Description { get; set; }
 
         /// <summary>
-        /// VNUM of the object
-        /// </summary>
-        public int VNUM { get; set; }
-
-        /// <summary>
         /// Reset number of the object
         /// </summary>
         public int ResetNum { get; set; }
