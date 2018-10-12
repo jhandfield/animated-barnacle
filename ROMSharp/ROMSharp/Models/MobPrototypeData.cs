@@ -7,7 +7,7 @@ using ROMSharp.Helpers;
 
 namespace ROMSharp.Models
 {
-    public class MobData
+    public class MobPrototypeData
     {
         #region Properties
         public int VNUM { get; set; }
@@ -122,10 +122,15 @@ namespace ROMSharp.Models
         /// </summary>
         public string Material { get; set; }
 
+        /// <summary>
+        /// A special function that the mobile can invoke
+        /// </summary>
+        public Func<CharacterData, bool> SpecialFunction { get; set;  }
+
         #endregion
 
         #region Constructors
-        public MobData()
+        public MobPrototypeData()
         {
             Actions = new ActionFlag();
             AffectedBy = new AffectedByFlag();
@@ -139,12 +144,12 @@ namespace ROMSharp.Models
             Vulnerability = new VulnerabilityFlag();
         }
 
-        internal static MobData ParseMobData(ref StringReader sr, string areaFile, ref int lineNum, string firstLine)
+        internal static MobPrototypeData ParseMobData(ref StringReader sr, string areaFile, ref int lineNum, string firstLine)
         {
             Logging.Log.Debug(String.Format("ParseMobData() called for area {0} starting on line {1}", areaFile, lineNum));
 
             // Instantiate variables for the method
-            MobData outMob = new MobData();
+            MobPrototypeData outMob = new MobPrototypeData();
             string lineData = firstLine;
 
             // First, pull the VNUM, then set it if it's valid
@@ -237,7 +242,7 @@ namespace ROMSharp.Models
                 return null;
             }
             else
-                outMob.Alignment = Convert.ToInt32(splitLine[3]);
+                outMob.Group = Convert.ToInt32(splitLine[3]);
 
             // Read the next line and split - expect six segments
             lineData = sr.ReadLine();
@@ -543,8 +548,54 @@ namespace ROMSharp.Models
 
             return outMob;
         }
-        #endregion
-    }
+
+        public override bool Equals(object obj)
+        {
+            MobPrototypeData other = (MobPrototypeData)obj;
+
+            return other.VNUM.Equals(other.VNUM)
+                        && other.Killed.Equals(Killed)
+                        && other.Name.Equals(Name)
+                        && other.ShortDescription.Equals(ShortDescription)
+                        && other.LongDescription.Equals(LongDescription)
+                        && other.Description.Equals(Description)
+                        && other.Race.Equals(Race)
+                        && other.Resistance.Equals(Resistance)
+                        && other.Vulnerability.Equals(Vulnerability)
+                        && other.Form.Equals(Form)
+                        && other.Parts.Equals(Parts)
+                        && other.Actions.Equals(Actions)
+                        && other.AffectedBy.Equals(AffectedBy)
+                        && other.Alignment.Equals(Alignment)
+                        && other.Group.Equals(Group)
+                        && other.Level.Equals(Level)
+                        && other.HitRoll.Equals(HitRoll)
+                        && other.Health.Equals(Health)
+                        && other.Mana.Equals(Mana)
+                        && other.Damage.Equals(Damage)
+                        && other.DamageType.Equals(DamageType)
+                        && other.ArmorRating.Equals(ArmorRating)
+                        && other.Offense.Equals(Offense)
+                        && other.Immunity.Equals(Immunity)
+                        && other.Resistance.Equals(Resistance)
+                        && other.StartingPosition.Equals(StartingPosition)
+                        && other.DefaultPosition.Equals(DefaultPosition)
+                        && other.Gender.Equals(Gender)
+                        && other.Wealth.Equals(Wealth)
+                        && other.Size.Equals(Size);
+        }
+
+		public override int GetHashCode()
+		{
+            return base.GetHashCode();
+		}
+
+		public override string ToString()
+		{
+            return base.ToString();
+		}
+		#endregion
+	}
 
     /// <summary>
     /// Defines a race and the attributes which make it up
@@ -582,6 +633,50 @@ namespace ROMSharp.Models
             Parts = PartFlag.None;
         }
     }
+
+    public class PCRace : Race {
+        /// <summary>
+        /// The text to appear in the Race column of the "who" command
+        /// </summary>
+        public string WhoName { get; set; }
+
+        /// <summary>
+        /// The number of points the race costs to choose on creation
+        /// </summary>
+        public int PointsCost { get; set; }
+
+        /// <summary>
+        /// Experience point multiplier for the class
+        /// </summary>
+        public int[] ClassExpMultiplier { get; set; }
+
+        /// <summary>
+        /// Bonus skills for the class
+        /// </summary>
+        public string[] Skills { get; set; }
+
+        /// <summary>
+        /// Starting stats for the race
+        /// </summary>
+        public Stats StartingStats { get; set; }
+
+        /// <summary>
+        /// Maximum stats for the race
+        /// </summary>
+        public Stats MaxStats { get; set; }
+
+        /// <summary>
+        /// Size of the race
+        /// </summary>
+        public Size Size { get; set; }
+
+        public PCRace() {
+            ClassExpMultiplier = new int[Consts.GameParameters.Maximums.Class];
+            Skills = new string[5];
+            StartingStats = new Stats();
+            MaxStats = new Stats();
+        }
+	}
 
     /// <summary>
     /// Special behaviors inherited by some mobiles

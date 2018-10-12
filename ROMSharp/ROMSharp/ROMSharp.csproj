@@ -78,7 +78,7 @@
     <Compile Include="World.cs" />
     <Compile Include="Enums\AlphaMacros.cs" />
     <Compile Include="Models\Rooms.cs" />
-    <Compile Include="Models\MobData.cs" />
+    <Compile Include="Models\MobPrototypeData.cs" />
     <Compile Include="Consts\SpecialBehaviors.cs" />
     <Compile Include="Helpers\SpecialBehaviorMethods.cs" />
     <Compile Include="Enums\ActionFlag.cs" />
@@ -139,11 +139,27 @@
     <Compile Include="Enums\ToWhere.cs" />
     <Compile Include="UnitTests\ObjectTests.cs" />
     <Compile Include="Enums\FurnitureFlag.cs" />
+    <Compile Include="Models\NoteData.cs" />
+    <Compile Include="Enums\NoteType.cs" />
+    <Compile Include="Enums\CommunicationFlag.cs" />
+    <Compile Include="Enums\WizNetFlag.cs" />
+    <Compile Include="Models\PlayerCharacterData.cs" />
+    <Compile Include="Consts\GameParameters.cs" />
+    <Compile Include="Models\Stats.cs" />
+    <Compile Include="Helpers\LowerOf.cs" />
+    <Compile Include="Models\EquipSlots.cs" />
+    <Compile Include="Models\AttributeBonus\StrengthBonus.cs" />
+    <Compile Include="Consts\AttributeBonuses.cs" />
+    <Compile Include="Helpers\URange.cs" />
+    <Compile Include="UnitTests\MobTests.cs" />
+    <Compile Include="Consts\Lookups.cs" />
+    <Compile Include="Enums\EquipSlot.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
     <None Include="areaFixes.diff" />
+    <None Include="Resets.md" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ItemGroup />
@@ -152,5 +168,6 @@
     <Folder Include="Models\" />
     <Folder Include="Helpers\" />
     <Folder Include="UnitTests\" />
+    <Folder Include="Models\AttributeBonus\" />
   </ItemGroup>
 </Project>

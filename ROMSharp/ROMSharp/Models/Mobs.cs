@@ -3,11 +3,11 @@ using System.Linq;
 
 namespace ROMSharp.Models
 {
-    public class Mobs : List<MobData>
+    public class Mobs : List<MobPrototypeData>
     {
         public Mobs() { }
 
-        public new MobData this[int key]
+        public new MobPrototypeData this[int key]
         {
             get
             {

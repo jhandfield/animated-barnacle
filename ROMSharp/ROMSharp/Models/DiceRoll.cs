@@ -6,7 +6,7 @@ namespace ROMSharp.Models
     /// <summary>
     /// Represents a potential dice roll (e.g. 1d6+3). Can also roll dice, <see cref="RollDice()"/> 
     /// </summary>
-    public class DiceRoll
+    public class DiceRoll 
     {
         #region Properties
         /// <summary>
@@ -26,7 +26,11 @@ namespace ROMSharp.Models
         #endregion
 
         #region Constructors
-        public DiceRoll() { }
+        public DiceRoll() {
+            NumDice = 0;
+            DiceType = 0;
+            Bonus = 0;
+        }
 
         /// <summary>
         /// Initialize a new DiceRoll object from the supplied string representation <paramref name="input"/>
@@ -59,16 +63,27 @@ namespace ROMSharp.Models
                     Bonus = 0;
             }
         }
-        #endregion
+		#endregion
 
-        #region Methods
-        /// <summary>
-        /// Tests that <paramref name="input"/> is a valid string representation of a dice roll
-        /// </summary>
-        /// <returns><c>true</c>, if <paramref name="input"/> is a valid dice roll string representation, <c>false</c> otherwise.</returns>
-        /// <param name="input">String to test</param>
-        /// <param name="output">Parsed dice roll, if <paramref name="input"/> is valid</param>
-        public static bool TryParse(string input, out DiceRoll output)
+		#region Methods
+		public override bool Equals(object obj)
+		{
+            DiceRoll otherObj = (DiceRoll)obj;
+            return otherObj.Bonus.Equals(Bonus) && otherObj.DiceType.Equals(DiceType) && otherObj.NumDice.Equals(NumDice);
+		}
+
+		public override string ToString()
+		{
+            return String.Format("{0}d{1}+{2}", NumDice, DiceType, Bonus);
+		}
+
+		/// <summary>
+		/// Tests that <paramref name="input"/> is a valid string representation of a dice roll
+		/// </summary>
+		/// <returns><c>true</c>, if <paramref name="input"/> is a valid dice roll string representation, <c>false</c> otherwise.</returns>
+		/// <param name="input">String to test</param>
+		/// <param name="output">Parsed dice roll, if <paramref name="input"/> is valid</param>
+		public static bool TryParse(string input, out DiceRoll output)
         {
             Regex validationRegex = new Regex(@"^(\d+)d(\d+)(\+(\d+))*$");
             output = new DiceRoll();

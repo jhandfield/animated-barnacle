@@ -13,16 +13,6 @@ namespace ROMSharp.Models
     {
         #region Properties
         /// <summary>
-        /// Contains the next area in the sequence of loading
-        /// </summary>
-        /// <remarks>Is this needed in this code? I'm not so sure.</remarks>
-        public AreaData NextArea
-        {
-            get { throw new NotImplementedException(); }
-            set { throw new NotSupportedException(); }
-        }
-
-        /// <summary>
         /// Collection of all rooms contained within this area
         /// </summary>
         public List<RoomIndexData> Rooms {
@@ -33,16 +23,10 @@ namespace ROMSharp.Models
         }
 
         /// <summary>
-        /// Used when resetting area, identifies the first object to be reset
+        /// Collection of all resets for the area
         /// </summary>
-        /// <value>The reset first.</value>
-        public ResetData ResetFirst { get; set; }
-
-        /// <summary>
-        /// Used when resetting area, identifies the last object to be reset
-        /// </summary>
-        /// <value>The reset last.</value>
-        public ResetData ResetLast { get; set; }
+        /// <value>The resets.</value>
+        public List<ResetData> Resets { get; set; }
 
         /// <summary>
         /// Filename the area was loaded from
@@ -91,12 +75,98 @@ namespace ROMSharp.Models
         #region Constructors
         public AreaData()
         {
-            this.ResetFirst = new ResetData();
-            this.ResetFirst = new ResetData();
+            Resets = new List<ResetData>();
         }
         #endregion
 
         #region Methods
+        public bool Reset()
+        {
+            Logging.Log.Debug(String.Format("Resetting area {0}", this.Name));
+
+            foreach(ResetData reset in this.Resets)
+            {
+                switch(reset.Command)
+                {
+                    case ResetCommand.SpawnMobile:
+                        Logging.Log.Debug(String.Format("Processing Mob reset for VNUM {0}", reset.Arg1));
+
+                        MobileResetData mobReset = new MobileResetData(reset);
+
+                        if (mobReset != null)
+                        {
+                            // Check that the mob is valid
+                            Models.MobPrototypeData mobProto = mobReset.Mobile;
+
+                            if (mobProto != null)
+                            {
+                                // Instantiate a new mob
+                                Models.CharacterData newMob = new Models.CharacterData(mobProto);
+
+                                // Check for any nested resets for the mob
+                                foreach(ResetData innerReset in mobReset.Inner)
+                                {
+                                    Models.ObjectData mobObj = null;
+
+                                    switch(innerReset.Command)
+                                    {
+                                        case ResetCommand.EquipObjectOnMob:
+                                            // Reload this reset as an EquipReset
+                                            EquipResetData equipReset = new EquipResetData(innerReset);
+
+                                            // Instantiate the object
+                                            mobObj = new ObjectData(equipReset.Object, newMob.Level - 2);
+
+                                            // Check that the level of the item is appropriate for the mob
+                                            if (mobObj.Level > newMob.Level + 3 || (mobObj.ObjectType == Enums.ItemClass.Weapon && mobObj.Level < newMob.Level - 5 && mobObj.Level < 45))
+                                            {
+                                                Logging.Log.Error(String.Format("Level mismatch equipping mob {0} ({1}) lv{2} with object {3} ({4}) lv{5}", newMob.ShortDescription, newMob.Prototype.VNUM, newMob.Level, mobObj.ShortDescription, mobObj.Prototype.VNUM, mobObj.Level));
+                                                break;
+                                            }
+
+                                            // Give to the mob
+                                            mobObj.GiveTo(newMob);
+                                            newMob.EquipObject(mobObj, equipReset.Slot);
+
+                                            break;
+                                        case ResetCommand.GiveObjectToMob:
+                                            // Reload this reset as 
+                                            GiveResetData giveReset = new GiveResetData(innerReset);
+
+                                            // Instantiate the object
+                                            mobObj = new ObjectData(giveReset.Object, newMob.Level - 2);
+
+                                            // Check that the level of the item is appropriate for the mob
+                                            if (mobObj.Level > newMob.Level + 3 || (mobObj.ObjectType == Enums.ItemClass.Weapon && mobObj.Level < newMob.Level - 5 && mobObj.Level < 45))
+                                            {
+                                                Logging.Log.Error(String.Format("Level mismatch giving object {0} ({1}) lv{2} to mob {3} ({4}) lv{5}", mobObj.ShortDescription, mobObj.Prototype.VNUM, mobObj.Level, newMob.ShortDescription, newMob.Prototype.VNUM, newMob.Level));
+                                                break;
+                                            }
+
+                                            // Give to the mob
+                                            mobObj.GiveTo(newMob);
+
+                                            break;
+                                    }
+                                }
+
+                                // Place the mob into the room
+                                mobReset.Room.Characters.Add(newMob);
+                            }
+                        }
+                        else
+                            Logging.Log.Error("Unable to cast reset as MobileResetData");
+
+                        break;
+                }
+            }
+
+            Logging.Log.Debug(String.Format("Area {0} reset", this.Name));
+
+            // Report success
+            return true;
+        }
+
         public static AreaData LoadFromFile(string areaPath)
         {
             // Check that the file exists
@@ -242,6 +312,7 @@ namespace ROMSharp.Models
                                 backFromError = false;
                                 errors = 0;
                                 loaded = 0;
+                                ResetData lastMob = null;
 
                                 while (readingResets)
                                 {
@@ -249,29 +320,47 @@ namespace ROMSharp.Models
                                     lineData = strRdr.ReadLine();
                                     lineNum++;
 
-                                    // If we've recently come back from failing to load a mob, we need to ignore some lines
-                                    // until we get to the start of the next mob definition
-                                    if (backFromError)
-                                        // If the line is not the section terminator but it does begin with #, it is
-                                        // (should be) a new mob definition, so un-set the backFromError flag
-                                        if (!lineData.Trim().Equals("#0") && lineData.Trim().Length > 0 && lineData.Trim()[0].Equals('#'))
-                                        {
-                                            // Un-set the backFromError flag; it's time to resume loading
-                                            backFromError = false;
-
-                                            Logging.Log.Debug(String.Format("Resuming loading of #RESETS section in area {0} on line {1} with mob {2}", areaFile, lineNum, lineData.Trim()));
-                                        }
-                                        // Otherwise, just move on to the next iteration of the loop
-                                        else
-                                            continue;
-                                    
                                     if (lineData == null)
-                                        readingResets= false;
-                                    else if (lineData.Trim().Equals("#0"))
                                         readingResets = false;
-                                    else if (!lineData.Trim().Equals("#0") && !lineData.Trim().Equals("#$") && !lineData.Trim().Equals(""))
+                                    else if (lineData.Trim().Equals("S"))
+                                        readingResets = false;
+                                    else if (!lineData.Trim().Equals("S") && !lineData.Trim().Equals("#$") && !lineData.Trim().Equals(""))
                                     {
-                                        // TODO: Implement #RESETS parsing
+                                        try
+                                        {
+                                            // Parse the reset
+                                            ResetData newReset = ResetData.ParseResetData(areaFile, ref lineNum, lineData, lastMob);
+
+                                            // Check that the reset parsed
+                                            if (newReset != null)
+                                            {
+                                                // Special handling if the new reset is an E(quip) or G(ive)
+                                                if (newReset.Command == ResetCommand.EquipObjectOnMob || newReset.Command == ResetCommand.GiveObjectToMob)
+                                                    // Nest in the mob reset it relates to
+                                                    lastMob.Inner.Add(newReset);
+                                                else
+                                                    // Otherwise, add the reset to the area
+                                                    areaOut.Resets.Add(newReset);
+
+                                                // If the reset was to spawn a M(ob), reset lastMob
+                                                if (newReset.Command == ResetCommand.SpawnMobile)
+                                                    lastMob = newReset;
+
+                                                // Finally, increment the loaded count
+                                                loaded++;
+                                            }
+                                            else
+                                            {
+                                                // Record a failed mob load, and set the indicator that we're back because of an error and should keep reading
+                                                // but do nothing until we find a new mob
+                                                errors++;
+                                                backFromError = true;
+                                            }
+                                        }
+                                        catch (ObjectParsingException ex)
+                                        {
+                                            Logging.Log.Error(String.Format("Error parsing object: {0}", ex.Message));
+                                        }
                                     }
                                 }
 
@@ -406,7 +495,7 @@ namespace ROMSharp.Models
                                         readingMobs = false;
                                     else if (!lineData.Trim().Equals("#0") && !lineData.Trim().Equals("#$") && !lineData.Trim().Equals(""))
                                     {
-                                        MobData newMob = MobData.ParseMobData(ref strRdr, areaFile, ref lineNum, lineData);
+                                        MobPrototypeData newMob = MobPrototypeData.ParseMobData(ref strRdr, areaFile, ref lineNum, lineData);
 
                                         // If we have a loaded room, add it to the world
                                         if (newMob != null)

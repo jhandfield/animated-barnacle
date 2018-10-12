@@ -78,7 +78,7 @@ namespace ROMSharp
             /// <summary>
             /// Holds the PlayerCharacter object
             /// </summary>
-            public Character PlayerCharacter { get; set; }
+            public Models.PlayerCharacterData PlayerCharacter { get; set; }
 
             /// <summary>
             /// Temporary storage for password during character creation - is erased on the first read
@@ -112,6 +112,10 @@ namespace ROMSharp
 
 				// Set TCP Keepalive properties
 				ConfigureSocketKeepalive(this.workSocket);
+
+                PlayerCharacter = new Models.PlayerCharacterData();
+                PlayerCharacter.InRoom = Program.World.Rooms[3001];
+                PlayerCharacter.Level = 60;
 			}
 			#endregion
 

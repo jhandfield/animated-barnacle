@@ -47,6 +47,20 @@ namespace ROMSharp
         public Models.Objects Objects { get; set; }
 
         /// <summary>
+        /// Calculated total count of resets across the world
+        /// </summary>
+        public int NumResets { 
+            get {
+                int total = 0;
+
+                foreach (Models.AreaData area in Areas)
+                    total += area.Resets.Count;
+
+                return total;
+            }
+        }
+
+        /// <summary>
         /// The date and time the server started
         /// </summary>
         public DateTime StartupTime { get; }
@@ -94,13 +108,21 @@ namespace ROMSharp
                         // Instantiate and load the World
                         Program.World.LoadFromDisk(Program.config.AreaDirectory);
 
-                    Logging.Log.Info(String.Format("World loaded - {0} areas consisting of {1} rooms, {2} mobs, and {3} objects", Program.World.Areas.Count, Program.World.Rooms.Count, Program.World.Mobs.Count, Program.World.Objects.Count));
+                    Logging.Log.Info(String.Format("World loaded - {0} areas consisting of {1} rooms, {2} mobs, {3} objects, and {4} resets", Program.World.Areas.Count, Program.World.Rooms.Count, Program.World.Mobs.Count, Program.World.Objects.Count, Program.World.NumResets));
 
                     //}
                     //catch (Exception e)
                     //{
                     //    Logging.Log.Fatal(String.Format("Unhandled exception caught: {0}: {1}\n{2}", e.GetType(), e.Message, e.StackTrace));
                     //}
+
+                    // Reset all areas
+                    Logging.Log.Info("Performing initial world reset...");
+
+                    foreach(Models.AreaData area in Program.World.Areas)
+                    {
+                        area.Reset();
+                    }
 
                     // Listen for connections
                     Network.StartListening(Program.config);

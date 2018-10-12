@@ -111,7 +111,8 @@ namespace ROMSharp.Enums
         /// <summary>
         /// Legacy APPLY_SAVING_PARA (20)
         /// </summary>
-        Saving_Paralyze = 20,
+        /// <remarks>We use 26 here because we can't duplicate 20</remarks>
+        Saving_Paralyze = 26,
 
         /// <summary>
         /// Legacy APPLY_SAVING_ROD (21)

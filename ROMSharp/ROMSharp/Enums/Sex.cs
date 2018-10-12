@@ -6,6 +6,7 @@ namespace ROMSharp.Enums
     {
         Neutral = 0,    // SEX_NEUTRAL
         Male = 1,       // SEX_MALE
-        Female = 2      // SEX_FEMALE
+        Female = 2,      // SEX_FEMALE
+        Random = 3      // Happens, but no macro
     }
 }
