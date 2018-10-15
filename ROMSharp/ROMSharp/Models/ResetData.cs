@@ -43,6 +43,11 @@ namespace ROMSharp.Models
         #endregion
     }
 
+    public class ObjectResetData : ResetData
+    {
+
+    }
+
     public class GiveResetData : ResetData
     {
         #region Properties
