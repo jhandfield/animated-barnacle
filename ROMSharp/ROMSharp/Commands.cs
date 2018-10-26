@@ -282,6 +282,9 @@ namespace ROMSharp
                 StringBuilder sb = new StringBuilder();
                 sb.Append(String.Format("{0}\n\r\n\r{1}\n\r\n\r", room.Name, room.Description));
 
+                foreach (Models.ObjectData obj in room.Objects)
+                    sb.Append("\t" + obj.Description + "\n\r");
+
                 foreach (Models.CharacterData person in room.Characters)
                     sb.Append(person.LongDescription + "\n\r");
 

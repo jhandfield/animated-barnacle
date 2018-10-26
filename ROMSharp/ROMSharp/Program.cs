@@ -31,6 +31,11 @@ namespace ROMSharp
         /// </summary>
         public static string[] commandArgs;
 
+        /// <summary>
+        /// Random number generator available to everything
+        /// </summary>
+        public static System.Random randGen;
+
         public static int Main(string[] args)
         {
             // Configure the Console.CancelKeyPress event

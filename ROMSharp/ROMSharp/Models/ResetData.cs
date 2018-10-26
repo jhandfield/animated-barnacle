@@ -45,7 +45,19 @@ namespace ROMSharp.Models
 
     public class ObjectResetData : ResetData
     {
+        public ObjectPrototypeData Object { get { return Program.World.Objects[this.Arg1]; } }
+        public RoomIndexData Room { get { return Program.World.Rooms[this.Arg3]; } }
 
+        public ObjectResetData() : base() { }
+        public ObjectResetData(ResetData data) : base()
+        {
+            this.Arg1 = data.Arg1;
+            this.Arg2 = data.Arg2;
+            this.Arg3 = data.Arg3;
+            this.Arg4 = data.Arg4;
+            this.Command = data.Command;
+            this.Inner = data.Inner;
+        }
     }
 
     public class GiveResetData : ResetData
@@ -241,7 +253,25 @@ namespace ROMSharp.Models
 
                     case "O":
                         // Object reset
-                        return null;
+                        outReset.Command = ResetCommand.SpawnObject;
+
+                        // Validate the object VNUM
+                        if (!Program.World.Objects.Exists(o => o.VNUM == outReset.Arg1))
+                        {
+                            Logging.Log.Error(String.Format("Encountered unknown object VNUM {0} in object reset data on line {1} of area {2}", outReset.Arg1, lineNum, areaFile));
+                            return null;
+                        }
+
+                        // Validate the room VNUM
+                        if (!Program.World.Rooms.Exists(r => r.VNUM == outReset.Arg3))
+                        {
+                            Logging.Log.Error(String.Format("Encountered unknown room VNUM {0} in object reset data on line {1} of area {2}", outReset.Arg3, lineNum, areaFile));
+                            return null;
+                        }
+
+                        Logging.Log.Debug(String.Format("Loaded object reset for object {0} in room {1} on line {2} of area {3}", outReset.Arg1, outReset.Arg3, lineNum, areaFile));
+
+                        return outReset;
 
                     case "P":
                         // Put reset

@@ -188,6 +188,21 @@ namespace ROMSharp.Models
         }
         #endregion
         #region Methods
+        /// <summary>
+        /// Place the object into room <paramref name="room"/>
+        /// </summary>
+        /// <param name="room">The Room to place the object in</param>
+        public void ToRoom(RoomIndexData room) {
+            room.Objects.Add(this);
+            this.InRoom = room;
+            this.CarriedBy = null;
+            this.InObject = null;
+        }
+
+        /// <summary>
+        /// Give the object to character <paramref name="ch"/>
+        /// </summary>
+        /// <param name="ch">Character to receive the object</param>
         public void GiveTo(CharacterData ch)
         {
             CarriedBy = ch;

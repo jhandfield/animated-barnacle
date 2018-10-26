@@ -154,6 +154,8 @@
     <Compile Include="UnitTests\MobTests.cs" />
     <Compile Include="Consts\Lookups.cs" />
     <Compile Include="Enums\EquipSlot.cs" />
+    <Compile Include="Helpers\HigherOf.cs" />
+    <Compile Include="Helpers\Randomness.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

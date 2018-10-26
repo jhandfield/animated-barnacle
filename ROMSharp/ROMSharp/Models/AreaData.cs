@@ -84,9 +84,13 @@ namespace ROMSharp.Models
         {
             Logging.Log.Debug(String.Format("Resetting area {0}", this.Name));
 
-            foreach(ResetData reset in this.Resets)
+            // This value gets set when a mob is spawned, and is also used as a base when setting the level of objects
+            // in resets. I think this was intended to keep objects in areas generally the same level as the mobs.
+            int level = 0;
+
+            foreach (ResetData reset in this.Resets)
             {
-                switch(reset.Command)
+                switch (reset.Command)
                 {
                     case ResetCommand.SpawnMobile:
                         Logging.Log.Debug(String.Format("Processing Mob reset for VNUM {0}", reset.Arg1));
@@ -104,11 +108,11 @@ namespace ROMSharp.Models
                                 Models.CharacterData newMob = new Models.CharacterData(mobProto);
 
                                 // Check for any nested resets for the mob
-                                foreach(ResetData innerReset in mobReset.Inner)
+                                foreach (ResetData innerReset in mobReset.Inner)
                                 {
                                     Models.ObjectData mobObj = null;
 
-                                    switch(innerReset.Command)
+                                    switch (innerReset.Command)
                                     {
                                         case ResetCommand.EquipObjectOnMob:
                                             // Reload this reset as an EquipReset
@@ -152,10 +156,42 @@ namespace ROMSharp.Models
 
                                 // Place the mob into the room
                                 mobReset.Room.Characters.Add(newMob);
+
+                                // Store approximately the mob level
+                                level = Helpers.Miscellaneous.URange(0, newMob.Level - 2, Consts.GameParameters.StateOfBeing.Hero - 1);
                             }
                         }
                         else
                             Logging.Log.Error("Unable to cast reset as MobileResetData");
+
+                        break;
+                    case ResetCommand.SpawnObject:
+                        Logging.Log.Debug(String.Format("Processing Object reset for VNUM {0}", reset.Arg1));
+
+                        // Convert the reset to an ObjectReset
+                        ObjectResetData objReset = new ObjectResetData(reset);
+
+                        // Validate the object and room
+                        if (objReset.Object == null)
+                        {
+                            Logging.Log.Error(String.Format("Object reset for object {0} in room {1} failed: object not found", objReset.Arg1, objReset.Arg3));
+                            break;
+                        }
+
+                        if (objReset.Room == null)
+                        {
+                            Logging.Log.Error(String.Format("Object reset for object {0} in room {1} failed: room not found", objReset.Arg1, objReset.Arg3));
+                            break;
+                        }
+
+                        // If the area has 1 or more players in it, or the room already has one or more objects in it, don't reset
+                        if (this.NumPlayers > 0 || objReset.Room.Objects.Count > 0)
+                            break;
+
+                        // Instantiate the object and place it in the room
+                        ObjectData newObj = new ObjectData(objReset.Object, Helpers.Miscellaneous.LowestOf(new int[] { Helpers.Miscellaneous.Randomness.NumberFuzzy(level), Consts.GameParameters.StateOfBeing.Hero - 1 }));
+                        newObj.Cost = 0;
+                        newObj.ToRoom(objReset.Room);
 
                         break;
                 }
