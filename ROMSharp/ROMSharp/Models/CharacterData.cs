@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+
 namespace ROMSharp.Models
 {
     /// <summary>
@@ -11,6 +13,7 @@ namespace ROMSharp.Models
     {
         private Func<CharacterData, bool> _specialFunction;
         private RoomIndexData _inRoom;
+        private int _trust;
 
         #region Facts
         public bool IsAffected(Enums.AffectedByFlag aff)
@@ -212,7 +215,24 @@ namespace ROMSharp.Models
         /// tested, never mind incremented or even set to >0. The "order" command is one of the few places that
         /// seems to use it.
         /// </remarks>
-        public int Trust { get; set; }
+        public int Trust
+        {
+            get
+            {
+                if (this._trust > 0)
+                    return this._trust;
+
+                if (this.IsNPC && this.Level >= Consts.GameParameters.StateOfBeing.Hero)
+                    return Consts.GameParameters.StateOfBeing.Hero - 1;
+                else
+                    return this.Level;
+            }
+
+            set
+            {
+                this._trust = value;
+            }
+        }
 
         /// <summary>
         /// The character's playtime
@@ -700,6 +720,63 @@ namespace ROMSharp.Models
             // TODO: Apply effects of the object instance to char
 
             // TODO: Update luminence of the room
+        }
+
+        /// <summary>
+        /// Show one character (this, "victim")) to the seer (<paramref name="ch"/>)
+        /// </summary>
+        /// <returns>A description of what the character (<paramref name="ch"/>) sees of the victim (this)</returns>
+        /// <param name="victim">The character to attempt to look at</param>
+        public string ShowToChar(CharacterData ch)
+        {
+            // You can't look at oneself... Unless you have eye stalks maybe? But we don't count that.
+            if (ch == this)
+                return String.Empty;
+
+            // Invisible people can't be seen if you aren't trusted enough
+            if (ch.Trust < this.InvisLevel)
+                return String.Empty;
+
+            // If the person can be seen...
+            if (ch.CanSee(this))
+                // Show the character
+                return this.FormatCharToChar(ch);
+
+            // More not implemented
+            return String.Empty;
+        }
+
+        public string FormatCharToChar(CharacterData ch)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            // Some stuff
+
+            // Sanctuary
+            if (this.IsAffected(AffectedByFlag.Sanctuary))
+                sb.Append("(White Aura) ");
+
+            // Bunch of other stuf
+
+            sb.Append(this.LongDescription);
+
+            return sb.ToString();
+        }
+
+        public bool CanSee(CharacterData victim)
+        {
+            // You can always see yourself (hopefully?)
+            if (this == victim)
+                return true;
+
+            // Can't see some invisible people
+            if (this.Trust < victim.InvisLevel)
+                return false;
+
+            // Some other stuff not impemented yet...
+
+            // For now, just say yes
+            return true;
         }
     }
 }

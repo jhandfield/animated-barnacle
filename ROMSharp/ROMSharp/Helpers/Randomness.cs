@@ -16,7 +16,7 @@ namespace ROMSharp.Helpers
                     case 3: number += 1; break;
                 }
 
-                return Helpers.Miscellaneous.HigherOf(new int[] { 1, number });
+                return Helpers.Miscellaneous.HighestOf(new int[] { 1, number });
             }
 
             /// <summary>

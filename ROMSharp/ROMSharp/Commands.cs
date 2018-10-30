@@ -285,8 +285,8 @@ namespace ROMSharp
                 foreach (Models.ObjectData obj in room.Objects)
                     sb.Append("\t" + obj.Description + "\n\r");
 
-                foreach (Models.CharacterData person in room.Characters)
-                    sb.Append(person.LongDescription + "\n\r");
+                foreach (Models.CharacterData roomVictim in room.Characters)
+                    sb.Append(roomVictim.ShowToChar(character));
 
                 Network.Send(sb.ToString() + "\n\r", state);
             }
