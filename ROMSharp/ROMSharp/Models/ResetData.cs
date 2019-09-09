@@ -137,7 +137,7 @@ namespace ROMSharp.Models
             string lineData = firstLine;
 
             // Regex to parse reset lines
-            Regex lineRegex = new Regex(@"^(\w){1}\s+(\d+)\s+(\d+)\s+(-*\d+)\s*(\d+)*\s*(\d+)*(\s*\*(.*))*$");
+            Regex lineRegex = new Regex(@"^(\w){1}\s+(\d+)\s+(\d+)\s+(-*\d+)\s*(\d+)*\s*(\d+)*(\s*\*(.*))*\s*$");
 
             // Attempt to parse the line
             Match match = lineRegex.Match(lineData);
