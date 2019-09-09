@@ -187,10 +187,11 @@ namespace ROMSharp.Models
                             while (readingDescription)
                             {
                                 // Read the line
-                                lineData = sr.ReadLine();
+                                lineData = sr.ReadLine().Trim();
                                 lineNum++;
 
-                                if (lineData.Trim().Equals("~"))
+                                // Check that the line either is only a tilde, or ends with a tilde
+                                if (lineData.Trim().Equals("~") || (lineData.Length > 0 && lineData[lineData.Length - 1] == '~'))
                                     readingDescription = false;
                                 else
                                     sb.AppendLine(lineData);
@@ -283,11 +284,28 @@ namespace ROMSharp.Models
                 }
             }
 
-            // Pull the next line and store as the keywords
-            lineData = sr.ReadLine();
-            lineNum++;
+            // Begin reading the exit keywords
+            bool readingKeywords = true;
 
-            exit.Keywords = lineData.Replace("~", "");
+            while(readingKeywords)
+            {
+                // Pull the next line and store as the keywords
+                lineData = sr.ReadLine();
+                lineNum++;
+
+                if (lineData.Equals("~"))
+                    readingKeywords = false;
+                else
+                {
+                    // Append to the exit's keywords - trim any trailing tildes
+                    exit.Keywords += lineData.TrimEnd('~');
+
+                    // If the line end with ~, we're done reading
+                    if (lineData.EndsWith("~", StringComparison.CurrentCulture))
+                        readingKeywords = false;
+                }
+            }
+            
 
             // Pull the final line of the exit definition, [lock #] [key #] [toRoom #]
             lineData = sr.ReadLine();
