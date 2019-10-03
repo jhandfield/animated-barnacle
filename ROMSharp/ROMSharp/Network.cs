@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Collections.Generic;
 using static ROMSharp.Consts.GameParameters;
+using ROMSharp.Interfaces;
 
 namespace ROMSharp
 {
@@ -62,7 +63,7 @@ namespace ROMSharp
 			/// <summary>
 			/// Returns the text of the last command sent from the client
 			/// </summary>
-			public string LastCommand { get; set; }
+			public ICommand LastCommand { get; set; }
 
 			/// <summary>
 			/// Indicates whether we're waiting for data

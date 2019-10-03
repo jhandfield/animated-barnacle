@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using ROMSharp.Interfaces;
 
 namespace ROMSharp
 {
@@ -100,6 +101,8 @@ namespace ROMSharp
                     Logging.Log.Info(String.Format("Server memory usage: {0:N0}KiB", GC.GetTotalMemory(true) / 1024));
                     Logging.Log.Info(String.Format("{0} classes | {1} skill groups | {2} skills", Consts.Classes.ClassTable.Count, Consts.Skills.SkillGroupTable.Count, Consts.Skills.SkillTable.Count));
 
+                    Program.commandTable = PopulateCommandTable();
+
                     //try
                     //{
                         // Instantiate our ClientConnections object which will contain all active connections
@@ -159,6 +162,21 @@ namespace ROMSharp
             }
 
             Logging.Log.Info(String.Format("Game state is now {0}", newState));
+        }
+
+        private List<ICommand> PopulateCommandTable()
+        {
+            // Build the command table from built-in ICommands
+            List<ICommand> commandTable = new List<ICommand>()
+            {
+                new Commands.Look(),
+                new Commands.Goto(),
+                new Commands.Shutdown(),
+                new Commands.Quit(),
+                new Commands.ListConnections()
+            };
+
+            return commandTable;
         }
 
         /// <summary>

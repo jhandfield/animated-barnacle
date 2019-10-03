@@ -2,7 +2,12 @@
 using System.Linq;
 using System.Text;
 using System.Collections.Generic;
+using System.Xml.Serialization;
 using System.Text.RegularExpressions;
+using ROMSharp.Interfaces;
+using ROMSharp.Enums;
+using ROMSharp.Models;
+using static ROMSharp.Consts.GameParameters;
 
 namespace ROMSharp
 {
@@ -11,6 +16,229 @@ namespace ROMSharp
 	/// </summary>
 	public class Commands
 	{
+        /// <summary>
+        /// Look command - describes the room, object, mob, etc. specified
+        /// </summary>
+        public class Look : ICommand
+        {
+            public string Name => "look";
+
+            public IEnumerable<string> Aliases => new string[1] { "examine" };
+
+            public string HelpText =>
+                @"Syntax: look\n\r
+Syntax: look    <object>\n\r
+Syntax: look    <character>\n\r
+Syntax: look    <direction>\n\r
+Syntax: look    <keyword>\n\r
+Syntax: look in <container>\n\r
+Syntax: look in <corpse>\n\r
+Syntax: examine <container>\n\r
+Syntax: examine <corpse>\n\r
+\n\r
+LOOK looks at something and sees what you can see.\n\r
+\n\r
+EXAMINE is short for 'LOOK container' followed by 'LOOK IN container'.\n\r"
+;
+            public Enums.Position MinimumPosition => Enums.Position.Resting;
+
+            public int MinimumLevel => 0;
+
+            public CommandLogLevel LogLevel => CommandLogLevel.LogNormal;
+
+            public bool Show => true;
+
+            public void Execute(CharacterData ch, string[] args)
+            {
+                string arg1, arg2;
+
+                // Recombine args
+                List<string> argList = args.ToList();
+                string command = args.First();
+                argList.RemoveAt(0);
+                string arguments = String.Join(" ", argList);
+
+                // Pull arguments
+                arguments = GetOneArgument(arguments, out arg1);
+                arguments = GetOneArgument(arguments, out arg2);
+
+                Network.ClientConnection state = ch.Descriptor;
+                CharacterData victim;
+                RoomIndexData room;
+
+                // Get the character's current room
+                room = ch.InRoom;
+
+                // Attempt to pull a character from the first argument
+                victim = room.Characters.SingleOrDefault(c => c.Name.ToLower().Equals(arg1));
+
+                if (victim != null)
+                {
+                    string output = ShowCharToChar(ch, victim);
+                    Network.Send(output + "\n\r", state);
+                }
+                else
+                {
+                    StringBuilder sb = new StringBuilder();
+                    sb.Append(String.Format("{0}\n\r\n\r{1}\n\r\n\r", room.Name, room.Description));
+
+                    foreach (CharacterData person in room.Characters)
+                        sb.Append(person.LongDescription + "\n\r");
+
+                    Network.Send(sb.ToString() + "\n\r", state);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Goto command - sends the character to the specified room
+        /// </summary>
+        public class Goto : ICommand
+        {
+            public string Name => "goto";
+
+            public IEnumerable<string> Aliases => new string[0];
+
+            public string HelpText => @"Usage: goto <room VNUM>\n\r
+Immediately sends the player to the room with the specified VNUM.\n\r";
+
+            public Enums.Position MinimumPosition => Enums.Position.Dead;
+
+            public int MinimumLevel => Maximums.Level - 4;
+
+            public CommandLogLevel LogLevel => CommandLogLevel.LogNormal;
+
+            public bool Show => true;
+
+            public void Execute(CharacterData ch, string[] args)
+            {
+                string arg1 = args[1];
+
+                Network.ClientConnection state;
+                state = ch.Descriptor;
+
+                if (Int32.TryParse(arg1, out int roomID) && Program.World.Rooms[roomID] != null)
+                {
+                    state.PlayerCharacter.InRoom = Program.World.Rooms[roomID];
+                    Network.Send("Ok.\n\r\n\r", state);
+                }
+                else
+                    Network.Send("Syntax: goto [room VNUM]\n\r\n\r", state);
+            }
+        }
+
+        /// <summary>
+        /// Shutdown - Shuts down the service
+        /// </summary>
+        public class Shutdown : ICommand
+        {
+            public string Name => "shutdown";
+
+            public IEnumerable<string> Aliases => new string[1] { "shutdow" };
+
+            public string HelpText => "Shuts down the service";
+
+            public Enums.Position MinimumPosition => Enums.Position.Dead;
+
+            public int MinimumLevel => Maximums.Level - 1;
+
+            public CommandLogLevel LogLevel => CommandLogLevel.LogAlways;
+
+            public bool Show => true;
+
+            public void Execute(CharacterData ch, string[] args)
+            {
+                ServerControl.Shutdown();
+            }
+        }
+
+        /// <summary>
+        /// Ends a user's session with the service
+        /// </summary>
+        public class Quit : ICommand
+        {
+            public string Name => "quit";
+
+            public IEnumerable<string> Aliases => new string[1] { "qui" };
+
+            public string HelpText => @"Syntax: QUIT\n\r
+Syntax: RENT ... not!\n\r
+Syntax: SAVE\n\r
+\n\r
+SAVE saves your character and object.  The game saves your character every\n\r
+15 minutes regardless, and is the preferred method of saving.  Typing save\n\r
+will block all other command for about 20 seconds, so use it sparingly.\n\r
+(90+ players all typing save every 30 seconds just generated too much lag)\n\r
+\n\r
+Some objects, such as keys and potions, may not be saved.\n\r
+\n\r
+QUIT leaves the game.  You may QUIT anywhere.  When you re-enter the game \n\r
+you will be back in the same room.\n\r
+\n\r
+QUIT automatically does a SAVE, so you can safely leave the game with just one\n\r
+command.  Nevertheless it's a good idea to SAVE before QUIT.  If you get into\n\r
+the habit of using QUIT without SAVE, and then you play some other mud that\n\r
+doesn't save before quitting, you're going to regret it.\n\r
+\n\r
+There is no RENT in this mud.  Just SAVE and QUIT whenever you want to leave.\n\r";
+
+            public Enums.Position MinimumPosition => Enums.Position.Dead;
+
+            public int MinimumLevel => 0;
+
+            public CommandLogLevel LogLevel => CommandLogLevel.LogNormal;
+
+            public bool Show => true;
+
+            public void Execute(CharacterData ch, string[] args)
+            {
+                //TODO: Implement actual quit/save logic
+                Network.EndSession(ch.Descriptor);
+            }
+        }
+
+        public class ListConnections : ICommand
+        {
+            public string Name => "listconnections";
+
+            public IEnumerable<string> Aliases => new string[0];
+
+            public string HelpText => "Lists all active connections with the service";
+
+            public Enums.Position MinimumPosition => Enums.Position.Dead;
+
+            public int MinimumLevel => 0;
+
+            public CommandLogLevel LogLevel => CommandLogLevel.LogNormal;
+
+            public bool Show => true;
+
+            public void Execute(CharacterData ch, string[] args)
+            {
+                // For now, get a ClientConnection since I haven't reworked everything to just use the ID yet
+                Network.ClientConnection state = ch.Descriptor;
+
+                // Header
+                string result = "ACTIVE CONNECTIONS\n\rID     Remote IP         Player       Duration   Tx/Rx\n\r";
+                //2345	  123.123.123.132   00:00:00   Seath        1024.1MB/1024.1MB   
+
+                // Data
+                foreach (Network.ClientConnection conn in Network.ClientConnections)
+                {
+                    result += String.Format("{0,-7}{1,-18}{2,-11}{3,-13}{4}/{5}\n\r",
+                        conn.ID.ToString(),
+                        conn.RemoteIP.ToString(),
+                        ch.Name,
+                        conn.ConnectionDuration.ToString(@"hh\:mm\:ss"),
+                        conn.bytesSent,
+                        conn.bytesReceived);
+                }
+
+                // Send the result
+                Network.Send(result, state);
+            }
+        }
+
         /// <summary>
         /// Forces the point pulse outside of its regular schedule. Invoking this does not reset the point pulse schedule, the next automated pulse will happen as scheduled.
         /// </summary>
@@ -123,21 +351,7 @@ namespace ROMSharp
             //   that doesn't set up a new callback yet.
             return sb.ToString();
         }
-
-        public static void DoGoto(int connID, string dest)
-        {
-            Network.ClientConnection state;
-            state = Network.ClientConnections.Single(c => c.ID == connID);
-
-            if (Int32.TryParse(dest, out int roomID) && Program.World.Rooms[roomID] != null)
-            {
-                state.PlayerCharacter.InRoom = Program.World.Rooms[roomID];
-                Network.Send("Ok.\n\r\n\r", state);
-            }
-            else
-                Network.Send("Syntax: goto [room VNUM]\n\r\n\r", state);
-        }
-
+        
         public static void DoLoad(int connID, string[] args)
         {
             Network.ClientConnection state;
@@ -237,60 +451,6 @@ namespace ROMSharp
             Network.Send(sb.ToString() + "\n\r", state);
         }
 
-        /// <summary>
-        /// Describes the room, its contents, and the people in it to the player. Not fully implemented.
-        /// </summary>
-        /// <param name="connID">Conn identifier.</param>
-        public static void DoLook(int connID, string[] args)
-        {
-            string arguments = String.Empty;
-            string arg1, arg2;
-
-            // Recombine args
-            List<string> argList = args.ToList();
-            argList.RemoveAt(0);
-            arguments = String.Join(" ", argList);
-
-            // Pull arguments
-            arguments = GetOneArgument(arguments, out arg1);
-            arguments = GetOneArgument(arguments, out arg2);
-
-            Network.ClientConnection state;
-            Models.PlayerCharacterData character;
-            Models.CharacterData victim;
-            Models.RoomIndexData room;
-
-            // Get the client state
-            state = Network.ClientConnections.Single(c => c.ID == connID);
-
-            // Get the client character
-            character = state.PlayerCharacter;
-
-            // Get the character's current room
-            room = character.InRoom;
-
-            // Attempt to pull a character from the first argument
-            victim = room.Characters.SingleOrDefault(c => c.Name.ToLower().Equals(arg1));
-
-            if (victim != null)
-            {
-                string output = ShowCharToChar(character, victim);
-                Network.Send(output + "\n\r", state);
-            }
-            else
-            {
-                StringBuilder sb = new StringBuilder();
-                sb.Append(String.Format("{0}\n\r\n\r{1}\n\r\n\r", room.Name, room.Description));
-
-                foreach (Models.CharacterData person in room.Characters)
-                    sb.Append(person.LongDescription + "\n\r");
-
-                Network.Send(sb.ToString() + "\n\r", state);
-            }
-
-
-        }
-
         public static void DoSpawn(int mobID, int roomID, int connID)
         {
             Network.ClientConnection state = Network.ClientConnections.Single(c => c.ID == connID);
@@ -338,34 +498,7 @@ namespace ROMSharp
 
 			Network.Send ("Sorry, I don't know what you're asking - " + command + "\n\r", state);
 		}
-
-		/// <summary>
-		/// Sends a list of open connections to the user
-		/// </summary>
-		/// <param name="connID">Connection ID of the requesting user</param>
-		public static void ListConnections(int connID)
-		{
-			// For now, get a ClientConnection since I haven't reworked everything to just use the ID yet
-			Network.ClientConnection state = Network.ClientConnections.Single(c => c.ID == connID);
-
-			// Header
-			string result = "ACTIVE CONNECTIONS\n\rID     Remote IP         Duration   Tx/Rx\n\r";
-			//2345	  123.123.123.132   00:00:00   1024.1MB/1024.1MB   
-
-			// Data
-			foreach (Network.ClientConnection conn in Network.ClientConnections) {
-				result += String.Format ("{0,-7}{1,-18}{2,-11}{3}/{4}\n\r",
-					conn.ID.ToString (),
-					conn.RemoteIP.ToString (),
-					conn.ConnectionDuration.ToString (@"hh\:mm\:ss"),
-					conn.bytesSent,
-					conn.bytesReceived);
-			}
-
-			// Send the result
-			Network.Send(result, state);
-		}
-
+        
 		public static void DoGreeting(int connID)
 		{
 			// For now, get a ClientConnection since I haven't reworked everything to just use the ID yet

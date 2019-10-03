@@ -52,6 +52,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Enums\CommandLogLevel.cs" />
+    <Compile Include="Interfaces\ICommand.cs" />
+    <Compile Include="Models\Command.cs" />
     <Compile Include="Network.cs" />
     <Compile Include="Password.cs" />
     <Compile Include="Program.cs" />
@@ -163,11 +166,5 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ItemGroup />
-  <ItemGroup>
-    <Folder Include="ServerControl\" />
-    <Folder Include="Models\" />
-    <Folder Include="Helpers\" />
-    <Folder Include="UnitTests\" />
-    <Folder Include="Models\AttributeBonus\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>
