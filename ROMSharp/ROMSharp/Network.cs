@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Collections.Generic;
+using static ROMSharp.Consts.GameParameters;
 
 namespace ROMSharp
 {
@@ -114,8 +115,11 @@ namespace ROMSharp
 				ConfigureSocketKeepalive(this.workSocket);
 
                 PlayerCharacter = new Models.PlayerCharacterData();
+                PlayerCharacter.Name = "Seath";
                 PlayerCharacter.InRoom = Program.World.Rooms[3001];
-                PlayerCharacter.Level = 60;
+                PlayerCharacter.Level = Maximums.Level;
+                PlayerCharacter.Trust = Maximums.Level;
+                PlayerCharacter.Descriptor = this;
 			}
 			#endregion
 
@@ -284,16 +288,22 @@ namespace ROMSharp
 	                }
 				}
 			}
-			catch (System.Net.Sockets.SocketException) {
-                Logging.Log.Warn(String.Format("Error communicating with connection ID {0}, closing connection.", state.ID));
+			catch (Exception ex) {
+                if (ex.GetType() == typeof(SocketException) || ex.GetType() == typeof(ObjectDisposedException))
+                {
+                    Logging.Log.Warn(String.Format("Error communicating with connection ID {0}, closing connection.", state.ID));
 
-				// End the session
-				handler.Close();
+                    // End the session
+                    handler.Close();
 
-				// Remove the connection from ClientConnections
-				ClientConnections.RemoveAt(ClientConnections.FindIndex(c => c.ID.Equals(state.ID)));
+                    // Remove the connection from ClientConnections, if it's still there
+                    if (ClientConnections.Contains(state))
+                        ClientConnections.RemoveAt(ClientConnections.FindIndex(c => c.ID.Equals(state.ID)));
+                }
+                else
+                    throw ex;
 			}
-		}
+        }
 
         /// <summary>
         /// Ends the remote session with the user
@@ -426,9 +436,9 @@ namespace ROMSharp
                 //handler.Close();
 
             }
-            catch (SocketException ex)
+            catch (Exception ex)
             {
-                if (ex.SocketErrorCode == SocketError.ConnectionAborted)
+                if ((ex.GetType() == typeof(SocketException) && ((SocketException)ex).SocketErrorCode == SocketError.ConnectionAborted) || ex.GetType() == typeof(ObjectDisposedException))
                 {
                     // The remote client has disconnected, so log them out
                     // TODO: Actually log the user out (save their data, etc.) rather than just dump their connection
