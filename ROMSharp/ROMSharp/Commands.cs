@@ -225,7 +225,7 @@ There is no RENT in this mud.  Just SAVE and QUIT whenever you want to leave.\n\
                 // Data
                 foreach (Network.ClientConnection conn in Network.ClientConnections)
                 {
-                    result += String.Format("{0,-7}{1,-18}{2,-11}{3,-13}{4}/{5}\n\r",
+                    result += String.Format("{0,-7}{1,-18}{2,-13}{3,-11}{4}/{5}\n\r",
                         conn.ID.ToString(),
                         conn.RemoteIP.ToString(),
                         ch.Name,
