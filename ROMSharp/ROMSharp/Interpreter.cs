@@ -117,102 +117,38 @@ namespace ROMSharp
 
             // Check the character's position vs. the command's minimum
             if ((int)state.PlayerCharacter.Position.PositionCode < (int)matchedCommand.MinimumPosition)
+            {
+                switch (state.PlayerCharacter.Position.PositionCode)
                 {
-                    switch (state.PlayerCharacter.Position.PositionCode)
-                    {
-                        case Position.Dead:
-                            Network.Send("Lie still; you are DEAD.\n\r", state);
-                            break;
-                        case Position.MortallyWounded:
-                        case Position.Incapacitated:
-                            Network.Send("You are hurt far too badly for that.\n\r", state);
-                            break;
-                        case Position.Stunned:
-                            Network.Send("You are too stunned to do that.\n\r", state);
-                            break;
-                        case Position.Sleeping:
-                            Network.Send("In your dreams, or what?\n\r", state);
-                            break;
-                        case Position.Resting:
-                            Network.Send("Nah... You feel too relaxed...\n\r", state);
-                            break;
-                        case Position.Sitting:
-                            Network.Send("Better stand up first.\n\r", state);
-                            break;
-                        case Position.Fighting:
-                            Network.Send("No way! You are still fighting!\n\r", state);
-                            break;
-                    }
-
-                    return;
+                    case Position.Dead:
+                        Network.Send("Lie still; you are DEAD.\n\r", state);
+                        break;
+                    case Position.MortallyWounded:
+                    case Position.Incapacitated:
+                        Network.Send("You are hurt far too badly for that.\n\r", state);
+                        break;
+                    case Position.Stunned:
+                        Network.Send("You are too stunned to do that.\n\r", state);
+                        break;
+                    case Position.Sleeping:
+                        Network.Send("In your dreams, or what?\n\r", state);
+                        break;
+                    case Position.Resting:
+                        Network.Send("Nah... You feel too relaxed...\n\r", state);
+                        break;
+                    case Position.Sitting:
+                        Network.Send("Better stand up first.\n\r", state);
+                        break;
+                    case Position.Fighting:
+                        Network.Send("No way! You are still fighting!\n\r", state);
+                        break;
                 }
 
-                // Execute the command
-                matchedCommand.Execute(state.PlayerCharacter, commandArr);
+                return;
             }
 
-            // Determine what command was requested
-            /*
-            switch (command)
-            {
-                // Request the current time
-                case "whattimeisit":
-                    Commands.WhatTimeIsIt(state.ID);
-                    break;
-
-                // Force a point pulse
-                case "forcepointtick":
-                    Commands.ForcePointPulse(state.ID);
-                    break;
-
-                // Repeats the last command
-                case "!":
-                    ParseCommand(state.LastCommand, state.ID);
-                    break;
-
-                case "serverstats":
-                    Commands.DoServerStats(state.ID);
-                    break;
-
-                case "stat":
-                    switch (commandArr[1])
-                    {
-                        case "room":
-                            Commands.DoStatRoom(state.ID, Convert.ToInt32(commandArr[2]));
-                            break;
-                        default:
-                            Commands.UnknownCommand(state.ID, command);
-                            break;
-                    }
-                    break;
-
-                case "look":
-                    //Commands.DoLook(state.ID, commandArr);
-                    break;
-
-                case "spawn":
-                    Commands.DoSpawn(Convert.ToInt32(commandArr[1]), Convert.ToInt32(commandArr[2]), state.ID);
-                    break;
-
-                case "load":
-                    Commands.DoLoad(state.ID, commandArr);
-                    break;
-
-                case "inv":
-                case "inventory":
-                    Commands.DoInventory(state.ID);
-                    break;
-
-                // Unknown command
-                default:
-                    Commands.UnknownCommand(state.ID, command);
-                    break;
-            }
-
-			// Store the active command as the client's last command, if it wasn't !
-			if (!command.Equals ("!"))
-				state.LastCommand = command;
-		}
-        */
+            // Execute the command
+            matchedCommand.Execute(state.PlayerCharacter, commandArr);
+        }
 	}
 }

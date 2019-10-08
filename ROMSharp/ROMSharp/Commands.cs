@@ -197,6 +197,9 @@ There is no RENT in this mud.  Just SAVE and QUIT whenever you want to leave.\n\
             }
         }
 
+        /// <summary>
+        /// Outputs a list of open sockets in the service to the calling player
+        /// </summary>
         public class ListConnections : ICommand
         {
             public string Name => "listconnections";
@@ -239,6 +242,298 @@ There is no RENT in this mud.  Just SAVE and QUIT whenever you want to leave.\n\
             }
         }
 
+        /// <summary>
+        /// Loads the specified mobile of the specified level in the calling player's room, or loads the specified object of the specified level into the calling player's inventory
+        /// </summary>
+        public class Load : ICommand
+        {
+            public string Name => "load";
+
+            public IEnumerable<string> Aliases => new string[0];
+
+            public string HelpText => @"Syntax: load mob <vnum>\n\r
+        load obj <vnum> <level>\n\r
+\n\r
+The load command is used to load new objects or mobiles (use clone to\n\r
+duplicate strung items and mobs).  The vnums can be found with the vnum\n\r
+command, or by stat'ing an existing mob or object.\n\r
+\n\r
+Load puts objects in inventory if they can be carried, otherwise they are\n\r
+put in the room.  Mobiles are always put into the same room as the god. Old\n\r
+format objects must be given a level argument to determine their power, new\n\r
+format objects have a preset level that cannot be changed without set.\n\r
+(see also clone, vnum, stat)\n\r";
+
+            public Enums.Position MinimumPosition => Enums.Position.Dead;
+
+            public int MinimumLevel => Maximums.Level - 4;
+
+            public CommandLogLevel LogLevel => CommandLogLevel.LogAlways;
+
+            public bool Show => true;
+
+            public void Execute(CharacterData ch, string[] args)
+            {
+                Network.ClientConnection state = ch.Descriptor;
+
+                if (args.Length < 3)
+                {
+                    // Invalid, we need at least 3 arguments
+                    Network.Send("Syntax:\n\r  load mob <vnum>\n\r  load obj <vnum> <level>\n\r", state);
+                    return;
+                }
+                else
+                {
+                    switch (args[1].ToLower().Trim())
+                    {
+                        case "obj":
+                            int objVNUM, objLevel;
+
+                            // Need 4 args for this
+                            if (args.Length != 4)
+                            {
+                                Network.Send("Syntax:\n\r  load mob <vnum>\n\r  load obj <vnum> <level>\n\r", state);
+                                return;
+                            }
+
+                            // VNUM must be numeric
+                            if (!Int32.TryParse(args[2], out objVNUM))
+                            {
+                                Network.Send("Syntax: load obj <vnum:int> <level:int>\n\r", state);
+                                return;
+                            }
+
+                            // Level must be numeric and between 0 and the player's level
+                            if (!Int32.TryParse(args[3], out objLevel))
+                            {
+                                Network.Send("Syntax: load obj <vnum:int> <level:int>\n\r", state);
+                                return;
+                            }
+                            else
+                            {
+                                // Level needs to be between 0 and the player's trust level 9using player level for now)
+                                // TODO: Switch to using trust level
+                                if (objLevel < 0 || objLevel > state.PlayerCharacter.Level)
+                                {
+                                    Network.Send("Level must be between 0 and your level.\n\r", state);
+                                    return;
+                                }
+                            }
+
+                            // Object VNUM must exist
+                            if (Program.World.Objects[objVNUM] == null)
+                            {
+                                Network.Send("No object has that VNUM.\n\r", state);
+                                return;
+                            }
+
+                            // Go ahead and instantiate the object
+                            Models.ObjectData newObj = new Models.ObjectData(Program.World.Objects[objVNUM]);
+
+                            // Give it to the character
+                            state.PlayerCharacter.Inventory.Add(newObj);
+
+                            // Send feedback
+                            Network.Send("Ok.\n\r\n\r", state);
+
+                            break;
+                        default:
+                            Network.Send("Syntax:\n\r  load mob <vnum>\n\r  load obj <vnum> <level>\n\r", state);
+                            break;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Displays the player's inventory to themselves
+        /// </summary>
+        public class Inventory : ICommand
+        {
+            public string Name => "inventory";
+
+            public IEnumerable<string> Aliases => new string[0];
+
+            public string HelpText => @"Syntax: inventory\n\r
+Lists your inventory\n\r";
+
+            public Enums.Position MinimumPosition => Enums.Position.Dead;
+
+            public int MinimumLevel => 0;
+
+            public CommandLogLevel LogLevel => CommandLogLevel.LogNormal;
+
+            public bool Show => true;
+
+            public void Execute(CharacterData ch, string[] args)
+            {
+                Network.ClientConnection state = ch.Descriptor;
+
+                StringBuilder sb = new StringBuilder();
+                sb.Append("You are carrying:\n\r");
+
+                if (state.PlayerCharacter.Inventory.Count == 0)
+                {
+                    sb.Append("Nothing.\n\r");
+                }
+                else
+                {
+                    foreach (ObjectData obj in state.PlayerCharacter.Inventory)
+                    {
+                        sb.Append(obj.ShortDescription + "\n\r");
+                    }
+                }
+
+                // Send output
+                Network.Send(sb.ToString() + "\n\r", state);
+            }
+        }
+
+        /// <summary>
+        /// Displays detailed statistics of the specified object/mobile/room to the calling player
+        /// </summary>
+        public class Stat : ICommand
+        {
+            public string Name => "stat";
+
+            public IEnumerable<string> Aliases => new string[0];
+
+            public string HelpText => @"Syntax:\n\r
+        stat <name>\n\r
+        stat obj <name>\n\r
+        stat mob <name>\n\r
+        stat room <number>\n\r
+\n\r
+Displays detailed statistics about the specified object, mob, or room";
+
+            public Enums.Position MinimumPosition => Enums.Position.Dead;
+
+            public int MinimumLevel => StateOfBeing.Immortal;
+
+            public CommandLogLevel LogLevel => CommandLogLevel.LogAlways;
+
+            public bool Show => true;
+
+            public void StatRoom(CharacterData ch, int vnum)
+            {
+                // Attempt to find the room
+                Models.RoomIndexData targetRoom = Program.World.Rooms.SingleOrDefault(r => r.VNUM.Equals(vnum));
+
+                // Did we find it?
+                if (targetRoom == null)
+                {
+                    // Inform the user
+                    Network.Send("No such location\n\r\n\r", ch.Descriptor);
+                }
+                else
+                {
+                    string output = String.Empty;
+                    output += String.Format("Name: '{0}'\n\rArea: '{1}'\n\r", targetRoom.Name, Program.World.Areas.Single(a => a.MinVNum <= targetRoom.VNUM && a.MaxVNum >= targetRoom.VNUM).Name);
+                    output += String.Format("VNUM: {0}  Sector: {1}  Light: {2}  Healing: {3}  Mana: {4}\n\r",
+                                            targetRoom.VNUM,
+                                            targetRoom.SectorType.ToString(),
+                                            targetRoom.LightLevel,
+                                            targetRoom.HealRate.ToString(),
+                                            targetRoom.ManaRate.ToString());
+                    output += String.Format("Room Flags: {0}\n\r", ((Enums.AlphaMacros)targetRoom.Attributes).ToString().Replace(",", "").Replace(" ", ""));
+                    output += String.Format("Description:\n\r{0}\n\r", targetRoom.Description);
+                    output += "Extra description keywords: " + String.Join(",", targetRoom.ExtraDescriptions.Select(ed => ed.Keywords)) + "\n\r";
+
+                    // TODO: Should check that the character can be seen by the person invoking this command
+                    output += "Characters: " + String.Join(",", targetRoom.Characters.Select(person => person.Name)) + "\n\r";
+                    output += "Objects: " + String.Join(",", targetRoom.Objects.Select(obj => obj.Name)) + "\n\r";
+
+                    // Loop over possible exits
+                    for (int i = 0; i <= 5; i++)
+                    {
+                        // Check that the exit is defined
+                        if (targetRoom.Exits[i] != null)
+                            // Add to output
+                            output += String.Format("Door: {0}.  To: {1}.  Key: {2}.  Exit flags: {3}.\n\rKeyword: '{4}'.  Description: {5}\n\r",
+                                                    i,
+                                                    targetRoom.Exits[i].ToVNUM,
+                                                    targetRoom.Exits[i].KeyVNUM,
+                                                    ((Enums.AlphaMacros)targetRoom.Exits[i].Attributes).ToString(),
+                                                    targetRoom.Exits[i].Keywords,
+                                                    targetRoom.Exits[i].Description);
+                    }
+
+                    output += "\n\r";
+
+                    // Send output to the user
+                    Network.Send(output, ch.Descriptor);
+                }
+            }
+
+            public void Execute(CharacterData ch, string[] args)
+            {
+                Network.ClientConnection state = ch.Descriptor;
+
+                // Check the first argument for a type
+                string firstArg = args[1];
+                
+                switch(firstArg.ToLower())
+                {
+                    case "room":
+                        string secondArg = args[2];
+
+                        if (!Int32.TryParse(secondArg, out int vnum))
+                        {
+                            Network.Send(@"Syntax:\n\r
+        stat <name>\n\r
+        stat obj <name>\n\r
+        stat mob <name>\n\r
+        stat room <number>\n\r", state);
+                            return;
+                        }
+                        else
+                            StatRoom(ch, vnum);
+
+                        return;
+                    case "obj":
+                        Network.Send("\"stat obj\" not implemented yet", state);
+                        return;
+                    case "mob":
+                        Network.Send("\"stat mob\" not implemented yet", state);
+                        return;
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Provides statistics of the service to the calling player
+        /// </summary>
+        public class ServerStats : ICommand
+        {
+            public string Name => "serverstats";
+
+            public IEnumerable<string> Aliases => new string[0];
+
+            public string HelpText => @"Syntax: serverstats\n\r
+                Provides statistical information about the running service\n\r";
+
+            public Enums.Position MinimumPosition => Enums.Position.Dead;
+
+            public int MinimumLevel => StateOfBeing.Immortal;
+
+            public CommandLogLevel LogLevel => CommandLogLevel.LogAlways;
+
+            public bool Show => true;
+
+            public void Execute(CharacterData ch, string[] args)
+            {
+                Network.ClientConnection state = ch.Descriptor;
+
+                // Send statistics
+                Network.Send(String.Format("SERVER STATISTICS\n\r=================\n\r{0} rooms loaded\n\r{1} mobiles loaded\n\r{2} object prototypes loaded\n\r{3} connections currently open\n\rServer uptime is {4}\n\r",
+                    Program.World.Rooms.Count,
+                    Program.World.Mobs.Count,
+                    Program.World.Objects.Count,
+                    Network.ClientConnections.Count,
+                    (DateTime.Now - Program.World.StartupTime).ToString()), state);
+            }
+        }
         /// <summary>
         /// Forces the point pulse outside of its regular schedule. Invoking this does not reset the point pulse schedule, the next automated pulse will happen as scheduled.
         /// </summary>
@@ -351,154 +646,7 @@ There is no RENT in this mud.  Just SAVE and QUIT whenever you want to leave.\n\
             //   that doesn't set up a new callback yet.
             return sb.ToString();
         }
-        
-        public static void DoLoad(int connID, string[] args)
-        {
-            Network.ClientConnection state;
-            state = Network.ClientConnections.Single(c => c.ID == connID);
 
-            if (args.Length < 3)
-            {
-                // Invalid, we need at least 3 arguments
-                Network.Send("Syntax:\n\r  load mob <vnum>\n\r  load obj <vnum> <level>\n\r", state);
-                return;
-            }
-            else
-            {
-                switch (args[1].ToLower().Trim())
-                {
-                    case "obj":
-                        int objVNUM, objLevel;
-
-                        // Need 4 args for this
-                        if (args.Length != 4)
-                        {
-                            Network.Send("Syntax:\n\r  load mob <vnum>\n\r  load obj <vnum> <level>\n\r", state);
-                            return;
-                        }
-
-                        // VNUM must be numeric
-                        if (!Int32.TryParse(args[2], out objVNUM))
-                        {
-                            Network.Send("Syntax: load obj <vnum:int> <level:int>\n\r", state);
-                            return;
-                        }
-
-                        // Level must be numeric and between 0 and the player's level
-                        if (!Int32.TryParse(args[3], out objLevel))
-                        {
-                            Network.Send("Syntax: load obj <vnum:int> <level:int>\n\r", state);
-                            return;
-                        }
-                        else
-                        {
-                            // Level needs to be between 0 and the player's trust level 9using player level for now)
-                            // TODO: Switch to using trust level
-                            if (objLevel < 0 || objLevel > state.PlayerCharacter.Level)
-                            {
-                                Network.Send("Level must be between 0 and your level.\n\r", state);
-                                return;
-                            }
-                        }
-
-                        // Object VNUM must exist
-                        if (Program.World.Objects[objVNUM] == null)
-                        {
-                            Network.Send("No object has that VNUM.\n\r", state);
-                            return;
-                        }
-
-                        // Go ahead and instantiate the object
-                        Models.ObjectData newObj = new Models.ObjectData(Program.World.Objects[objVNUM]);
-
-                        // Give it to the character
-                        state.PlayerCharacter.Inventory.Add(newObj);
-
-                        // Send feedback
-                        Network.Send("Ok.\n\r\n\r", state);
-
-                        break;
-                    default:
-                        Network.Send("Syntax:\n\r  load mob <vnum>\n\r  load obj <vnum> <level>\n\r", state);
-                        break;
-                }
-            }
-        }
-
-        public static void DoInventory(int connID)
-        {
-            Network.ClientConnection state;
-
-            // Get the client state
-            state = Network.ClientConnections.Single(c => c.ID == connID);
-
-            StringBuilder sb = new StringBuilder();
-            sb.Append("You are carrying:\n\r");
-
-            if (state.PlayerCharacter.Inventory.Count == 0)
-            {
-                sb.Append("Nothing.\n\r");
-            }
-            else
-            {
-                foreach(Models.ObjectData obj in state.PlayerCharacter.Inventory)
-                {
-                    sb.Append(obj.ShortDescription + "\n\r");
-                }
-            }
-
-            // Send output
-            Network.Send(sb.ToString() + "\n\r", state);
-        }
-
-        public static void DoSpawn(int mobID, int roomID, int connID)
-        {
-            Network.ClientConnection state = Network.ClientConnections.Single(c => c.ID == connID);
-            Models.PlayerCharacterData character = state.PlayerCharacter;
-            Models.RoomIndexData room = Program.World.Rooms[roomID];
-
-            // Check that the mob is valid
-            Models.MobPrototypeData mobProto = Program.World.Mobs.SingleOrDefault(m => m.VNUM.Equals(mobID));
-
-            if (mobProto != null)
-            {
-                // Instantiate a new mob
-                Models.CharacterData newMob = new Models.CharacterData(mobProto);
-
-                // Place the mob into the room
-                room.Characters.Add(newMob);
-
-                Network.Send("OK.", state);
-            }
-            else
-                Network.Send("Invalid mob VNUM " + mobID, state);
-
-        }
-
-		/// <summary>
-		/// Requests the current server time be sent to the client
-		/// </summary>
-		/// <param name="connID">Connection ID of the user invoking the command.</param>
-		public static void WhatTimeIsIt(int connID)
-		{
-			// For now, get a ClientConnection since I haven't reworked everything to just use the ID yet
-			Network.ClientConnection state = Network.ClientConnections.Single(c => c.ID == connID);
-
-			Network.Send(String.Format ("The current server time is {0}\n\r", DateTime.Now.ToString ()), state);
-		}
-
-		/// <summary>
-		/// Tells the user we don't know what they're asking us to do
-		/// </summary>
-		/// <param name="connID">Connection ID of the requesting user</param>
-		public static void UnknownCommand(int connID, string command)
-		{
-			// For now, get a ClientConnection since I haven't reworked everything to just use the ID yet
-			Network.ClientConnection state = Network.ClientConnections.Single(c => c.ID == connID);
-
-			Network.Send ("Sorry, I don't know what you're asking - " + command + "\n\r", state);
-		}
-        
 		public static void DoGreeting(int connID)
 		{
 			// For now, get a ClientConnection since I haven't reworked everything to just use the ID yet
@@ -526,79 +674,7 @@ There is no RENT in this mud.  Just SAVE and QUIT whenever you want to leave.\n\
             Network.ClientConnection state = Network.ClientConnections.Single(c => c.ID == connID);
 
             // Send the single user login text
-            Network.Send("Connected to server running in single-user mode.\n", state);
-        }
-
-        public static void DoServerStats(int connID)
-        {
-            // For now, get a ClientConnection since I haven't reworked everything to just use the ID yet
-            Network.ClientConnection state = Network.ClientConnections.Single(c => c.ID == connID);
-
-            // Send statistics
-            Network.Send(String.Format("SERVER STATISTICS\n=================\n{0} rooms loaded\n{1} mobiles loaded\n{2} object prototypes loaded\n{3} connections currently open\nServer uptime is {4}\n\n",
-                Program.World.Rooms.Count,
-                Program.World.Mobs.Count,
-                Program.World.Objects.Count,
-                Network.ClientConnections.Count,
-                                       (DateTime.Now - Program.World.StartupTime).ToString()), state);
-            
-        }
-
-        /// <summary>
-        /// Returns information about a given room VNUM
-        /// </summary>
-        public static void DoStatRoom(int connID, int vnum)
-        {
-            // For now, get a ClientConnection since I haven't reworked everything to just use the ID yet
-            Network.ClientConnection state = Network.ClientConnections.Single(c => c.ID == connID);
-
-            // Attempt to find the room
-            Models.RoomIndexData targetRoom = Program.World.Rooms.SingleOrDefault(r => r.VNUM.Equals(vnum));
-
-            // Did we find it?
-            if (targetRoom == null)
-            {
-                // Inform the user
-                Network.Send("No such location\n\n", state);
-            }
-            else
-            {
-                string output = String.Empty;
-                output += String.Format("Name: '{0}'\nArea: '{1}'\n", targetRoom.Name, Program.World.Areas.Single(a => a.MinVNum <= targetRoom.VNUM && a.MaxVNum >= targetRoom.VNUM).Name);
-                output += String.Format("VNUM: {0}  Sector: {1}  Light: {2}  Healing: {3}  Mana: {4}\n",
-                                        targetRoom.VNUM,
-                                        targetRoom.SectorType.ToString(),
-                                        targetRoom.LightLevel,
-                                        targetRoom.HealRate.ToString(),
-                                        targetRoom.ManaRate.ToString());
-                output += String.Format("Room Flags: {0}\n", ((Enums.AlphaMacros)targetRoom.Attributes).ToString().Replace(",","").Replace(" ",""));
-                output += String.Format("Description:\n{0}\n", targetRoom.Description);
-                output += "Extra description keywords: " + String.Join(",", targetRoom.ExtraDescriptions.Select(ed => ed.Keywords)) + "\n";
-
-                // TODO: Should check that the character can be seen by the person invoking this command
-                output += "Characters: " + String.Join(",", targetRoom.Characters.Select(person => person.Name)) + "\n";
-                output += "Objects: " + String.Join(",", targetRoom.Objects.Select(obj => obj.Name)) + "\n";
-
-                // Loop over possible exits
-                for (int i = 0; i <= 5; i++)
-                {
-                    // Check that the exit is defined
-                    if (targetRoom.Exits[i] != null)
-                        // Add to output
-                        output += String.Format("Door: {0}.  To: {1}.  Key: {2}.  Exit flags: {3}.\nKeyword: '{4}'.  Description: {5}\n",
-                                                i,
-                                                targetRoom.Exits[i].ToVNUM,
-                                                targetRoom.Exits[i].KeyVNUM,
-                                                ((Enums.AlphaMacros)targetRoom.Exits[i].Attributes).ToString(),
-                                                targetRoom.Exits[i].Keywords,
-                                                targetRoom.Exits[i].Description);
-                }
-
-                output += "\n";
-
-                // Send output to the user
-                Network.Send(output, state);
-            }
+            Network.Send("Connected to server running in single-user mode.\n\r", state);
         }
 	}
 }

@@ -173,7 +173,11 @@ namespace ROMSharp
                 new Commands.Goto(),
                 new Commands.Shutdown(),
                 new Commands.Quit(),
-                new Commands.ListConnections()
+                new Commands.ListConnections(),
+                new Commands.Load(),
+                new Commands.Inventory(),
+                new Commands.Stat(),
+                new Commands.ServerStats()
             };
 
             return commandTable;
