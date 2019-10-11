@@ -22,6 +22,8 @@ namespace ROMSharp
             public byte[] buffer = new byte[BufferSize];
             // Received data string.
             public StringBuilder sb = new StringBuilder();
+            // Buffer for the user's input string
+            public string stringBuffer;
             // Data sent count
             public UInt64 bytesSent = 0;
             // Data received count
@@ -251,18 +253,28 @@ namespace ROMSharp
 	                // Increment the state's received count
 	                state.bytesReceived += (UInt64)bytesRead;
 
-	                // There might be more data, so store the data received so far.
-	                state.sb.Append(Encoding.ASCII.GetString(state.buffer, 0, bytesRead));
+                    // Clients may be sending commands in their stream, so progress byte-by-byte
+                    char[] bufChars = Encoding.ASCII.GetChars(state.buffer, 0, bytesRead);
 
-	                // Read the StringBuffer
-					content = state.sb.ToString();
+                    // Work through the character buffer
+                    foreach(char bufChar in bufChars)
+                    {
+                        // Handle backspace
+                        if ((int)bufChar == '\b')
+                            state.stringBuffer = state.stringBuffer.Remove(state.stringBuffer.Length - 1);
+                        // Otherwise, add to the string buffer
+                        else
+                            state.stringBuffer += bufChar;
+                    }
+                    
+                    // Read the stringBuffer
+                    content = state.stringBuffer;
 
 					// Check for a null character at the end of the buffer; if we don't have it, continue reading until we've gotten the whole message
 					if (content.IndexOf('\n') > -1 && content.IndexOf('\r') > -1)
-					//if (state.buffer[ClientConnection.BufferSize - 1] == '\0')
 	                {
 						state.buffer = new byte[ClientConnection.BufferSize];
-						state.sb.Clear();
+                        state.stringBuffer = String.Empty;
 
 						// Send the input off to be processed
 						Interpreter.InterpretInput(content.TrimEnd('\n', '\r', ' '), state.ID);
@@ -284,7 +296,7 @@ namespace ROMSharp
 	                }
 				}
 			}
-			catch (System.Net.Sockets.SocketException) {
+			catch (SocketException) {
                 Logging.Log.Warn(String.Format("Error communicating with connection ID {0}, closing connection.", state.ID));
 
 				// End the session
