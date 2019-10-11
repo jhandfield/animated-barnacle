@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Threading;
 
@@ -25,6 +26,8 @@ namespace ROMSharp
         /// Represents the game World
         /// </summary>
         public static World World;
+
+        public static List<Interfaces.ICommand> commandTable;
 
         /// <summary>
         /// The command line arguments from server startup

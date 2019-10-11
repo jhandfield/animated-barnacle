@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ROMSharp.Enums;
+using ROMSharp.Interfaces;
 
 namespace ROMSharp
 {
@@ -80,92 +82,73 @@ namespace ROMSharp
 		public static void ParseCommand(string input, int connID)
 		{
 			Network.ClientConnection state = Network.ClientConnections.Single (c => c.ID == connID);
+            ICommand matchedCommand;
 
 			// Split commandString for easier handling
 			string[] commandArr = input.Split (' ');
 
 			// The first word of a user input is the command - isolate it
-			string command = commandArr[0].ToLower ();
+			string command = commandArr[0].ToLower().Trim();
 
-            // Determine what command was requested
-            switch (command)
+            // If the command is "!", re-execute the player's last command
+            if (command.Equals("!") && state.LastCommand != null)
+                matchedCommand = state.LastCommand;
+            else
             {
-                // Shut down the server
-                case "shutdown":
-                    ServerControl.Shutdown();
-                    break;
+                // Try to find a matching command
+                IEnumerable<ICommand> matchedCommands = Program.commandTable.Where(cmd => cmd.MinimumLevel <= state.PlayerCharacter.Trust && cmd.Name.ToLower().Equals(command.Trim().ToLower()) || cmd.Aliases.Contains(command.Trim().ToLower()));
 
-                // Disconnect the client
-                case "exit":
-                    Network.EndSession(state);
-                    break;
+                // If we got one or more commands, execute the first match
+                if (matchedCommands.Count() > 0)
+                {
+                    // Grab the matched command
+                    matchedCommand = matchedCommands.First();
 
-                // Request the current time
-                case "whattimeisit":
-                    Commands.WhatTimeIsIt(state.ID);
-                    break;
-
-                // Request a list of current connections
-                case "listconnections":
-                    Commands.ListConnections(state.ID);
-                    break;
-
-                // Force a point pulse
-                case "forcepointtick":
-                    Commands.ForcePointPulse(state.ID);
-                    break;
-
-                // Repeats the last command
-                case "!":
-                    ParseCommand(state.LastCommand, state.ID);
-                    break;
-
-                case "serverstats":
-                    Commands.DoServerStats(state.ID);
-                    break;
-
-                case "goto":
-                    Commands.DoGoto(state.ID, commandArr[1]);
-                    break;
-
-                case "stat":
-                    switch (commandArr[1])
-                    {
-                        case "room":
-                            Commands.DoStatRoom(state.ID, Convert.ToInt32(commandArr[2]));
-                            break;
-                        default:
-                            Commands.UnknownCommand(state.ID, command);
-                            break;
-                    }
-                    break;
-
-                case "look":
-                    Commands.DoLook(state.ID, commandArr);
-                    break;
-
-                case "spawn":
-                    Commands.DoSpawn(Convert.ToInt32(commandArr[1]), Convert.ToInt32(commandArr[2]), state.ID);
-                    break;
-
-                case "load":
-                    Commands.DoLoad(state.ID, commandArr);
-                    break;
-
-                case "inv":
-                case "inventory":
-                    Commands.DoInventory(state.ID);
-                    break;
-
-                // Unknown command
-                default:
-                    Commands.UnknownCommand(state.ID, command);
-                    break;
+                    // Store this as the player's last command executed
+                    state.LastCommand = matchedCommand;
+                }
+                else
+                {
+                    // Not sure what they're looking for
+                    Network.Send("Huh?\n\r", state);
+                    return;
+                }
             }
 
-			// Store the active command as the client's last command, if it wasn't !
-			if (!command.Equals ("!"))
-				state.LastCommand = command;
-		}
+            // Check the character's position vs. the command's minimum
+            if ((int)state.PlayerCharacter.Position.PositionCode < (int)matchedCommand.MinimumPosition)
+            {
+                switch (state.PlayerCharacter.Position.PositionCode)
+                {
+                    case Position.Dead:
+                        Network.Send("Lie still; you are DEAD.\n\r", state);
+                        break;
+                    case Position.MortallyWounded:
+                    case Position.Incapacitated:
+                        Network.Send("You are hurt far too badly for that.\n\r", state);
+                        break;
+                    case Position.Stunned:
+                        Network.Send("You are too stunned to do that.\n\r", state);
+                        break;
+                    case Position.Sleeping:
+                        Network.Send("In your dreams, or what?\n\r", state);
+                        break;
+                    case Position.Resting:
+                        Network.Send("Nah... You feel too relaxed...\n\r", state);
+                        break;
+                    case Position.Sitting:
+                        Network.Send("Better stand up first.\n\r", state);
+                        break;
+                    case Position.Fighting:
+                        Network.Send("No way! You are still fighting!\n\r", state);
+                        break;
+                }
+
+                return;
+            }
+
+            // Execute the command
+            matchedCommand.Execute(state.PlayerCharacter, commandArr);
+        }
 	}
 }
